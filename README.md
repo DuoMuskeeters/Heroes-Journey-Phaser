@@ -1,4 +1,4 @@
-# Phaser 3 + Create React App template
+# Phaser 3 + React App 
 ![image](https://user-images.githubusercontent.com/11501902/149049053-f46a9d1e-7075-4258-9102-cdbcbe7198ba.png)
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
