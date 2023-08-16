@@ -1,10 +1,8 @@
-# Phaser 3 + React App 
-<img src="./public/Ekran Resmi 2023-08-16 08.38.19.png" alt="Heroes-Journey" width="100" height="100">
+# Phaser 3 + React App
 
-## What's included? - [Check the preview](https://create-react-phaser3-app.netlify.app/)
+<img src="./public/Ekran Resmi 2023-08-16 08.38.19.png" alt="Heroes-Journey" width="1958" height="782">
 
 - [Phaser 3](https://github.com/photonstorm/phaser) - overlaid canvas with the config in `src/PhaserGame.ts` and a scene in `src/scenes/`
- - React, TSX
-- An example button in `src/App.tsx` showing how to communicate with Phaser within a React component
+- React, TSX
+- `src/App.tsx` showing how to communicate with Phaser within a React component
 - That's it!
-
