@@ -144,19 +144,19 @@ export default class HelloWorldScene extends Phaser.Scene {
   }
 
   movement() {
-    const keySpace = this.input.keyboard.addKey("SPACE");
-    const keyW = this.input.keyboard.addKey("W");
-    const keyA = this.input.keyboard.addKey("A");
-    const keyD = this.input.keyboard.addKey("D");
-    const keyQ = this.input.keyboard.addKey("Q");
-    const keyB = this.input.keyboard.addKey("B");
+    const keySpace = this.input.keyboard?.addKey("SPACE");
+    const keyW = this.input.keyboard?.addKey("W");
+    const keyA = this.input.keyboard?.addKey("A");
+    const keyD = this.input.keyboard?.addKey("D");
+    const keyQ = this.input.keyboard?.addKey("Q");
+    const keyB = this.input.keyboard?.addKey("B");
 
     const mouse = this.input.activePointer.leftButtonDown();
-    if (keyA.isDown) {
+    if (keyA?.isDown) {
       this.lastdirection = this.direction.Left;
       this.direction.Dirvelocity = -1;
     }
-    if (keyD.isDown) {
+    if (keyD?.isDown) {
       this.lastdirection = this.direction.Right;
       this.direction.Dirvelocity = +1;
     }
@@ -168,23 +168,23 @@ export default class HelloWorldScene extends Phaser.Scene {
         Math.floor(this.player.y) ===
         Math.floor(window.innerHeight * 0.72333333333333333333333)
       ) {
-        if (keyW.isDown) {
+        if (keyW?.isDown) {
           this.player.anims.startAnimation(`jump-${this.lastdirection}`);
           this.player.anims.stopAfterRepeat(0);
 
           this.player.body.setVelocityY(-1 * window.innerHeight * 2.1951);
-          if (keyD.isDown || keyA.isDown) {
+          if (keyD?.isDown || keyA?.isDown) {
             this.player.body.setVelocityX(this.direction.Dirvelocity * 650);
           } else {
             this.player.body.setVelocityX(0);
           }
         }
         if (
-          (keyD.isDown || keyA.isDown) &&
-          !keyW.isDown &&
-          this.player.anims.currentFrame.textureKey !==
+          (keyD?.isDown || keyA?.isDown) &&
+          !keyW?.isDown &&
+          this.player.anims.currentFrame?.textureFrame !==
             `attack2-${this.lastdirection}` &&
-          this.player.anims.currentFrame.textureKey !==
+          this.player.anims.currentFrame?.textureKey !==
             `attack1-${this.lastdirection}`
         ) {
           this.player?.anims.play(this.lastdirection, true);
@@ -192,8 +192,8 @@ export default class HelloWorldScene extends Phaser.Scene {
           this.player?.body.setVelocityX(this.direction.Dirvelocity * 650);
         }
         if (
-          keyQ.isDown &&
-          this.player.anims.currentFrame.textureKey !==
+          keyQ?.isDown &&
+        this.player.anims.currentFrame?.textureKey !==
             `attack1-${this.lastdirection}`
         ) {
           this.player.anims.play(`attack2-${this.lastdirection}`, true);
@@ -201,31 +201,31 @@ export default class HelloWorldScene extends Phaser.Scene {
           this.player?.body.setVelocityX(this.direction.Dirvelocity * 650);
         }
         if (
-          (mouse || keySpace.isDown) &&
-          this.player.anims.currentFrame.textureKey !==
+          (mouse || keySpace?.isDown) &&
+          this.player.anims.currentFrame?.textureKey !==
             `attack2-${this.lastdirection}`
         ) {
           this.player?.anims.play(`attack1-${this.lastdirection}`, true);
           this.player.anims.stopAfterRepeat(0);
           this.player.body.setVelocityX(0);
         }
-        if (keyB.isDown) {
+        if (keyB?.isDown) {
           this.Goblin();
         }
         if (this.goblin?.sprite.x == this.player.x) {
           console.log(1);
         } else if (
-          this.player.anims.currentFrame.textureKey ===
+          this.player.anims.currentFrame?.textureKey ===
             `fall-${this.lastdirection}` ||
-          (!keyD.isDown &&
-            !keyW.isDown &&
-            !keyA.isDown &&
-            !keyB.isDown &&
-            this.player.anims.currentFrame.textureKey !==
+          (!keyD?.isDown &&
+            !keyW?.isDown &&
+            !keyA?.isDown &&
+            !keyB?.isDown &&
+            this.player.anims.currentFrame?.textureKey !==
               `attack2-${this.lastdirection}` &&
-            this.player.anims.currentFrame.textureKey !==
+            this.player.anims.currentFrame?.textureKey !==
               `attack1-${this.lastdirection}` &&
-            this.player.anims.currentFrame.textureKey !==
+            this.player.anims.currentFrame?.textureKey !==
               `attack2-${this.lastdirection}`)
         ) {
           this.player.body.setVelocityX(0);
@@ -247,7 +247,7 @@ export default class HelloWorldScene extends Phaser.Scene {
       if (
         this.goblin?.sprite.active &&
         Math.abs(this.goblin.sprite.x - this.player.x) <= 250 &&
-        this.player.anims.currentFrame.textureKey ==
+        this.player.anims.currentFrame?.textureKey ==
           `attack1-${this.lastdirection}` &&
         this.player.anims.currentFrame.textureFrame == "5"
       ) {
