@@ -23,11 +23,15 @@ export default class HelloWorldScene extends Phaser.Scene {
     hp: number;
     frameWidth: number;
     frameHeight: number;
+    lastdirection: string;
+    direction: number;
   } = {
     sprite: {} as Phaser.GameObjects.Sprite,
     hp: 0,
     frameWidth: 150,
     frameHeight: 145,
+    lastdirection: this.direction.Left,
+    direction: 1,
   };
   private bomb: { sprite: Phaser.GameObjects.Sprite } = {
     sprite: {} as Phaser.GameObjects.Sprite,
@@ -108,7 +112,7 @@ export default class HelloWorldScene extends Phaser.Scene {
       frameWidth: this.goblin?.frameWidth,
       frameHeight: this.goblin?.frameHeight,
     });
-    this.load.spritesheet("goblin-bomb", "goblin-bomb.png", {
+    this.load.spritesheet("goblin-bomb-left", "goblin-bomb-left.png", {
       frameWidth: this.goblin?.frameWidth,
       frameHeight: this.goblin?.frameHeight,
     });
@@ -116,11 +120,23 @@ export default class HelloWorldScene extends Phaser.Scene {
       frameWidth: this.goblin?.frameWidth,
       frameHeight: this.goblin?.frameHeight,
     });
+    this.load.spritesheet("goblin-run-right", "goblin-run-right.png", {
+      frameWidth: this.goblin?.frameWidth,
+      frameHeight: this.goblin?.frameHeight,
+    });
     this.load.spritesheet("goblin-attack-left", "goblin-attack-left.png", {
       frameWidth: this.goblin?.frameWidth,
       frameHeight: this.goblin?.frameHeight,
     });
+    this.load.spritesheet("goblin-attack-right", "goblin-attack-right.png", {
+      frameWidth: this.goblin?.frameWidth,
+      frameHeight: this.goblin?.frameHeight,
+    });
     this.load.spritesheet("goblin-takehit-left", "goblin-takehit-left.png", {
+      frameWidth: this.goblin?.frameWidth,
+      frameHeight: this.goblin?.frameHeight,
+    });
+    this.load.spritesheet("goblin-takehit-right", "goblin-takehit-right.png", {
       frameWidth: this.goblin?.frameWidth,
       frameHeight: this.goblin?.frameHeight,
     });
@@ -226,7 +242,7 @@ export default class HelloWorldScene extends Phaser.Scene {
           );
         }
         if (
-          keyQ?.isDown &&
+          keyQ?.isDown &&!keyD.isDown&&!keyA.isDown&&
           this.player.sprite.anims.currentFrame?.textureKey !==
             `attack1-${this.player.lastdirection}`
         ) {
@@ -236,7 +252,7 @@ export default class HelloWorldScene extends Phaser.Scene {
           );
           this.player.sprite.anims.stopAfterRepeat(0);
           this.player?.sprite.body.setVelocityX(
-            this.direction.Dirvelocity * 650
+           0
           );
         }
         if (
@@ -289,35 +305,58 @@ export default class HelloWorldScene extends Phaser.Scene {
         this.road[0].sprite.tilePositionX =
           this.cameras.main.scrollX * this.road[0].rationx;
       }
+
       if (this.goblin?.sprite.body instanceof Phaser.Physics.Arcade.Body) {
+        const distanceofgoblin = this.goblin.sprite.x - this.player.sprite.x;
+        if (distanceofgoblin > 0) {
+          this.goblin.lastdirection = this.direction.Left;
+          this.goblin.direction = -1;
+        } else {
+          this.goblin.lastdirection = this.direction.Right;
+          this.goblin.direction = 1;
+        }
         if (
           this.player.sprite.anims.currentFrame?.textureKey ==
-            `attack1-${this.player.lastdirection}` &&
-          Math.abs(this.goblin.sprite.x - this.player.sprite.x) <= 250
+            `attack2-${this.player.lastdirection}` &&
+          Math.abs(distanceofgoblin) <= 400 &&
+         this.player.lastdirection!== this.goblin.lastdirection
         ) {
-          this.goblin.sprite.anims.play("goblin-takehit-left", true);
+          console.log(this.player.sprite.anims.currentFrame?.textureFrame);
+          this.goblin.sprite.anims.play(
+            `goblin-takehit-${this.goblin.lastdirection}`,
+            true
+          );
           this.goblin.sprite.anims.stopAfterRepeat(0);
         } else if (
           this.goblin?.sprite.active &&
-          Math.abs(this.goblin.sprite.x - this.player.sprite.x) <= 250 &&
-          Math.abs(this.goblin.sprite.x - this.player.sprite.x) >= 100 &&
+          Math.abs(distanceofgoblin) <= 400 &&
+          Math.abs(distanceofgoblin) >= 145 &&
           this.goblin.sprite.anims.currentFrame?.textureKey !==
-            `goblin-takehit-left`
+            `goblin-takehit-${this.goblin.lastdirection}`
         ) {
-          this.goblin.sprite.anims.play("goblin-run-left", true);
+          this.goblin.sprite.anims.play(
+            `goblin-run-${this.goblin.lastdirection}`,
+            true
+          );
           this.goblin.sprite.anims.stopAfterRepeat(0);
-          this.goblin.sprite.body.setVelocityX(-200);
+          this.goblin.sprite.body.setVelocityX(this.goblin.direction * 600);
         } else if (
-          Math.abs(this.goblin.sprite.x - this.player.sprite.x) <= 100 &&
+          Math.abs(distanceofgoblin) <= 145&&
           this.goblin.sprite.anims.currentFrame?.textureKey !==
-            `goblin-takehit-left`
+            `goblin-takehit-${this.goblin.lastdirection}`
         ) {
-          this.goblin.sprite.anims.play("goblin-attack-left", true);
+          this.goblin.sprite.anims.play(
+            `goblin-attack-${this.goblin.lastdirection}`,
+            true
+          );
           this.goblin.sprite.anims.stopAfterRepeat(0);
           this.goblin.sprite.body.setVelocityX(0);
         } else {
           this.goblin.sprite.body.setVelocityX(0);
-          this.goblin.sprite.anims.play("goblin-left", true);
+          this.goblin.sprite.anims.play(
+            `goblin-${this.goblin.lastdirection}`,
+            true
+          );
         }
       }
     }
@@ -549,6 +588,15 @@ export default class HelloWorldScene extends Phaser.Scene {
       repeat: -1,
     });
     this.anims.create({
+      key: "goblin-takehit-right",
+      frames: this.anims.generateFrameNumbers("goblin-takehit-right", {
+        start: 0,
+        end: 4,
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+    this.anims.create({
       key: "goblin-run-left",
       frames: this.anims.generateFrameNumbers("goblin-run-left", {
         start: 8,
@@ -558,10 +606,28 @@ export default class HelloWorldScene extends Phaser.Scene {
       repeat: -1,
     });
     this.anims.create({
+      key: "goblin-run-right",
+      frames: this.anims.generateFrameNumbers("goblin-run-right", {
+        start: 0,
+        end: 8,
+      }),
+      frameRate: 8,
+      repeat: -1,
+    });
+    this.anims.create({
       key: "goblin-attack-left",
       frames: this.anims.generateFrameNumbers("goblin-attack-left", {
         start: 8,
         end: 0,
+      }),
+      frameRate: 8,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: "goblin-attack-right",
+      frames: this.anims.generateFrameNumbers("goblin-attack-right", {
+        start: 0,
+        end: 8,
       }),
       frameRate: 8,
       repeat: -1,
