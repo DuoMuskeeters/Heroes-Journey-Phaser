@@ -3,10 +3,10 @@ import Phaser from "phaser";
 export default class HelloWorldScene extends Phaser.Scene {
   private shopobject?: Phaser.GameObjects.Sprite;
   private player: Phaser.GameObjects.Sprite = {} as Phaser.GameObjects.Sprite;
-  private goblin?: { sprite: Phaser.GameObjects.Sprite, hp: number } = {
-  sprite: {} as Phaser.GameObjects.Sprite,
-  hp: 300
-};
+  private goblin?: { sprite: Phaser.GameObjects.Sprite; hp: number } = {
+    sprite: {} as Phaser.GameObjects.Sprite,
+    hp: 300,
+  };
   private bomb: Phaser.GameObjects.Sprite = {} as Phaser.GameObjects.Sprite;
 
   private direction = {
@@ -106,6 +106,18 @@ export default class HelloWorldScene extends Phaser.Scene {
       frameWidth: 100,
       frameHeight: 100,
     });
+    this.load.spritesheet("goblin-run-left", "goblin-run-left.png", {
+      frameWidth: 150,
+      frameHeight: 150,
+    });
+    this.load.spritesheet("goblin-attack-left", "goblin-attack-left.png", {
+      frameWidth: 150,
+      frameHeight: 150,
+    });
+    this.load.spritesheet("goblin-takehit-left", "goblin-takehit-left.png", {
+      frameWidth: 150,
+      frameHeight: 150,
+    });
   }
 
   create(isrectangle: boolean) {
@@ -193,7 +205,7 @@ export default class HelloWorldScene extends Phaser.Scene {
         }
         if (
           keyQ?.isDown &&
-        this.player.anims.currentFrame?.textureKey !==
+          this.player.anims.currentFrame?.textureKey !==
             `attack1-${this.lastdirection}`
         ) {
           this.player.anims.play(`attack2-${this.lastdirection}`, true);
@@ -210,11 +222,13 @@ export default class HelloWorldScene extends Phaser.Scene {
           this.player.body.setVelocityX(0);
         }
         if (keyB?.isDown) {
-          this.Goblin();
+          if (!this.goblin?.sprite.active) {
+            this.Mob();
+            this.goblin?.sprite.anims.play("goblin-left", true);
+          }
         }
-        if (this.goblin?.sprite.x == this.player.x) {
-          console.log(1);
-        } else if (
+
+         else if (
           this.player.anims.currentFrame?.textureKey ===
             `fall-${this.lastdirection}` ||
           (!keyD?.isDown &&
@@ -244,14 +258,37 @@ export default class HelloWorldScene extends Phaser.Scene {
         this.road[0].sprite.tilePositionX =
           this.cameras.main.scrollX * this.road[0].rationx;
       }
-      if (
-        this.goblin?.sprite.active &&
-        Math.abs(this.goblin.sprite.x - this.player.x) <= 250 &&
-        this.player.anims.currentFrame?.textureKey ==
-          `attack1-${this.lastdirection}` &&
-        this.player.anims.currentFrame.textureFrame == "5"
-      ) {
-        console.log(1);
+      if (this.goblin?.sprite.body instanceof Phaser.Physics.Arcade.Body) {
+        if (
+          this.player.anims.currentFrame?.textureKey ==
+            `attack1-${this.lastdirection}` &&
+          Math.abs(this.goblin.sprite.x - this.player.x) <= 250
+        ) {
+          this.goblin.sprite.anims.play("goblin-takehit-left",true);
+          this.goblin.sprite.anims.stopAfterRepeat(0);
+        } else if (
+          this.goblin?.sprite.active &&
+          Math.abs(this.goblin.sprite.x - this.player.x) <= 250 &&
+          Math.abs(this.goblin.sprite.x - this.player.x) >= 100 &&
+          this.goblin.sprite.anims.currentFrame?.textureKey !==
+            `goblin-takehit-left`
+        ) {
+          this.goblin.sprite.anims.play("goblin-run-left", true);
+          this.goblin.sprite.anims.stopAfterRepeat(0);
+          this.goblin.sprite.body.setVelocityX(-200);
+        } else if (
+          Math.abs(this.goblin.sprite.x - this.player.x) <= 100 &&
+          this.goblin.sprite.anims.currentFrame?.textureKey !==
+            `goblin-takehit-left`
+        ) {
+          this.goblin.sprite.anims.play("goblin-attack-left", true);
+          this.goblin.sprite.anims.stopAfterRepeat(0);
+          this.goblin.sprite.body.setVelocityX(0);
+        } else  
+           {
+          this.goblin.sprite.body.setVelocityX(0);
+          this.goblin.sprite.anims.play("goblin-left", true);
+        }
       }
     }
   }
@@ -433,17 +470,17 @@ export default class HelloWorldScene extends Phaser.Scene {
     });
   }
   Mob() {
-    if(this.goblin?.sprite!==undefined)
-    this.goblin.sprite = this.physics.add
-      .sprite(
-        window.innerWidth * 0.82,
-        window.innerHeight * 0.63,
-        "goblin-left"
-      )
-      .setScale(window.innerHeight / 300)
-      .setDepth(4)
-      .setCollideWorldBounds(true)
-      .setBounce(0.2);
+    if (this.goblin?.sprite !== undefined)
+      this.goblin.sprite = this.physics.add
+        .sprite(
+          window.innerWidth * 0.82,
+          window.innerHeight * 0.63,
+          "goblin-left"
+        )
+        .setScale(window.innerHeight / 300)
+        .setDepth(4)
+        .setCollideWorldBounds(true)
+        .setBounce(0.2);
 
     this.anims.create({
       key: "goblin-bomb",
@@ -472,6 +509,33 @@ export default class HelloWorldScene extends Phaser.Scene {
       frameRate: 8,
       repeat: -1,
     });
+    this.anims.create({
+      key: "goblin-takehit-left",
+      frames: this.anims.generateFrameNumbers("goblin-takehit-left", {
+        start: 4,
+        end: 0,
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: "goblin-run-left",
+      frames: this.anims.generateFrameNumbers("goblin-run-left", {
+        start: 8,
+        end: 0,
+      }),
+      frameRate: 8,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: "goblin-attack-left",
+      frames: this.anims.generateFrameNumbers("goblin-attack-left", {
+        start: 8,
+        end: 0,
+      }),
+      frameRate: 8,
+      repeat: -1,
+    });
 
     this.bomb = this.physics.add
       .sprite(
@@ -493,12 +557,6 @@ export default class HelloWorldScene extends Phaser.Scene {
       frameRate: 10,
       repeat: -1,
     });
-  }
-  Goblin() {
-    if (!this.goblin?.sprite.active) {
-      this.Mob();
-    }
-    this.goblin?.sprite.anims.startAnimation("goblin-left");
   }
 
   // TODO : doesn?t change scale when change screenwidth
