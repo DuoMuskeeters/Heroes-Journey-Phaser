@@ -1,32 +1,46 @@
 import Phaser from "phaser";
 
 export default class HelloWorldScene extends Phaser.Scene {
-  private shopobject?: Phaser.GameObjects.Sprite;
-  private player: Phaser.GameObjects.Sprite = {} as Phaser.GameObjects.Sprite;
-  private goblin?: { sprite: Phaser.GameObjects.Sprite; hp: number } = {
-    sprite: {} as Phaser.GameObjects.Sprite,
-    hp: 300,
-  };
-  private bomb: Phaser.GameObjects.Sprite = {} as Phaser.GameObjects.Sprite;
-
   private direction = {
     Right: "right",
     Left: "left",
     Dirvelocity: 1,
   };
-  private sprisheeets = {
+  private shopobject?: Phaser.GameObjects.Sprite;
+  private player: {
+    sprite: Phaser.GameObjects.Sprite;
+    lastdirection: string;
+    framewidth: number;
+    frameheight: number;
+  } = {
+    sprite: {} as Phaser.GameObjects.Sprite,
+    lastdirection: this.direction.Right,
     framewidth: 200,
     frameheight: 166,
   };
-  backgrounds: {
+  private goblin: {
+    sprite: Phaser.GameObjects.Sprite;
+    hp: number;
+    frameWidth: number;
+    frameHeight: number;
+  } = {
+    sprite: {} as Phaser.GameObjects.Sprite,
+    hp: 0,
+    frameWidth: 150,
+    frameHeight: 145,
+  };
+  private bomb: { sprite: Phaser.GameObjects.Sprite } = {
+    sprite: {} as Phaser.GameObjects.Sprite,
+  };
+
+  private backgrounds: {
     rationx: number;
     sprite: Phaser.GameObjects.TileSprite;
   }[] = [];
-  road?: {
+  private road?: {
     rationx: number;
     sprite: Phaser.GameObjects.TileSprite;
   }[] = [];
-  private lastdirection = this.direction.Right; //
 
   constructor() {
     super("helloworld");
@@ -36,87 +50,87 @@ export default class HelloWorldScene extends Phaser.Scene {
     this.load.image("background2", "background/background_layer_2.png");
     this.load.image("background3", "background/background_layer_3.png");
     this.load.image("shop", "shop_anim.png");
+    this.load.image("piskel", "Road.png");
 
-    this.load.image("piskel", "Merged_document-13.png");
     this.load.spritesheet("ıdle-right", "Idle.png", {
-      frameWidth: this.sprisheeets.framewidth,
-      frameHeight: this.sprisheeets.frameheight,
+      frameWidth: this.player.framewidth,
+      frameHeight: this.player.frameheight,
     });
     this.load.spritesheet("ıdle-left", "Idle2.png", {
-      frameWidth: this.sprisheeets.framewidth,
-      frameHeight: this.sprisheeets.frameheight,
+      frameWidth: this.player.framewidth,
+      frameHeight: this.player.frameheight,
     });
     this.load.spritesheet("right", "Run.png", {
-      frameWidth: this.sprisheeets.framewidth,
-      frameHeight: this.sprisheeets.frameheight,
+      frameWidth: this.player.framewidth,
+      frameHeight: this.player.frameheight,
     });
     this.load.spritesheet("left", "Run2.png", {
-      frameWidth: this.sprisheeets.framewidth,
-      frameHeight: this.sprisheeets.frameheight,
+      frameWidth: this.player.framewidth,
+      frameHeight: this.player.frameheight,
     });
     this.load.spritesheet("jump-right", "Jump.png", {
-      frameWidth: this.sprisheeets.framewidth,
-      frameHeight: this.sprisheeets.frameheight,
+      frameWidth: this.player.framewidth,
+      frameHeight: this.player.frameheight,
     });
     this.load.spritesheet("jump-left", "Jump2.png", {
-      frameWidth: this.sprisheeets.framewidth,
-      frameHeight: this.sprisheeets.frameheight,
-    });
-    this.load.spritesheet("shopanim", "shop_anim.png", {
-      frameWidth: 118,
-      frameHeight: 128,
+      frameWidth: this.player.framewidth,
+      frameHeight: this.player.frameheight,
     });
     this.load.spritesheet("attack1-right", "Attack1.png", {
-      frameWidth: this.sprisheeets.framewidth,
-      frameHeight: this.sprisheeets.frameheight,
+      frameWidth: this.player.framewidth,
+      frameHeight: this.player.frameheight,
     });
     this.load.spritesheet("attack1-left", "attack1left.png", {
-      frameWidth: this.sprisheeets.framewidth,
-      frameHeight: this.sprisheeets.frameheight,
+      frameWidth: this.player.framewidth,
+      frameHeight: this.player.frameheight,
     });
     this.load.spritesheet("fall-right", "Fall.png", {
-      frameWidth: this.sprisheeets.framewidth,
-      frameHeight: this.sprisheeets.frameheight,
+      frameWidth: this.player.framewidth,
+      frameHeight: this.player.frameheight,
     });
     this.load.spritesheet("fall-left", "Fall2.png", {
-      frameWidth: this.sprisheeets.framewidth,
-      frameHeight: this.sprisheeets.frameheight,
+      frameWidth: this.player.framewidth,
+      frameHeight: this.player.frameheight,
     });
     this.load.spritesheet("attack2-right", "Attack2.png", {
-      frameWidth: this.sprisheeets.framewidth,
-      frameHeight: this.sprisheeets.frameheight,
+      frameWidth: this.player.framewidth,
+      frameHeight: this.player.frameheight,
     });
     this.load.spritesheet("attack2-left", "attack2left.png", {
-      frameWidth: this.sprisheeets.framewidth,
-      frameHeight: this.sprisheeets.frameheight,
+      frameWidth: this.player.framewidth,
+      frameHeight: this.player.frameheight,
     });
     this.load.spritesheet("goblin-left", "goblin-left.png", {
-      frameWidth: 150,
-      frameHeight: 145,
+      frameWidth: this.goblin?.frameWidth,
+      frameHeight: this.goblin?.frameHeight,
     });
     this.load.spritesheet("goblin-right", "goblin-right.png", {
-      frameWidth: 150,
-      frameHeight: 145,
+      frameWidth: this.goblin?.frameWidth,
+      frameHeight: this.goblin?.frameHeight,
     });
     this.load.spritesheet("goblin-bomb", "goblin-bomb.png", {
-      frameWidth: 150,
-      frameHeight: 145,
+      frameWidth: this.goblin?.frameWidth,
+      frameHeight: this.goblin?.frameHeight,
+    });
+    this.load.spritesheet("goblin-run-left", "goblin-run-left.png", {
+      frameWidth: this.goblin?.frameWidth,
+      frameHeight: this.goblin?.frameHeight,
+    });
+    this.load.spritesheet("goblin-attack-left", "goblin-attack-left.png", {
+      frameWidth: this.goblin?.frameWidth,
+      frameHeight: this.goblin?.frameHeight,
+    });
+    this.load.spritesheet("goblin-takehit-left", "goblin-takehit-left.png", {
+      frameWidth: this.goblin?.frameWidth,
+      frameHeight: this.goblin?.frameHeight,
     });
     this.load.spritesheet("goblin-attack-bomb", "goblin-attack-bomb.png", {
       frameWidth: 100,
       frameHeight: 100,
     });
-    this.load.spritesheet("goblin-run-left", "goblin-run-left.png", {
-      frameWidth: 150,
-      frameHeight: 150,
-    });
-    this.load.spritesheet("goblin-attack-left", "goblin-attack-left.png", {
-      frameWidth: 150,
-      frameHeight: 150,
-    });
-    this.load.spritesheet("goblin-takehit-left", "goblin-takehit-left.png", {
-      frameWidth: 150,
-      frameHeight: 150,
+    this.load.spritesheet("shopanim", "shop_anim.png", {
+      frameWidth: 118,
+      frameHeight: 128,
     });
   }
 
@@ -126,10 +140,10 @@ export default class HelloWorldScene extends Phaser.Scene {
       this.Road();
       this.Player();
 
-      this.player.anims.play("fall-right", true);
-      this.player.anims.stopAfterRepeat(1);
+      this.player.sprite.anims.play("fall-right", true);
+      this.player.sprite.anims.stopAfterRepeat(1);
       this.cameras.main.startFollow(
-        this.player,
+        this.player.sprite,
         false,
         1,
         0,
@@ -165,85 +179,102 @@ export default class HelloWorldScene extends Phaser.Scene {
 
     const mouse = this.input.activePointer.leftButtonDown();
     if (keyA?.isDown) {
-      this.lastdirection = this.direction.Left;
+      this.player.lastdirection = this.direction.Left;
       this.direction.Dirvelocity = -1;
     }
     if (keyD?.isDown) {
-      this.lastdirection = this.direction.Right;
+      this.player.lastdirection = this.direction.Right;
       this.direction.Dirvelocity = +1;
     }
-    if (this.player.body instanceof Phaser.Physics.Arcade.Body) {
-      this.player.anims.chain(undefined!);
-      this.player?.anims.chain([`fall-${this.lastdirection}`]);
+    if (this.player.sprite.body instanceof Phaser.Physics.Arcade.Body) {
+      this.player.sprite.anims.chain(undefined!);
+      this.player?.sprite.anims.chain([`fall-${this.player.lastdirection}`]);
 
       if (
-        Math.floor(this.player.y) ===
+        Math.floor(this.player.sprite.y) ===
         Math.floor(window.innerHeight * 0.72333333333333333333333)
       ) {
         if (keyW?.isDown) {
-          this.player.anims.startAnimation(`jump-${this.lastdirection}`);
-          this.player.anims.stopAfterRepeat(0);
+          this.player.sprite.anims.startAnimation(
+            `jump-${this.player.lastdirection}`
+          );
+          this.player.sprite.anims.stopAfterRepeat(0);
 
-          this.player.body.setVelocityY(-1 * window.innerHeight * 2.1951);
+          this.player.sprite.body.setVelocityY(
+            -1 * window.innerHeight * 2.1951
+          );
           if (keyD?.isDown || keyA?.isDown) {
-            this.player.body.setVelocityX(this.direction.Dirvelocity * 650);
+            this.player.sprite.body.setVelocityX(
+              this.direction.Dirvelocity * 650
+            );
           } else {
-            this.player.body.setVelocityX(0);
+            this.player.sprite.body.setVelocityX(0);
           }
         }
         if (
           (keyD?.isDown || keyA?.isDown) &&
           !keyW?.isDown &&
-          this.player.anims.currentFrame?.textureFrame !==
-            `attack2-${this.lastdirection}` &&
-          this.player.anims.currentFrame?.textureKey !==
-            `attack1-${this.lastdirection}`
+          this.player.sprite.anims.currentFrame?.textureFrame !==
+            `attack2-${this.player.lastdirection}` &&
+          this.player.sprite.anims.currentFrame?.textureKey !==
+            `attack1-${this.player.lastdirection}`
         ) {
-          this.player?.anims.play(this.lastdirection, true);
+          this.player?.sprite.anims.play(this.player.lastdirection, true);
 
-          this.player?.body.setVelocityX(this.direction.Dirvelocity * 650);
+          this.player?.sprite.body.setVelocityX(
+            this.direction.Dirvelocity * 650
+          );
         }
         if (
           keyQ?.isDown &&
-          this.player.anims.currentFrame?.textureKey !==
-            `attack1-${this.lastdirection}`
+          this.player.sprite.anims.currentFrame?.textureKey !==
+            `attack1-${this.player.lastdirection}`
         ) {
-          this.player.anims.play(`attack2-${this.lastdirection}`, true);
-          this.player.anims.stopAfterRepeat(0);
-          this.player?.body.setVelocityX(this.direction.Dirvelocity * 650);
+          this.player.sprite.anims.play(
+            `attack2-${this.player.lastdirection}`,
+            true
+          );
+          this.player.sprite.anims.stopAfterRepeat(0);
+          this.player?.sprite.body.setVelocityX(
+            this.direction.Dirvelocity * 650
+          );
         }
         if (
           (mouse || keySpace?.isDown) &&
-          this.player.anims.currentFrame?.textureKey !==
-            `attack2-${this.lastdirection}`
+          this.player.sprite.anims.currentFrame?.textureKey !==
+            `attack2-${this.player.lastdirection}`
         ) {
-          this.player?.anims.play(`attack1-${this.lastdirection}`, true);
-          this.player.anims.stopAfterRepeat(0);
-          this.player.body.setVelocityX(0);
+          this.player?.sprite.anims.play(
+            `attack1-${this.player.lastdirection}`,
+            true
+          );
+          this.player.sprite.anims.stopAfterRepeat(0);
+          this.player.sprite.body.setVelocityX(0);
         }
         if (keyB?.isDown) {
           if (!this.goblin?.sprite.active) {
             this.Mob();
             this.goblin?.sprite.anims.play("goblin-left", true);
           }
-        }
-
-         else if (
-          this.player.anims.currentFrame?.textureKey ===
-            `fall-${this.lastdirection}` ||
+        } else if (
+          this.player.sprite.anims.currentFrame?.textureKey ===
+            `fall-${this.player.lastdirection}` ||
           (!keyD?.isDown &&
             !keyW?.isDown &&
             !keyA?.isDown &&
             !keyB?.isDown &&
-            this.player.anims.currentFrame?.textureKey !==
-              `attack2-${this.lastdirection}` &&
-            this.player.anims.currentFrame?.textureKey !==
-              `attack1-${this.lastdirection}` &&
-            this.player.anims.currentFrame?.textureKey !==
-              `attack2-${this.lastdirection}`)
+            this.player.sprite.anims.currentFrame?.textureKey !==
+              `attack2-${this.player.lastdirection}` &&
+            this.player.sprite.anims.currentFrame?.textureKey !==
+              `attack1-${this.player.lastdirection}` &&
+            this.player.sprite.anims.currentFrame?.textureKey !==
+              `attack2-${this.player.lastdirection}`)
         ) {
-          this.player.body.setVelocityX(0);
-          this.player.anims.play(`ıdle-${this.lastdirection}`, true);
+          this.player.sprite.body.setVelocityX(0);
+          this.player.sprite.anims.play(
+            `ıdle-${this.player.lastdirection}`,
+            true
+          );
         }
       }
       if (this.backgrounds !== undefined) {
@@ -260,16 +291,16 @@ export default class HelloWorldScene extends Phaser.Scene {
       }
       if (this.goblin?.sprite.body instanceof Phaser.Physics.Arcade.Body) {
         if (
-          this.player.anims.currentFrame?.textureKey ==
-            `attack1-${this.lastdirection}` &&
-          Math.abs(this.goblin.sprite.x - this.player.x) <= 250
+          this.player.sprite.anims.currentFrame?.textureKey ==
+            `attack1-${this.player.lastdirection}` &&
+          Math.abs(this.goblin.sprite.x - this.player.sprite.x) <= 250
         ) {
-          this.goblin.sprite.anims.play("goblin-takehit-left",true);
+          this.goblin.sprite.anims.play("goblin-takehit-left", true);
           this.goblin.sprite.anims.stopAfterRepeat(0);
         } else if (
           this.goblin?.sprite.active &&
-          Math.abs(this.goblin.sprite.x - this.player.x) <= 250 &&
-          Math.abs(this.goblin.sprite.x - this.player.x) >= 100 &&
+          Math.abs(this.goblin.sprite.x - this.player.sprite.x) <= 250 &&
+          Math.abs(this.goblin.sprite.x - this.player.sprite.x) >= 100 &&
           this.goblin.sprite.anims.currentFrame?.textureKey !==
             `goblin-takehit-left`
         ) {
@@ -277,15 +308,14 @@ export default class HelloWorldScene extends Phaser.Scene {
           this.goblin.sprite.anims.stopAfterRepeat(0);
           this.goblin.sprite.body.setVelocityX(-200);
         } else if (
-          Math.abs(this.goblin.sprite.x - this.player.x) <= 100 &&
+          Math.abs(this.goblin.sprite.x - this.player.sprite.x) <= 100 &&
           this.goblin.sprite.anims.currentFrame?.textureKey !==
             `goblin-takehit-left`
         ) {
           this.goblin.sprite.anims.play("goblin-attack-left", true);
           this.goblin.sprite.anims.stopAfterRepeat(0);
           this.goblin.sprite.body.setVelocityX(0);
-        } else  
-           {
+        } else {
           this.goblin.sprite.body.setVelocityX(0);
           this.goblin.sprite.anims.play("goblin-left", true);
         }
@@ -351,7 +381,7 @@ export default class HelloWorldScene extends Phaser.Scene {
     });
   }
   Player() {
-    this.player = this.physics.add
+    this.player.sprite = this.physics.add
       .sprite(100, 0, "right")
       .setCollideWorldBounds(true)
       .setScale(window.innerHeight / 300)
@@ -537,7 +567,7 @@ export default class HelloWorldScene extends Phaser.Scene {
       repeat: -1,
     });
 
-    this.bomb = this.physics.add
+    this.bomb.sprite = this.physics.add
       .sprite(
         window.innerWidth * 0.82,
         window.innerHeight * 0.63,
@@ -577,7 +607,7 @@ export default class HelloWorldScene extends Phaser.Scene {
     //   ?.setScale(screenHeight / 290)
     //   .setPosition(screenWidth * 0.82, screenHeight * 0.63);
 
-    this.player = this.player?.setScale(window.innerHeight / 300);
+    this.player.sprite = this.player?.sprite.setScale(window.innerHeight / 300);
 
     for (let i = 0; i < 3; i++) {
       this.backgrounds[i].sprite.setDisplaySize(
