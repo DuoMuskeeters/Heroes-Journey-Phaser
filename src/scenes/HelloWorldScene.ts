@@ -404,7 +404,7 @@ export default class HelloWorldScene extends Phaser.Scene {
           Number(this.goblin.sprite.anims.currentFrame?.textureFrame) >= 7 &&
           this.player.hp >= 0
         ) {
-          this.player.hp -= 10;
+          this.player.hp -=10;
           console.log(this.player.hp);
           if (this.player.hp <= 0) {
             this.player.sprite.anims.play(
