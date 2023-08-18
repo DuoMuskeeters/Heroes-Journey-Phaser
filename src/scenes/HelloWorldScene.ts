@@ -1,12 +1,16 @@
 import Phaser from "phaser";
 import { Character, State, create_character} from "../game/Karakter";
+
+//deneme 
+const jack = create_character("Ali")
+
 export default class HelloWorldScene extends Phaser.Scene {
   private direction = {
     Right: "right",
     Left: "left",
     Dirvelocity: 1,
   };
-  
+
   private shopobject?: Phaser.GameObjects.Sprite;
   private player: {
     sprite: Phaser.GameObjects.Sprite;
@@ -16,6 +20,7 @@ export default class HelloWorldScene extends Phaser.Scene {
     standbytime: number;
     ultimate: boolean;
     hp: number;
+    atk:number;
   } = {
     sprite: {} as Phaser.GameObjects.Sprite,
     lastdirection: this.direction.Right,
@@ -23,7 +28,8 @@ export default class HelloWorldScene extends Phaser.Scene {
     frameheight: 166,
     standbytime: 3000,
     ultimate: true,
-    hp: 1000,
+    hp: jack.state.HP,
+    atk: jack.state.ATK,
   };
   private goblin: {
     sprite: Phaser.GameObjects.Sprite;
@@ -272,8 +278,8 @@ export default class HelloWorldScene extends Phaser.Scene {
         }
         if (
           keyQ?.isDown &&
-          !keyD.isDown &&
-          !keyA.isDown &&
+          !keyD?.isDown &&
+          !keyA?.isDown &&
           this.player.sprite.anims.currentFrame?.textureKey !==
             `attack1-${this.player.lastdirection}` &&
           this.player.ultimate
@@ -356,7 +362,7 @@ export default class HelloWorldScene extends Phaser.Scene {
             `attack2-${this.player.lastdirection}` &&
           Math.abs(distanceofgoblin) <= 400 &&
           this.player.lastdirection !== this.goblin.lastdirection &&
-          !keyW.isDown
+          !keyW?.isDown
         ) {
           this.goblin.sprite.anims.play(
             `goblin-takehit-${this.goblin.lastdirection}`,
@@ -392,7 +398,7 @@ export default class HelloWorldScene extends Phaser.Scene {
           this.goblin.sprite.body.setVelocityX(0);
         } else if (
           this.player.sprite.anims.currentFrame?.textureKey ===
-          `death-${this.player.lastdirection}` && this.goblin.sprite.anims.currentFrame.textureKey!==`goblin-death-${this.goblin.lastdirection}`
+          `death-${this.player.lastdirection}` && this.goblin.sprite.anims.currentFrame?.textureKey!==`goblin-death-${this.goblin.lastdirection}`
         ) {
           this.goblin.sprite.body.setVelocityX(0);
           this.goblin.sprite.anims.play(
@@ -423,7 +429,7 @@ export default class HelloWorldScene extends Phaser.Scene {
             `attack1-${this.player.lastdirection}` &&
           Math.abs(distanceofgoblin) <= 400 &&
           this.player.lastdirection !== this.goblin.lastdirection &&
-          !keyW.isDown &&
+          !keyW?.isDown &&
           Number(this.player.sprite.anims.currentFrame.textureFrame) > 4 &&
           this.goblin.hp >= 0
         ) {
