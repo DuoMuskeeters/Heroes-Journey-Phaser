@@ -1,11 +1,12 @@
 import Phaser from "phaser";
-
+import { Character, State, create_character} from "../game/Karakter";
 export default class HelloWorldScene extends Phaser.Scene {
   private direction = {
     Right: "right",
     Left: "left",
     Dirvelocity: 1,
   };
+  
   private shopobject?: Phaser.GameObjects.Sprite;
   private player: {
     sprite: Phaser.GameObjects.Sprite;
@@ -207,7 +208,8 @@ export default class HelloWorldScene extends Phaser.Scene {
 
   update(time: number, delta: number): void {
     this.movement();
-  }
+    
+    }
 
   movement() {
     const keySpace = this.input.keyboard?.addKey("SPACE");
