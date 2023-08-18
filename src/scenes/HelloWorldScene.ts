@@ -1,8 +1,10 @@
 import Phaser from "phaser";
-import { Character, State, create_character} from "../game/Karakter";
+import { Character, create_character,create_giant} from "../game/Karakter";
 
-//deneme 
+
 const jack = create_character("Ali")
+const goblin_1sv = create_giant(1)
+
 
 export default class HelloWorldScene extends Phaser.Scene {
   private direction = {
@@ -33,18 +35,20 @@ export default class HelloWorldScene extends Phaser.Scene {
   };
   private goblin: {
     sprite: Phaser.GameObjects.Sprite;
-    hp: number;
     frameWidth: number;
     frameHeight: number;
     lastdirection: string;
     direction: number;
+    hp: number;
+    atk:number;
   } = {
     sprite: {} as Phaser.GameObjects.Sprite,
-    hp: 1000,
     frameWidth: 150,
     frameHeight: 145,
     lastdirection: this.direction.Left,
     direction: 1,
+    hp: goblin_1sv.state.HP,
+    atk: goblin_1sv.state.ATK,
   };
   private bomb: { sprite: Phaser.GameObjects.Sprite } = {
     sprite: {} as Phaser.GameObjects.Sprite,
@@ -412,7 +416,7 @@ export default class HelloWorldScene extends Phaser.Scene {
           Number(this.goblin.sprite.anims.currentFrame?.textureFrame) >= 7 &&
           this.player.hp >= 0
         ) {
-          this.player.hp -=10;
+          this.player.hp -= this.goblin.atk;
           console.log(this.player.hp);
           if (this.player.hp <= 0) {
             this.player.sprite.anims.play(
@@ -433,7 +437,7 @@ export default class HelloWorldScene extends Phaser.Scene {
           Number(this.player.sprite.anims.currentFrame.textureFrame) > 4 &&
           this.goblin.hp >= 0
         ) {
-          this.goblin.hp -= 10;
+          this.goblin.hp -= this.player.atk;
           console.log("goblin", this.goblin.hp);
           if (this.goblin.hp <= 0) {
             this.goblin.sprite.anims.play(

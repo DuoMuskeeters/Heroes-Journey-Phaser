@@ -225,7 +225,7 @@ export class Giant extends Mob {
     );
   }
 }
-function create_giant(Level: number): Giant {
+export function create_giant(Level: number): Giant {
   const name = `${Level} Level Giant`;
   let stat_point = Level * 5;
   let stat_turn: number = 2;
@@ -294,7 +294,7 @@ export class Bird extends Mob {
     );
   }
 }
-function create_bird(Level: number): Bird {
+export function create_bird(Level: number): Bird {
   const name = `${Level} Level Bird`;
   let stat_point = Level * 5;
   let stat_turn: number = 3;
