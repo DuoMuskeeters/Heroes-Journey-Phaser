@@ -216,43 +216,7 @@ export default class HelloWorldScene extends Phaser.Scene {
       
     });
 
-    // this.player.sprite.on("animationcomplete", () => {
-    //   console.log(1)
-    //   if (
-    //     this.player.sprite.anims.currentFrame.textureKey === "attack1-right" ||
-    //     this.player.sprite.anims.currentFrame.textureKey === "attack1-left"
-    //   ) {
-    //     // Saldırı animasyonu tamamlandığında goblin canını azalt
-    //     this.goblin.hp -= this.player.atk;
-    //   }
-    // });
-
-    //  this.goblin.sprite.on(
-    //    Phaser.Animations.Events.ANIMATION_STOP+
-    //      "goblin-attack-left",
-    //    () => {
-    //      if (
-    //        this.player.Sprite.anims.currentAnim?.key.includes(
-    //          "goblin-attack-left"
-    //        )
-    //      ) {
-    //        this.goblin.hp -= this.player.atk;
-    //        console.log("Goblin HP:", this.goblin.hp);
-    //      }
-    //    },
-    //    this
-    //  );
-      // this.player.Sprite.on("animationcomplete", () => {
-      //   if (
-      //     this.player.Sprite.anims.currentFrame.textureKey === "attack1-right" ||
-      //     this.player.Sprite.anims.currentFrame.textureKey === "attack1-left"
-      //   ) {
-      //     // Saldırı animasyonu tamamlandığında goblin canını azalt
-      //     this.goblin.hp -= this.player.atk;
-      //     console.log(1);
-      //   }
-      // });
-           
+  
    
   }
 
