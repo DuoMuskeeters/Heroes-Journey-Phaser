@@ -266,13 +266,13 @@ export default class HelloWorldScene extends Phaser.Scene {
         if (
           (keyD?.isDown || keyA?.isDown) &&
           !keyW?.isDown &&
-          this.player.sprite.anims.currentFrame?.textureFrame !==
+          this.player.sprite.anims.getName() !==
             `attack2-right` &&
-          this.player.sprite.anims.currentFrame?.textureFrame !==
+          this.player.sprite.anims.getName() !==
             `attack2-left` &&
-          this.player.sprite.anims.currentFrame?.textureKey !==
+          this.player.sprite.anims.getName() !==
             `attack1-right` &&
-          this.player.sprite.anims.currentFrame?.textureKey !== `attack1-left`
+          this.player.sprite.anims.getName() !== `attack1-left`
         ) {
           this.player?.sprite.anims.play(this.player.lastdirection, true);
 
@@ -284,7 +284,7 @@ export default class HelloWorldScene extends Phaser.Scene {
           keyQ?.isDown &&
           !keyD?.isDown &&
           !keyA?.isDown &&
-          this.player.sprite.anims.currentFrame?.textureKey !==
+          this.player.sprite.anims.getName() !==
             `attack1-${this.player.lastdirection}` &&
           this.player.ultimate
         ) {
@@ -301,7 +301,7 @@ export default class HelloWorldScene extends Phaser.Scene {
         }
         if (
           (mouse || keySpace?.isDown) &&
-          this.player.sprite.anims.currentFrame?.textureKey !==
+          this.player.sprite.anims.getName() !==
             `attack2-${this.player.lastdirection}`
         ) {
           this.player?.sprite.anims.play(
@@ -317,19 +317,19 @@ export default class HelloWorldScene extends Phaser.Scene {
             this.goblin?.sprite.anims.play("goblin-left", true);
           }
         } else if (
-          this.player.sprite.anims.currentFrame?.textureKey ===
+          this.player.sprite.anims.getName() ===
             `fall-${this.player.lastdirection}` ||
           (!keyD?.isDown &&
             !keyW?.isDown &&
             !keyA?.isDown &&
             !keyB?.isDown &&
-            this.player.sprite.anims.currentFrame?.textureKey !==
+            this.player.sprite.anims.getName() !==
               `attack2-${this.player.lastdirection}` &&
-            this.player.sprite.anims.currentFrame?.textureKey !==
+            this.player.sprite.anims.getName() !==
               `attack1-${this.player.lastdirection}` &&
-            this.player.sprite.anims.currentFrame?.textureKey !==
+            this.player.sprite.anims.getName() !==
               `attack2-${this.player.lastdirection}` &&
-            this.player.sprite.anims.currentFrame?.textureKey !==
+            this.player.sprite.anims.getName() !==
               `death-${this.player.lastdirection}`)
         ) {
           this.player.sprite.body.setVelocityX(0);
@@ -362,7 +362,7 @@ export default class HelloWorldScene extends Phaser.Scene {
           this.goblin.direction = 1;
         }
         if (
-          this.player.sprite.anims.currentFrame?.textureKey ===
+          this.player.sprite.anims.getName() ===
             `attack2-${this.player.lastdirection}` &&
           Math.abs(distanceofgoblin) <= 400 &&
           this.player.lastdirection !== this.goblin.lastdirection &&
@@ -375,9 +375,9 @@ export default class HelloWorldScene extends Phaser.Scene {
           this.goblin.sprite.anims.stopAfterRepeat(0);
         } else if (
           this.goblin?.sprite.active &&
-          Math.abs(distanceofgoblin) <= 250 &&
+          Math.abs(distanceofgoblin) <= 400 &&
           Math.abs(distanceofgoblin) >= 145 &&
-          this.goblin.sprite.anims.currentFrame?.textureKey !==
+          this.goblin.sprite.anims.getName() !==
             `goblin-takehit-${this.goblin.lastdirection}`
         ) {
           this.goblin.sprite.anims.play(
@@ -385,13 +385,13 @@ export default class HelloWorldScene extends Phaser.Scene {
             true
           );
          
-          this.goblin.sprite.body.setVelocityX(this.goblin.direction * 600);
+          this.goblin.sprite.body.setVelocityX(this.goblin.direction * 500);
         } else if (
           Math.abs(distanceofgoblin) <145 &&
-          this.goblin.sprite.anims.currentFrame?.textureKey !==
+          this.goblin.sprite.anims.getName() !==
             `goblin-takehit-${this.goblin.lastdirection}` &&
-          this.player.sprite.anims.currentFrame?.textureKey !==
-            `death-${this.player.lastdirection}`&&this.player.sprite.anims.currentFrame?.textureKey !==
+          this.player.sprite.anims.getName() !==
+            `death-${this.player.lastdirection}`&&this.player.sprite.anims.getName() !==
             `${this.player.lastdirection}`
         ) {
           this.goblin.sprite.anims.play(
@@ -402,10 +402,10 @@ export default class HelloWorldScene extends Phaser.Scene {
           this.goblin.sprite.anims.stopAfterRepeat(0);
           this.goblin.sprite.body.setVelocityX(0);
         } else if (
-          this.player.sprite.anims.currentFrame?.textureKey ===
-            `death-${this.player.lastdirection}` &&
-          this.goblin.sprite.anims.currentFrame?.textureKey !==
-            `goblin-death-${this.goblin.lastdirection}`
+          this.player.sprite.anims.getName() ===
+            `death-${this.player.lastdirection}` ||
+          (this.goblin.sprite.anims.getName() !==
+            `goblin-death-${this.goblin.lastdirection}` )
         ) {
           this.goblin.sprite.body.setVelocityX(0);
           this.goblin.sprite.anims.play(
@@ -413,6 +413,7 @@ export default class HelloWorldScene extends Phaser.Scene {
             true
           );
         }
+  
       }
     }
   }
@@ -613,9 +614,9 @@ export default class HelloWorldScene extends Phaser.Scene {
 
      this.player.sprite.on("animationstop", () => {
        if (
-         (this.player.sprite.anims.currentFrame?.textureKey ===
+         (this.player.sprite.anims.getName() ===
            "attack1-right" ||
-           this.player.sprite.anims.currentFrame?.textureKey ===
+           this.player.sprite.anims.getName() ===
              "attack1-left") &&
          this.goblin.hp >= 0 && Math.abs(this.goblin.sprite.x - this.player.sprite.x)<=250
        ) {
@@ -623,9 +624,9 @@ export default class HelloWorldScene extends Phaser.Scene {
          console.log("goblin", Math.max(0,this.goblin.hp));
        }
        else if (
-         (this.player.sprite.anims.currentFrame?.textureKey ===
+         (this.player.sprite.anims.getName() ===
           "attack2-right" ||
-          this.player.sprite.anims.currentFrame?.textureKey ===
+          this.player.sprite.anims.getName() ===
           "attack2-left") &&
           this.goblin.hp >= 0
           ) {
