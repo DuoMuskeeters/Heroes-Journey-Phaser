@@ -18,19 +18,19 @@ export class State {
   Constitution: number;
 
   constructor({
-    name,
+    name,//+
     Level,
     stat_point,
-    HP,
-    max_hp,
-    max_sp,
-    SP,
-    ATK,
+    HP,//+
+    max_hp,//+
+    max_sp,//+
+    SP,//+
+    ATK,//+
     ATKRATE,
-    HP_reg,
+    HP_reg,//+
     Armor,
-    SP_reg,
-    m_resist,
+    SP_reg,//+
+    m_resist,//**/
     Strength,
     Agility,
     Intelligence,
@@ -89,6 +89,12 @@ export class Character extends Canlı {
     super(state);
     this.exp = exp;
   }
+  regeneration() {
+    let HP_reg = (this.state.HP_reg * this.state.max_hp) / 100;
+    let SP_reg = (this.state.SP_reg * this.state.max_sp) / 100;
+    this.state.HP = Math.min(this.state.max_hp, this.state.HP + HP_reg);
+    this.state.SP = Math.min(this.state.max_sp, this.state.SP + SP_reg);
+  }
   calculate_power() {
     this.state.HP = 100 + this.state.Constitution * 10;
     this.state.max_hp = this.state.HP;
@@ -113,7 +119,6 @@ export class Character extends Canlı {
     }
     this.calculate_power();
   }
-  // update stats icin arayuz gerekli
 }
 
 export function create_character(
@@ -162,13 +167,13 @@ export function create_character(
 }
 
 export class Warrior extends Character {
-  constructor(state: State, exp: number = 0) {
-    super(state, exp);
+  constructor(character:Character) {
+    super(character.state,character.exp);
   }
   heavy_strike(): number {
-    if (this.state.SP >= 150) {
+    if (this.state.SP >= 50) {
       const strike_damage = this.state.ATK * 2;
-      this.state.SP -= 150;
+      this.state.SP -= 50;
       return strike_damage;
     } else {
       return this.state.ATK;
@@ -229,7 +234,7 @@ export function create_giant(Level: number): Giant {
   const name = `${Level} Level Giant`;
   let stat_point = Level * 5;
   let stat_turn: number = 2;
-  let Strength = 10;
+  let Strength = 2;
   let Agility = 2;
   let Intelligence = 10;
   let Constitution = 20;

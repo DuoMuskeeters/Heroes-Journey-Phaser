@@ -1,6 +1,6 @@
 import { Canlı, Mob, Warrior, Bird, Giant } from "./Karakter";
 
-function dodge(rate1: number, rate2: number): number {
+export function dodge(rate1: number, rate2: number): number {
   if (rate1 >= rate2) {
     let dodge_rate: number = (rate1 - rate2) / rate1;
     return dodge_rate;
@@ -9,7 +9,7 @@ function dodge(rate1: number, rate2: number): number {
   }
 }
 
-function fight(attacker: Canlı) {
+export function fight(attacker: Canlı) {
   if (attacker instanceof Warrior) {
     let input: string = "q";
     if (input.toLowerCase() == "q") {
@@ -34,7 +34,7 @@ function fight(attacker: Canlı) {
   return attacker.state.ATK;
 }
 
-export function fight_mechanics(fighter: Warrior, mob: Mob) {
+export function fight_mechanics_with_turn(fighter: Warrior, mob: Mob) {
   const players: Canlı[] = [fighter, mob];
   let turn = 0;
 
@@ -93,5 +93,23 @@ export function fight_mechanics(fighter: Warrior, mob: Mob) {
   }
   turn = 1 - turn;
 }
+function mob_fight(mob: Mob) {
+  //ulti
+  let sonuc = mob.skill_barı();
+  if (sonuc == true) {
+    if (mob instanceof Giant) {
+      mob.giant_skill();
+    }
+    if (mob instanceof Bird) {
+      mob.bird_skill();
+    }
+  }
+}
 
-// zindana giris gerekli degil.
+// export function Regeneration(fighter: Warrior) {
+//   let HP_reg = (fighter.state.HP_reg * fighter.state.max_hp) / 100;
+//   let SP_reg = (fighter.state.SP_reg * fighter.state.max_sp) / 100;
+//   fighter.state.HP = Math.min(fighter.state.max_hp, fighter.state.HP + HP_reg);
+//   fighter.state.SP = Math.min(fighter.state.max_sp, fighter.state.SP + SP_reg);  
+// }
+

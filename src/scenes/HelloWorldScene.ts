@@ -1,7 +1,7 @@
 import Phaser from "phaser";
-import { Character, create_character, create_giant } from "../game/Karakter";
+import { Character, Warrior, create_character, create_giant } from "../game/Karakter";
 
-const jack = create_character("Ali");
+const jack = new Warrior(create_character("Ali"));
 const goblin_1sv = create_giant(1);
 
 export default class HelloWorldScene extends Phaser.Scene {
@@ -674,20 +674,30 @@ export default class HelloWorldScene extends Phaser.Scene {
       frameRate: 10,
       repeat: -1,
     });
-
-    
      this.player.sprite.on("animationstop", () => {
        if (
-         (this.player.sprite.anims.currentFrame.textureKey ===
+         (this.player.sprite.anims.currentFrame?.textureKey ===
            "attack1-right" ||
-           this.player.sprite.anims.currentFrame.textureKey ===
+           this.player.sprite.anims.currentFrame?.textureKey ===
              "attack1-left") &&
          this.goblin.hp >= 0
        ) {
          this.goblin.hp -= this.player.atk;
          console.log("goblin", Math.max(0,this.goblin.hp));
        }
-     });
+       else if (
+         (this.player.sprite.anims.currentFrame?.textureKey ===
+          "attack2-right" ||
+          this.player.sprite.anims.currentFrame?.textureKey ===
+          "attack2-left") &&
+          this.goblin.hp >= 0
+          ) {
+            console.log(`sp${jack.state.SP}`)
+            const damage= jack.heavy_strike() 
+            this.goblin.hp -= damage;
+            console.log("goblin", Math.max(0,this.goblin.hp));
+          }
+      });
   }
   Mob() {
     if (this.goblin?.sprite !== undefined)
@@ -803,8 +813,8 @@ export default class HelloWorldScene extends Phaser.Scene {
     });
      this.goblin.sprite.on("animationstop", () => {
        if (
-   (      this.goblin.sprite.anims.currentFrame.textureKey === "goblin-attack-right" ||
-         this.goblin.sprite.anims.currentFrame.textureKey === "goblin-attack-left")&&this.player.hp>=0
+   (      this.goblin.sprite.anims.currentFrame?.textureKey === "goblin-attack-right" ||
+         this.goblin.sprite.anims.currentFrame?.textureKey === "goblin-attack-left")&&this.player.hp>=0
        ) {
          this.player.hp -= this.goblin.atk;
          console.log("player", Math.max(0,this.player.hp));
