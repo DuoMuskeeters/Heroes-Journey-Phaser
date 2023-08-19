@@ -610,7 +610,7 @@ export default class HelloWorldScene extends Phaser.Scene {
       frameRate: 10,
       repeat: -1,
     });
-<<<<<<< ours
+
      this.player.sprite.on("animationstop", () => {
        if (
          (this.player.sprite.anims.currentFrame?.textureKey ===
@@ -635,20 +635,7 @@ export default class HelloWorldScene extends Phaser.Scene {
             console.log("goblin", Math.max(0,this.goblin.hp));
           }
       });
-=======
 
-    this.player.sprite.on("animationstop", () => {
-      if (
-        (this.player.sprite.anims.currentFrame.textureKey === "attack1-right" ||
-          this.player.sprite.anims.currentFrame.textureKey ===
-            "attack1-left") &&
-        this.goblin.hp >= 0&&Math.abs(this.goblin.sprite.x - this.player.sprite.x)<=250
-      ) {
-        this.goblin.hp -= this.player.atk;
-        console.log("goblin", Math.max(0, this.goblin.hp));
-      }
-    });
->>>>>>> theirs
   }
   Mob() {
     if (this.goblin?.sprite !== undefined)
@@ -762,17 +749,7 @@ export default class HelloWorldScene extends Phaser.Scene {
       frameRate: 8,
       repeat: -1,
     });
-<<<<<<< ours
-     this.goblin.sprite.on("animationstop", () => {
-       if (
-   (      this.goblin.sprite.anims.currentFrame?.textureKey === "goblin-attack-right" ||
-         this.goblin.sprite.anims.currentFrame?.textureKey === "goblin-attack-left")&&this.player.hp>=0
-       ) {
-         this.player.hp -= this.goblin.atk;
-         console.log("player", Math.max(0,this.player.hp));
-       }
-     });
-=======
+
     this.goblin.sprite.on("animationstop", () => {
       if (
         (this.goblin.sprite.anims.currentFrame.textureKey ===
@@ -785,7 +762,7 @@ export default class HelloWorldScene extends Phaser.Scene {
         console.log("player", Math.max(0, this.player.hp));
       }
     });
->>>>>>> theirs
+
 
     this.bomb.sprite = this.physics.add
       .sprite(
