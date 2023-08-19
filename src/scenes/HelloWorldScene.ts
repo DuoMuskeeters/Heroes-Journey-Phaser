@@ -1,5 +1,10 @@
 import Phaser from "phaser";
-import { Character, Warrior, create_character, create_giant } from "../game/Karakter";
+import {
+  Character,
+  Warrior,
+  create_character,
+  create_giant,
+} from "../game/Karakter";
 
 const jack = new Warrior(create_character("Ali"));
 const goblin_1sv = create_giant(1);
@@ -21,7 +26,7 @@ export default class HelloWorldScene extends Phaser.Scene {
     ultimate: boolean;
     hp: number;
     atk: number;
-    canAttack: boolean;
+   
   } = {
     sprite: {} as Phaser.GameObjects.Sprite,
     lastdirection: this.direction.Right,
@@ -31,7 +36,7 @@ export default class HelloWorldScene extends Phaser.Scene {
     ultimate: true,
     hp: jack.state.HP,
     atk: jack.state.ATK,
-    canAttack: true,
+    
   };
   private goblin: {
     sprite: Phaser.GameObjects.Sprite;
@@ -245,7 +250,6 @@ export default class HelloWorldScene extends Phaser.Scene {
         Math.floor(this.player.sprite.y) ===
         Math.floor(window.innerHeight * 0.72333333333333333333333)
       ) {
-        
         if (keyW?.isDown) {
           this.player.sprite.anims.startAnimation(
             `jump-${this.player.lastdirection}`
@@ -266,12 +270,9 @@ export default class HelloWorldScene extends Phaser.Scene {
         if (
           (keyD?.isDown || keyA?.isDown) &&
           !keyW?.isDown &&
-          this.player.sprite.anims.getName() !==
-            `attack2-right` &&
-          this.player.sprite.anims.getName() !==
-            `attack2-left` &&
-          this.player.sprite.anims.getName() !==
-            `attack1-right` &&
+          this.player.sprite.anims.getName() !== `attack2-right` &&
+          this.player.sprite.anims.getName() !== `attack2-left` &&
+          this.player.sprite.anims.getName() !== `attack1-right` &&
           this.player.sprite.anims.getName() !== `attack1-left`
         ) {
           this.player?.sprite.anims.play(this.player.lastdirection, true);
@@ -378,21 +379,23 @@ export default class HelloWorldScene extends Phaser.Scene {
           Math.abs(distanceofgoblin) <= 400 &&
           Math.abs(distanceofgoblin) >= 145 &&
           this.goblin.sprite.anims.getName() !==
-            `goblin-takehit-${this.goblin.lastdirection}`
+            `goblin-takehit-${this.goblin.lastdirection}` &&
+          this.goblin.sprite.anims.getName() !==
+            `goblin-attack-${this.goblin.lastdirection}`
         ) {
           this.goblin.sprite.anims.play(
             `goblin-run-${this.goblin.lastdirection}`,
             true
           );
-         
+
           this.goblin.sprite.body.setVelocityX(this.goblin.direction * 500);
         } else if (
-          Math.abs(distanceofgoblin) <145 &&
+          Math.abs(distanceofgoblin) < 145 &&
           this.goblin.sprite.anims.getName() !==
             `goblin-takehit-${this.goblin.lastdirection}` &&
           this.player.sprite.anims.getName() !==
-            `death-${this.player.lastdirection}`&&this.player.sprite.anims.getName() !==
-            `${this.player.lastdirection}`
+            `death-${this.player.lastdirection}` &&
+          this.player.sprite.anims.getName() !== `${this.player.lastdirection}`
         ) {
           this.goblin.sprite.anims.play(
             `goblin-attack-${this.goblin.lastdirection}`,
@@ -404,8 +407,8 @@ export default class HelloWorldScene extends Phaser.Scene {
         } else if (
           this.player.sprite.anims.getName() ===
             `death-${this.player.lastdirection}` ||
-          (this.goblin.sprite.anims.getName() !==
-            `goblin-death-${this.goblin.lastdirection}` )
+          this.goblin.sprite.anims.getName() !==
+            `goblin-death-${this.goblin.lastdirection}`
         ) {
           this.goblin.sprite.body.setVelocityX(0);
           this.goblin.sprite.anims.play(
@@ -413,7 +416,6 @@ export default class HelloWorldScene extends Phaser.Scene {
             true
           );
         }
-  
       }
     }
   }
@@ -612,31 +614,25 @@ export default class HelloWorldScene extends Phaser.Scene {
       repeat: -1,
     });
 
-     this.player.sprite.on("animationstop", () => {
-       if (
-         (this.player.sprite.anims.getName() ===
-           "attack1-right" ||
-           this.player.sprite.anims.getName() ===
-             "attack1-left") &&
-         this.goblin.hp >= 0 && Math.abs(this.goblin.sprite.x - this.player.sprite.x)<=250
-       ) {
-         this.goblin.hp -= this.player.atk;
-         console.log("goblin", Math.max(0,this.goblin.hp));
-       }
-       else if (
-         (this.player.sprite.anims.getName() ===
-          "attack2-right" ||
-          this.player.sprite.anims.getName() ===
-          "attack2-left") &&
-          this.goblin.hp >= 0
-          ) {
-            console.log(`sp${jack.state.SP}`)
-            const damage= jack.heavy_strike() 
-            this.goblin.hp -= damage;
-            console.log("goblin", Math.max(0,this.goblin.hp));
-          }
-      });
-
+    this.player.sprite.on("animationstop", () => {
+      if (
+        (this.player.sprite.anims.getName() === `attack1-${this.player.lastdirection}` ) &&
+        this.goblin.hp >= 0 &&
+        Math.abs(this.goblin.sprite.x - this.player.sprite.x) <= 250
+      ) {
+        this.goblin.hp -= this.player.atk;
+        console.log("goblin", Math.max(0, this.goblin.hp));
+      } else if (
+        (this.player.sprite.anims.getName() === "attack2-right" ||
+          this.player.sprite.anims.getName() === "attack2-left") &&
+        this.goblin.hp >= 0&&  Math.abs(this.goblin.sprite.x - this.player.sprite.x) <= 250
+      ) {
+        console.log(`sp${jack.state.SP}`);
+        const damage = jack.heavy_strike();
+        this.goblin.hp -= damage;
+        console.log("goblin", Math.max(0, this.goblin.hp));
+      }
+    });
   }
   Mob() {
     if (this.goblin?.sprite !== undefined)
@@ -752,18 +748,24 @@ export default class HelloWorldScene extends Phaser.Scene {
     });
 
     this.goblin.sprite.on("animationstop", () => {
+      let goblinframe = 0
+     if(this.goblin.lastdirection == this.direction.Left){
+      goblinframe = 0
+     }
+    if(this.goblin.lastdirection == this.direction.Right){
+      goblinframe = 7
+     }
       if (
-        (this.goblin.sprite.anims.currentFrame.textureKey ===
-          "goblin-attack-right" ||
-          this.goblin.sprite.anims.currentFrame.textureKey ===
-            "goblin-attack-left") &&
-        this.player.hp >= 0
+        this.goblin.sprite.anims.currentFrame?.textureKey ===
+          `goblin-attack-${this.goblin.lastdirection}` &&
+        this.player.hp >= 0 &&
+        Math.abs(this.goblin.sprite.x - this.player.sprite.x) <= 250 &&
+        Number(this.goblin.sprite.anims.getFrameName()) == goblinframe
       ) {
         this.player.hp -= this.goblin.atk;
         console.log("player", Math.max(0, this.player.hp));
       }
     });
-
 
     this.bomb.sprite = this.physics.add
       .sprite(
