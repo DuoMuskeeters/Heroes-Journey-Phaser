@@ -81,11 +81,11 @@ export default class HelloWorldScene extends Phaser.Scene {
       frameWidth: this.player.framewidth,
       frameHeight: this.player.frameheight,
     });
-    this.load.spritesheet("right", "Run.png", {
+    this.load.spritesheet("right", "run-right.png", {
       frameWidth: this.player.framewidth,
       frameHeight: this.player.frameheight,
     });
-    this.load.spritesheet("left", "Run2.png", {
+    this.load.spritesheet("left", "run-left.png", {
       frameWidth: this.player.framewidth,
       frameHeight: this.player.frameheight,
     });
@@ -202,7 +202,7 @@ export default class HelloWorldScene extends Phaser.Scene {
         -1 * window.innerHeight * 0.5
       );
       this.Resize();
-}
+    }
 
     window.addEventListener("resize", () => {
       this.physics.world.gravity.y = window.innerHeight * 8.5365;
@@ -213,16 +213,11 @@ export default class HelloWorldScene extends Phaser.Scene {
         window.innerHeight
       );
       this.Resize();
-      
     });
-
-  
-   
   }
 
   update(time: number, delta: number): void {
     this.movement();
-    
   }
 
   movement() {
@@ -250,67 +245,7 @@ export default class HelloWorldScene extends Phaser.Scene {
         Math.floor(this.player.sprite.y) ===
         Math.floor(window.innerHeight * 0.72333333333333333333333)
       ) {
-        if (this.goblin?.sprite.body instanceof Phaser.Physics.Arcade.Body) {
-          const distanceofgoblin = this.goblin.sprite.x - this.player.sprite.x;
-          if (distanceofgoblin > 0) {
-            this.goblin.lastdirection = this.direction.Left;
-            this.goblin.direction = -1;
-          } else {
-            this.goblin.lastdirection = this.direction.Right;
-            this.goblin.direction = 1;
-          }
-          if (
-            this.player.sprite.anims.currentFrame?.textureKey ===
-              `attack2-${this.player.lastdirection}` &&
-            Math.abs(distanceofgoblin) <= 400 &&
-            this.player.lastdirection !== this.goblin.lastdirection &&
-            !keyW?.isDown
-          ) {
-            this.goblin.sprite.anims.play(
-              `goblin-takehit-${this.goblin.lastdirection}`,
-              true
-            );
-            this.goblin.sprite.anims.stopAfterRepeat(0);
-          } else if (
-            this.goblin?.sprite.active &&
-            Math.abs(distanceofgoblin) <= 200 &&
-            Math.abs(distanceofgoblin) >= 145 &&
-            this.goblin.sprite.anims.currentFrame?.textureKey !==
-              `goblin-takehit-${this.goblin.lastdirection}`
-          ) {
-            this.goblin.sprite.anims.play(
-              `goblin-run-${this.goblin.lastdirection}`,
-              true
-            );
-            this.goblin.sprite.anims.stopAfterRepeat(0);
-            this.goblin.sprite.body.setVelocityX(this.goblin.direction * 600);
-          } else if (
-            Math.abs(distanceofgoblin) <= 145 &&
-            this.goblin.sprite.anims.currentFrame?.textureKey !==
-              `goblin-takehit-${this.goblin.lastdirection}` &&
-            this.player.sprite.anims.currentFrame?.textureKey !==
-              `death-${this.player.lastdirection}`
-          ) {
-            this.goblin.sprite.anims.play(
-              `goblin-attack-${this.goblin.lastdirection}`,
-              true
-            );
-
-            this.goblin.sprite.anims.stopAfterRepeat(0);
-            this.goblin.sprite.body.setVelocityX(0);
-          } else if (
-            this.player.sprite.anims.currentFrame?.textureKey ===
-              `death-${this.player.lastdirection}` &&
-            this.goblin.sprite.anims.currentFrame?.textureKey !==
-              `goblin-death-${this.goblin.lastdirection}`
-          ) {
-            this.goblin.sprite.body.setVelocityX(0);
-            this.goblin.sprite.anims.play(
-              `goblin-${this.goblin.lastdirection}`,
-              true
-            );
-          }
-        }
+        
         if (keyW?.isDown) {
           this.player.sprite.anims.startAnimation(
             `jump-${this.player.lastdirection}`
@@ -375,8 +310,6 @@ export default class HelloWorldScene extends Phaser.Scene {
           );
           this.player.sprite.anims.stopAfterRepeat(0);
           this.player.sprite.body.setVelocityX(0);
-         
-      
         }
         if (keyB?.isDown) {
           if (!this.goblin?.sprite.active) {
@@ -442,7 +375,7 @@ export default class HelloWorldScene extends Phaser.Scene {
           this.goblin.sprite.anims.stopAfterRepeat(0);
         } else if (
           this.goblin?.sprite.active &&
-          Math.abs(distanceofgoblin) <= 200 &&
+          Math.abs(distanceofgoblin) <= 250 &&
           Math.abs(distanceofgoblin) >= 145 &&
           this.goblin.sprite.anims.currentFrame?.textureKey !==
             `goblin-takehit-${this.goblin.lastdirection}`
@@ -454,11 +387,12 @@ export default class HelloWorldScene extends Phaser.Scene {
           this.goblin.sprite.anims.stopAfterRepeat(0);
           this.goblin.sprite.body.setVelocityX(this.goblin.direction * 600);
         } else if (
-          Math.abs(distanceofgoblin) <= 145 &&
+          Math.abs(distanceofgoblin) <145 &&
           this.goblin.sprite.anims.currentFrame?.textureKey !==
             `goblin-takehit-${this.goblin.lastdirection}` &&
           this.player.sprite.anims.currentFrame?.textureKey !==
-            `death-${this.player.lastdirection}`
+            `death-${this.player.lastdirection}`&&this.player.sprite.anims.currentFrame?.textureKey !==
+            `${this.player.lastdirection}`
         ) {
           this.goblin.sprite.anims.play(
             `goblin-attack-${this.goblin.lastdirection}`,
@@ -469,7 +403,9 @@ export default class HelloWorldScene extends Phaser.Scene {
           this.goblin.sprite.body.setVelocityX(0);
         } else if (
           this.player.sprite.anims.currentFrame?.textureKey ===
-          `death-${this.player.lastdirection}` && this.goblin.sprite.anims.currentFrame?.textureKey!==`goblin-death-${this.goblin.lastdirection}`
+            `death-${this.player.lastdirection}` &&
+          this.goblin.sprite.anims.currentFrame?.textureKey !==
+            `goblin-death-${this.goblin.lastdirection}`
         ) {
           this.goblin.sprite.body.setVelocityX(0);
           this.goblin.sprite.anims.play(
@@ -674,6 +610,7 @@ export default class HelloWorldScene extends Phaser.Scene {
       frameRate: 10,
       repeat: -1,
     });
+<<<<<<< ours
      this.player.sprite.on("animationstop", () => {
        if (
          (this.player.sprite.anims.currentFrame?.textureKey ===
@@ -698,6 +635,20 @@ export default class HelloWorldScene extends Phaser.Scene {
             console.log("goblin", Math.max(0,this.goblin.hp));
           }
       });
+=======
+
+    this.player.sprite.on("animationstop", () => {
+      if (
+        (this.player.sprite.anims.currentFrame.textureKey === "attack1-right" ||
+          this.player.sprite.anims.currentFrame.textureKey ===
+            "attack1-left") &&
+        this.goblin.hp >= 0&&Math.abs(this.goblin.sprite.x - this.player.sprite.x)<=250
+      ) {
+        this.goblin.hp -= this.player.atk;
+        console.log("goblin", Math.max(0, this.goblin.hp));
+      }
+    });
+>>>>>>> theirs
   }
   Mob() {
     if (this.goblin?.sprite !== undefined)
@@ -811,6 +762,7 @@ export default class HelloWorldScene extends Phaser.Scene {
       frameRate: 8,
       repeat: -1,
     });
+<<<<<<< ours
      this.goblin.sprite.on("animationstop", () => {
        if (
    (      this.goblin.sprite.anims.currentFrame?.textureKey === "goblin-attack-right" ||
@@ -820,6 +772,20 @@ export default class HelloWorldScene extends Phaser.Scene {
          console.log("player", Math.max(0,this.player.hp));
        }
      });
+=======
+    this.goblin.sprite.on("animationstop", () => {
+      if (
+        (this.goblin.sprite.anims.currentFrame.textureKey ===
+          "goblin-attack-right" ||
+          this.goblin.sprite.anims.currentFrame.textureKey ===
+            "goblin-attack-left") &&
+        this.player.hp >= 0
+      ) {
+        this.player.hp -= this.goblin.atk;
+        console.log("player", Math.max(0, this.player.hp));
+      }
+    });
+>>>>>>> theirs
 
     this.bomb.sprite = this.physics.add
       .sprite(
