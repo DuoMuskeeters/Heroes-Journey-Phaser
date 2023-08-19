@@ -1,10 +1,8 @@
 import Phaser from "phaser";
-import { Character, create_character,create_giant} from "../game/Karakter";
+import { Character, create_character, create_giant } from "../game/Karakter";
 
-
-const jack = create_character("Ali")
-const goblin_1sv = create_giant(1)
-
+const jack = create_character("Ali");
+const goblin_1sv = create_giant(1);
 
 export default class HelloWorldScene extends Phaser.Scene {
   private direction = {
@@ -22,7 +20,8 @@ export default class HelloWorldScene extends Phaser.Scene {
     standbytime: number;
     ultimate: boolean;
     hp: number;
-    atk:number;
+    atk: number;
+    canAttack: boolean;
   } = {
     sprite: {} as Phaser.GameObjects.Sprite,
     lastdirection: this.direction.Right,
@@ -32,6 +31,7 @@ export default class HelloWorldScene extends Phaser.Scene {
     ultimate: true,
     hp: jack.state.HP,
     atk: jack.state.ATK,
+    canAttack: true,
   };
   private goblin: {
     sprite: Phaser.GameObjects.Sprite;
@@ -40,7 +40,7 @@ export default class HelloWorldScene extends Phaser.Scene {
     lastdirection: string;
     direction: number;
     hp: number;
-    atk:number;
+    atk: number;
   } = {
     sprite: {} as Phaser.GameObjects.Sprite,
     frameWidth: 150,
@@ -202,7 +202,7 @@ export default class HelloWorldScene extends Phaser.Scene {
         -1 * window.innerHeight * 0.5
       );
       this.Resize();
-    }
+}
 
     window.addEventListener("resize", () => {
       this.physics.world.gravity.y = window.innerHeight * 8.5365;
@@ -213,13 +213,53 @@ export default class HelloWorldScene extends Phaser.Scene {
         window.innerHeight
       );
       this.Resize();
+      
     });
+
+    // this.player.sprite.on("animationcomplete", () => {
+    //   console.log(1)
+    //   if (
+    //     this.player.sprite.anims.currentFrame.textureKey === "attack1-right" ||
+    //     this.player.sprite.anims.currentFrame.textureKey === "attack1-left"
+    //   ) {
+    //     // Saldırı animasyonu tamamlandığında goblin canını azalt
+    //     this.goblin.hp -= this.player.atk;
+    //   }
+    // });
+
+    //  this.goblin.sprite.on(
+    //    Phaser.Animations.Events.ANIMATION_STOP+
+    //      "goblin-attack-left",
+    //    () => {
+    //      if (
+    //        this.player.Sprite.anims.currentAnim?.key.includes(
+    //          "goblin-attack-left"
+    //        )
+    //      ) {
+    //        this.goblin.hp -= this.player.atk;
+    //        console.log("Goblin HP:", this.goblin.hp);
+    //      }
+    //    },
+    //    this
+    //  );
+      // this.player.Sprite.on("animationcomplete", () => {
+      //   if (
+      //     this.player.Sprite.anims.currentFrame.textureKey === "attack1-right" ||
+      //     this.player.Sprite.anims.currentFrame.textureKey === "attack1-left"
+      //   ) {
+      //     // Saldırı animasyonu tamamlandığında goblin canını azalt
+      //     this.goblin.hp -= this.player.atk;
+      //     console.log(1);
+      //   }
+      // });
+           
+   
   }
 
   update(time: number, delta: number): void {
     this.movement();
     
-    }
+  }
 
   movement() {
     const keySpace = this.input.keyboard?.addKey("SPACE");
@@ -246,6 +286,67 @@ export default class HelloWorldScene extends Phaser.Scene {
         Math.floor(this.player.sprite.y) ===
         Math.floor(window.innerHeight * 0.72333333333333333333333)
       ) {
+        if (this.goblin?.sprite.body instanceof Phaser.Physics.Arcade.Body) {
+          const distanceofgoblin = this.goblin.sprite.x - this.player.sprite.x;
+          if (distanceofgoblin > 0) {
+            this.goblin.lastdirection = this.direction.Left;
+            this.goblin.direction = -1;
+          } else {
+            this.goblin.lastdirection = this.direction.Right;
+            this.goblin.direction = 1;
+          }
+          if (
+            this.player.sprite.anims.currentFrame?.textureKey ===
+              `attack2-${this.player.lastdirection}` &&
+            Math.abs(distanceofgoblin) <= 400 &&
+            this.player.lastdirection !== this.goblin.lastdirection &&
+            !keyW?.isDown
+          ) {
+            this.goblin.sprite.anims.play(
+              `goblin-takehit-${this.goblin.lastdirection}`,
+              true
+            );
+            this.goblin.sprite.anims.stopAfterRepeat(0);
+          } else if (
+            this.goblin?.sprite.active &&
+            Math.abs(distanceofgoblin) <= 200 &&
+            Math.abs(distanceofgoblin) >= 145 &&
+            this.goblin.sprite.anims.currentFrame?.textureKey !==
+              `goblin-takehit-${this.goblin.lastdirection}`
+          ) {
+            this.goblin.sprite.anims.play(
+              `goblin-run-${this.goblin.lastdirection}`,
+              true
+            );
+            this.goblin.sprite.anims.stopAfterRepeat(0);
+            this.goblin.sprite.body.setVelocityX(this.goblin.direction * 600);
+          } else if (
+            Math.abs(distanceofgoblin) <= 145 &&
+            this.goblin.sprite.anims.currentFrame?.textureKey !==
+              `goblin-takehit-${this.goblin.lastdirection}` &&
+            this.player.sprite.anims.currentFrame?.textureKey !==
+              `death-${this.player.lastdirection}`
+          ) {
+            this.goblin.sprite.anims.play(
+              `goblin-attack-${this.goblin.lastdirection}`,
+              true
+            );
+
+            this.goblin.sprite.anims.stopAfterRepeat(0);
+            this.goblin.sprite.body.setVelocityX(0);
+          } else if (
+            this.player.sprite.anims.currentFrame?.textureKey ===
+              `death-${this.player.lastdirection}` &&
+            this.goblin.sprite.anims.currentFrame?.textureKey !==
+              `goblin-death-${this.goblin.lastdirection}`
+          ) {
+            this.goblin.sprite.body.setVelocityX(0);
+            this.goblin.sprite.anims.play(
+              `goblin-${this.goblin.lastdirection}`,
+              true
+            );
+          }
+        }
         if (keyW?.isDown) {
           this.player.sprite.anims.startAnimation(
             `jump-${this.player.lastdirection}`
@@ -310,6 +411,8 @@ export default class HelloWorldScene extends Phaser.Scene {
           );
           this.player.sprite.anims.stopAfterRepeat(0);
           this.player.sprite.body.setVelocityX(0);
+         
+      
         }
         if (keyB?.isDown) {
           if (!this.goblin?.sprite.active) {
@@ -409,46 +512,6 @@ export default class HelloWorldScene extends Phaser.Scene {
             `goblin-${this.goblin.lastdirection}`,
             true
           );
-        }
-        if (
-          this.goblin.sprite.anims.currentFrame?.textureKey ===
-            `goblin-attack-${this.goblin.lastdirection}` &&
-          Number(this.goblin.sprite.anims.currentFrame?.textureFrame) >= 7 &&
-          this.player.hp >= 0
-        ) {
-          this.player.hp -= this.goblin.atk;
-          console.log(this.player.hp);
-          if (this.player.hp <= 0) {
-            this.player.sprite.anims.play(
-              `death-${this.player.lastdirection}`,
-              true
-            );
-            setTimeout(() => {
-              this.player.sprite.anims.pause();
-            }, 550);
-          }
-        }
-        if (
-          this.player.sprite.anims.currentFrame?.textureKey ==
-            `attack1-${this.player.lastdirection}` &&
-          Math.abs(distanceofgoblin) <= 400 &&
-          this.player.lastdirection !== this.goblin.lastdirection &&
-          !keyW?.isDown &&
-          Number(this.player.sprite.anims.currentFrame.textureFrame) > 4 &&
-          this.goblin.hp >= 0
-        ) {
-          this.goblin.hp -= this.player.atk;
-          console.log("goblin", this.goblin.hp);
-          if (this.goblin.hp <= 0) {
-            this.goblin.sprite.anims.play(
-              `goblin-death-${this.goblin.lastdirection}`,
-              true
-            );
-            this.goblin.sprite.anims.stopAfterRepeat(0);
-            setTimeout(() => {
-              this.goblin.sprite.anims.pause()
-            }, 550);
-          }
         }
       }
     }
@@ -647,6 +710,20 @@ export default class HelloWorldScene extends Phaser.Scene {
       frameRate: 10,
       repeat: -1,
     });
+
+    
+     this.player.sprite.on("animationstop", () => {
+       if (
+         (this.player.sprite.anims.currentFrame.textureKey ===
+           "attack1-right" ||
+           this.player.sprite.anims.currentFrame.textureKey ===
+             "attack1-left") &&
+         this.goblin.hp >= 0
+       ) {
+         this.goblin.hp -= this.player.atk;
+         console.log("goblin", Math.max(0,this.goblin.hp));
+       }
+     });
   }
   Mob() {
     if (this.goblin?.sprite !== undefined)
@@ -760,6 +837,15 @@ export default class HelloWorldScene extends Phaser.Scene {
       frameRate: 8,
       repeat: -1,
     });
+     this.goblin.sprite.on("animationstop", () => {
+       if (
+   (      this.goblin.sprite.anims.currentFrame.textureKey === "goblin-attack-right" ||
+         this.goblin.sprite.anims.currentFrame.textureKey === "goblin-attack-left")&&this.player.hp>=0
+       ) {
+         this.player.hp -= this.goblin.atk;
+         console.log("player", Math.max(0,this.player.hp));
+       }
+     });
 
     this.bomb.sprite = this.physics.add
       .sprite(
