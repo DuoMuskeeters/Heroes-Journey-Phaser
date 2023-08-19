@@ -617,7 +617,7 @@ export default class HelloWorldScene extends Phaser.Scene {
            "attack1-right" ||
            this.player.sprite.anims.currentFrame?.textureKey ===
              "attack1-left") &&
-         this.goblin.hp >= 0
+         this.goblin.hp >= 0 && Math.abs(this.goblin.sprite.x - this.player.sprite.x)<=250
        ) {
          this.goblin.hp -= this.player.atk;
          console.log("goblin", Math.max(0,this.goblin.hp));
