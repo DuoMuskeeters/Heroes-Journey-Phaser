@@ -384,7 +384,7 @@ export default class HelloWorldScene extends Phaser.Scene {
             `goblin-run-${this.goblin.lastdirection}`,
             true
           );
-          this.goblin.sprite.anims.stopAfterRepeat(0);
+         
           this.goblin.sprite.body.setVelocityX(this.goblin.direction * 600);
         } else if (
           Math.abs(distanceofgoblin) <145 &&
