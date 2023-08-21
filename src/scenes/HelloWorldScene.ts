@@ -10,14 +10,14 @@ const jack = Warrior.from_Character(create_character("Ali"));
 const goblin_1sv = create_giant(1);
 
 export default class HelloWorldScene extends Phaser.Scene {
-  private direction = {
+  direction = {
     Right: "right",
     Left: "left",
     Dirvelocity: 1,
   };
 
-  private shopobject?: Phaser.GameObjects.Sprite;
-  private player: {
+  shopobject?: Phaser.GameObjects.Sprite;
+  player: {
     sprite: Phaser.GameObjects.Sprite;
     lastdirection: string;
     framewidth: number;
@@ -26,7 +26,7 @@ export default class HelloWorldScene extends Phaser.Scene {
     ultimate: boolean;
     hp: number;
     atk: number;
-   
+    healtbar: Phaser.GameObjects.Graphics;
   } = {
     sprite: {} as Phaser.GameObjects.Sprite,
     lastdirection: this.direction.Right,
@@ -36,9 +36,9 @@ export default class HelloWorldScene extends Phaser.Scene {
     ultimate: true,
     hp: jack.state.HP,
     atk: jack.state.ATK,
-    
+    healtbar: {} as Phaser.GameObjects.Graphics,
   };
-  private goblin: {
+  goblin: {
     sprite: Phaser.GameObjects.Sprite;
     frameWidth: number;
     frameHeight: number;
@@ -55,15 +55,15 @@ export default class HelloWorldScene extends Phaser.Scene {
     hp: goblin_1sv.state.HP,
     atk: goblin_1sv.state.ATK,
   };
-  private bomb: { sprite: Phaser.GameObjects.Sprite } = {
+  bomb: { sprite: Phaser.GameObjects.Sprite } = {
     sprite: {} as Phaser.GameObjects.Sprite,
   };
 
-  private backgrounds: {
+  backgrounds: {
     rationx: number;
     sprite: Phaser.GameObjects.TileSprite;
   }[] = [];
-  private road?: {
+  road?: {
     rationx: number;
     sprite: Phaser.GameObjects.TileSprite;
   }[] = [];
@@ -207,6 +207,7 @@ export default class HelloWorldScene extends Phaser.Scene {
         -1 * window.innerHeight * 0.5
       );
       this.Resize();
+      this.player.healtbar = this.add.graphics();
     }
 
     window.addEventListener("resize", () => {
@@ -250,7 +251,11 @@ export default class HelloWorldScene extends Phaser.Scene {
         Math.floor(this.player.sprite.y) ===
         Math.floor(window.innerHeight * 0.72333333333333333333333)
       ) {
-        if (keyW?.isDown) {
+        if (
+          keyW?.isDown &&
+          this.player.sprite.anims.getName() !==
+            `death-${this.player.lastdirection}`
+        ) {
           this.player.sprite.anims.startAnimation(
             `jump-${this.player.lastdirection}`
           );
@@ -273,7 +278,9 @@ export default class HelloWorldScene extends Phaser.Scene {
           this.player.sprite.anims.getName() !== `attack2-right` &&
           this.player.sprite.anims.getName() !== `attack2-left` &&
           this.player.sprite.anims.getName() !== `attack1-right` &&
-          this.player.sprite.anims.getName() !== `attack1-left`
+          this.player.sprite.anims.getName() !== `attack1-left` &&
+          this.player.sprite.anims.getName() !==
+            `death-${this.player.lastdirection}`
         ) {
           this.player?.sprite.anims.play(this.player.lastdirection, true);
 
@@ -287,7 +294,9 @@ export default class HelloWorldScene extends Phaser.Scene {
           !keyA?.isDown &&
           this.player.sprite.anims.getName() !==
             `attack1-${this.player.lastdirection}` &&
-          this.player.ultimate
+          this.player.ultimate &&
+          this.player.sprite.anims.getName() !==
+            `death-${this.player.lastdirection}`
         ) {
           this.player.sprite.anims.play(
             `attack2-${this.player.lastdirection}`,
@@ -303,7 +312,9 @@ export default class HelloWorldScene extends Phaser.Scene {
         if (
           (mouse || keySpace?.isDown) &&
           this.player.sprite.anims.getName() !==
-            `attack2-${this.player.lastdirection}`
+            `attack2-${this.player.lastdirection}` &&
+          this.player.sprite.anims.getName() !==
+            `death-${this.player.lastdirection}`
         ) {
           this.player?.sprite.anims.play(
             `attack1-${this.player.lastdirection}`,
@@ -312,11 +323,9 @@ export default class HelloWorldScene extends Phaser.Scene {
           this.player.sprite.anims.stopAfterRepeat(0);
           this.player.sprite.body.setVelocityX(0);
         }
-        if (keyB?.isDown) {
-          if (!this.goblin?.sprite.active) {
-            this.Mob();
-            this.goblin?.sprite.anims.play("goblin-left", true);
-          }
+        if (keyB?.isDown && !this.goblin?.sprite.active) {
+          this.Mob();
+          this.goblin?.sprite.anims.play("goblin-left", true);
         } else if (
           this.player.sprite.anims.getName() ===
             `fall-${this.player.lastdirection}` ||
@@ -395,7 +404,10 @@ export default class HelloWorldScene extends Phaser.Scene {
             `goblin-takehit-${this.goblin.lastdirection}` &&
           this.player.sprite.anims.getName() !==
             `death-${this.player.lastdirection}` &&
-          this.player.sprite.anims.getName() !== `${this.player.lastdirection}`
+          this.player.sprite.anims.getName() !==
+            `${this.player.lastdirection}` &&
+          this.goblin.sprite.anims.getName() !==
+            `goblin-death-${this.goblin.lastdirection}`
         ) {
           this.goblin.sprite.anims.play(
             `goblin-attack-${this.goblin.lastdirection}`,
@@ -405,10 +417,8 @@ export default class HelloWorldScene extends Phaser.Scene {
           this.goblin.sprite.anims.stopAfterRepeat(0);
           this.goblin.sprite.body.setVelocityX(0);
         } else if (
-          this.player.sprite.anims.getName() ===
-            `death-${this.player.lastdirection}` ||
           this.goblin.sprite.anims.getName() !==
-            `goblin-death-${this.goblin.lastdirection}`
+          `goblin-death-${this.goblin.lastdirection}`
         ) {
           this.goblin.sprite.body.setVelocityX(0);
           this.goblin.sprite.anims.play(
@@ -616,36 +626,51 @@ export default class HelloWorldScene extends Phaser.Scene {
 
     this.player.sprite.on("animationstop", () => {
       if (
-        (this.player.sprite.anims.getName() === `attack1-${this.player.lastdirection}` ) &&
+        this.player.sprite.anims.getName() ===
+          `attack1-${this.player.lastdirection}` &&
         this.goblin.hp >= 0 &&
         Math.abs(this.goblin.sprite.x - this.player.sprite.x) <= 250
       ) {
         this.goblin.hp -= this.player.atk;
         console.log("goblin", Math.max(0, this.goblin.hp));
+        if (this.goblin.hp <= 0) {
+          console.log(1);
+          this.goblin.sprite.play(
+            `goblin-death-${this.goblin.lastdirection}`,
+            true
+          );
+          this.goblin.sprite.stopAfterRepeat(0);
+        }
       } else if (
         (this.player.sprite.anims.getName() === "attack2-right" ||
           this.player.sprite.anims.getName() === "attack2-left") &&
-        this.goblin.hp >= 0&&  Math.abs(this.goblin.sprite.x - this.player.sprite.x) <= 250
+        this.goblin.hp >= 0 &&
+        Math.abs(this.goblin.sprite.x - this.player.sprite.x) <= 250
       ) {
         console.log(`sp${jack.state.SP}`);
         const damage = jack.heavy_strike();
         this.goblin.hp -= damage;
         console.log("goblin", Math.max(0, this.goblin.hp));
       }
+      if (
+        this.player.sprite.anims.getName() ===
+        `death-${this.player.lastdirection}`
+      ) {
+        this.player.sprite.anims.destroy();
+      }
     });
   }
   Mob() {
-    if (this.goblin?.sprite !== undefined)
-      this.goblin.sprite = this.physics.add
-        .sprite(
-          window.innerWidth * 0.82,
-          window.innerHeight * 0.63,
-          "goblin-left"
-        )
-        .setScale(window.innerHeight / 300)
-        .setDepth(4)
-        .setCollideWorldBounds(true)
-        .setBounce(0.2);
+    this.goblin.sprite = this.physics.add
+      .sprite(
+        window.innerWidth * 0.82,
+        window.innerHeight * 0.63,
+        "goblin-left"
+      )
+      .setScale(window.innerHeight / 300)
+      .setDepth(4)
+      .setCollideWorldBounds(true)
+      .setBounce(0.2);
 
     this.anims.create({
       key: "goblin-bomb",
@@ -748,22 +773,36 @@ export default class HelloWorldScene extends Phaser.Scene {
     });
 
     this.goblin.sprite.on("animationstop", () => {
-      let goblinframe = 0
-     if(this.goblin.lastdirection == this.direction.Left){
-      goblinframe = 0
-     }
-    if(this.goblin.lastdirection == this.direction.Right){
-      goblinframe = 7
-     }
+      let goblinframe = 0;
+      if (this.goblin.lastdirection == this.direction.Left) {
+        goblinframe = 0;
+      }
+      if (this.goblin.lastdirection == this.direction.Right) {
+        goblinframe = 7;
+      }
       if (
-        this.goblin.sprite.anims.currentFrame?.textureKey ===
+        this.goblin.sprite.anims.getName() ===
           `goblin-attack-${this.goblin.lastdirection}` &&
         this.player.hp >= 0 &&
         Math.abs(this.goblin.sprite.x - this.player.sprite.x) <= 250 &&
         Number(this.goblin.sprite.anims.getFrameName()) == goblinframe
       ) {
         this.player.hp -= this.goblin.atk;
-        console.log("player", Math.max(0, this.player.hp));
+        this.healtbar();
+
+        if (this.player.hp <= 0) {
+          this.player.sprite.anims.play(
+            `death-${this.player.lastdirection}`,
+            true
+          );
+          this.player.sprite.anims.stopAfterRepeat(0);
+        }
+      }
+      if (
+        this.goblin.sprite.anims.getName() ===
+        `goblin-death-${this.goblin.lastdirection}`
+      ) {
+        this.goblin.sprite.setVisible(false).setActive(false);
       }
     });
 
@@ -827,5 +866,29 @@ export default class HelloWorldScene extends Phaser.Scene {
       window.innerWidth * 5,
       window.innerHeight
     );
+  }
+  healtbar() {
+    const width = 250;
+    const percent = Phaser.Math.Clamp(this.player.hp, 0, 100) / 100;
+
+    this.player.healtbar.clear();
+    this.player.healtbar.fillStyle(0x808080);
+    this.player.healtbar.fillRoundedRect(
+      this.player.sprite.x,
+      10,
+      width,
+      20,
+      5
+    );
+    if (percent > 0) {
+      this.player.healtbar.fillStyle(0x00ff00);
+      this.player.healtbar.fillRoundedRect(
+        this.player.sprite.x,
+        10,
+        width * percent,
+        20,
+        5
+      );
+    }
   }
 }
