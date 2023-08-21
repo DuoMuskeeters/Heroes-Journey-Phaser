@@ -167,9 +167,14 @@ export function create_character(
 }
 
 export class Warrior extends Character {
-  constructor(character:Character) {
-    super(character.state,character.exp);
+
+  static from_Character(character: Character){
+    return new this(
+      character.state,
+      character.exp
+    )
   }
+
   heavy_strike(): number {
     if (this.state.SP >= 50) {
       const strike_damage = this.state.ATK * 2;

@@ -6,7 +6,7 @@ import {
   create_giant,
 } from "../game/Karakter";
 
-const jack = new Warrior(create_character("Ali"));
+const jack = Warrior.from_Character(create_character("Ali"));
 const goblin_1sv = create_giant(1);
 
 export default class HelloWorldScene extends Phaser.Scene {
