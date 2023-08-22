@@ -26,9 +26,9 @@ export class State {
     max_sp,//+
     SP,//+
     ATK,//+
-    ATKRATE,
+    ATKRATE,//+
     HP_reg,//+
-    Armor,
+    Armor,//+
     SP_reg,//+
     m_resist,//**/
     Strength,
@@ -110,7 +110,7 @@ export class Character extends Canlı {
     this.state.m_resist =
       this.state.Constitution / (this.state.Constitution + 100);
     this.state.ATK = 20 + this.state.Strength * 2;
-    this.state.ATKRATE = 1 + this.state.Agility * 0.05;
+    this.state.ATKRATE = 1 + this.state.Agility * 0.008;
   }
 
   level_up() {
@@ -141,7 +141,7 @@ export function create_character(
   const SP_reg = 2.5 + Intelligence * 0.05;
   const m_resist = Constitution / (Constitution + 100);
   const ATK = 20 + Strength * 2;
-  const ATKRATE = 1 + Agility * 0.05;
+  const ATKRATE = 1 + Agility * 0.008;
 
   const character_state: State = new State({
     name: username,
@@ -211,7 +211,7 @@ export class Mob extends Canlı {
     this.state.m_resist =
       this.state.Constitution / (this.state.Constitution + 100);
     this.state.ATK = 20 + this.state.Strength * 2;
-    this.state.ATKRATE = 1 + this.state.Agility * 0.05;
+    this.state.ATKRATE = 1 + this.state.Agility * 0.008;
   }
   skill_barı() {
     this.state.SP_reg = (this.state.max_sp * this.state.SP_reg) / 100;
@@ -256,7 +256,7 @@ export function create_giant(Level: number): Giant {
   const SP_reg = 10 + Intelligence * 0.5;
   const m_resist = Constitution / (Constitution + 100);
   const ATK = 20 + Strength * 2;
-  const ATKRATE = 1 + Agility * 0.05;
+  const ATKRATE = 1 + Agility * 0.008;
 
   while (stat_point > 0) {
     if (stat_turn == 0) {
@@ -325,7 +325,7 @@ export function create_bird(Level: number): Bird {
   const SP_reg = 10 + Intelligence * 0.5;
   const m_resist = Constitution / (Constitution + 100);
   const ATK = 20 + Strength * 2;
-  const ATKRATE = 1 + Agility * 0.05;
+  const ATKRATE = 1 + Agility * 0.008;
 
   while (stat_point > 0) {
     if (stat_turn == 0) {

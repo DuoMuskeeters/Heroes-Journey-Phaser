@@ -92,8 +92,5 @@ export default class MainScene extends Phaser.Scene {
     JackMovement(this);
     goblinMovement(this);
     Backroundmovement(this);
-    if (this.player.user.state.SP < 50) {
-      this.player.ultimate = false;
-    } else this.player.ultimate = true;
   }
 }

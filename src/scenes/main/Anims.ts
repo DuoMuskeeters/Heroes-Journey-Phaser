@@ -75,7 +75,7 @@ export function JackPlayer(scene: MainScene | MenuScene) {
       start: 0,
       end: 6,
     }),
-    frameRate: 14,
+    frameRate: scene.player.user.state.ATKRATE * 10 ,
     repeat: -1,
   });
   scene.anims.create({
@@ -84,7 +84,7 @@ export function JackPlayer(scene: MainScene | MenuScene) {
       start: 6,
       end: 0,
     }),
-    frameRate: 14,
+    frameRate: scene.player.user.state.ATKRATE * 10,
     repeat: -1,
   });
   scene.anims.create({
@@ -148,7 +148,7 @@ export function JackPlayer(scene: MainScene | MenuScene) {
         scene.goblin.mob.state.HP >= 0 &&
       Math.abs(scene.goblin.sprite.x - scene.player.sprite.x) <= 250
     ) {
-      scene.goblin.mob.state.HP -= scene.player.user.state.ATK;
+      scene.goblin.mob.state.HP -= (1 - scene.goblin.mob.state.Armor) * scene.player.user.state.ATK;
       console.log("goblin", Math.max(0, scene.goblin.mob.state.HP));
       if (scene.goblin.mob.state.HP <= 0) {
         console.log(1);
@@ -166,7 +166,7 @@ export function JackPlayer(scene: MainScene | MenuScene) {
     ) {
       console.log(`sp${scene.player.user.state.SP}`);
       const damage = scene.player.user.heavy_strike();
-      scene.goblin.mob.state.HP -= damage;
+      scene.goblin.mob.state.HP -= (1 - scene.goblin.mob.state.Armor) * damage;
       console.log("goblin", Math.max(0, scene.goblin.mob.state.HP));
     }
     if (
@@ -272,7 +272,7 @@ export function goblinMob(scene: MainScene) {
       start: 8,
       end: 0,
     }),
-    frameRate: 8,
+    frameRate: scene.goblin.mob.state.ATKRATE * 6.5,
     repeat: -1,
   });
   scene.anims.create({
@@ -281,7 +281,7 @@ export function goblinMob(scene: MainScene) {
       start: 0,
       end: 8,
     }),
-    frameRate: 8,
+    frameRate: scene.goblin.mob.state.ATKRATE * 6.5,
     repeat: -1,
   });
 
@@ -299,7 +299,7 @@ export function goblinMob(scene: MainScene) {
       Math.abs(scene.goblin.sprite.x - scene.player.sprite.x) <= 250 &&
       Number(scene.goblin.sprite.anims.getFrameName()) == goblinframe
     ) {
-      scene.player.user.state.HP-=scene.goblin.mob.state.ATK;
+      scene.player.user.state.HP-= (1 - scene.player.user.state.Armor) * scene.goblin.mob.state.ATK;
       healtbar(scene);
 
       if (scene.player.user.state.HP<= 0) {

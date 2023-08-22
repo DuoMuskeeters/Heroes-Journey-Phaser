@@ -64,6 +64,7 @@ export function JackMovement(scene: MainScene) {
         keyQ?.isDown &&
         !keyD?.isDown &&
         !keyA?.isDown && 
+        scene.player.user.state.SP >= 50 &&
         scene.player.sprite.anims.getName() !==
           `attack1-${scene.player.lastdirection}` &&
         scene.player.ultimate &&
