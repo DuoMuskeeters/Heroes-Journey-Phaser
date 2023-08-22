@@ -1,6 +1,6 @@
 import { Warrior, create_character } from "../../game/Karakter";
 import MenuScene from "../menu/MenuScene";
-import { healtbar } from "./Components";
+import { goblinHealtbar, healtbar } from "./Components";
 import MainScene from "./MainScene";
 import { Direction } from "./types";
 
@@ -75,7 +75,7 @@ export function JackPlayer(scene: MainScene | MenuScene) {
       start: 0,
       end: 6,
     }),
-    frameRate: scene.player.user.state.ATKRATE * 10 ,
+    frameRate: scene.player.user.state.ATKRATE * 10,
     repeat: -1,
   });
   scene.anims.create({
@@ -145,10 +145,12 @@ export function JackPlayer(scene: MainScene | MenuScene) {
     if (
       scene.player.sprite.anims.getName() ===
         `attack1-${scene.player.lastdirection}` &&
-        scene.goblin.mob.state.HP >= 0 &&
+      scene.goblin.mob.state.HP >= 0 &&
       Math.abs(scene.goblin.sprite.x - scene.player.sprite.x) <= 250
     ) {
-      scene.goblin.mob.state.HP -= (1 - scene.goblin.mob.state.Armor) * scene.player.user.state.ATK;
+      scene.goblin.mob.state.HP -=
+        (1 - scene.goblin.mob.state.Armor) * scene.player.user.state.ATK;
+      
       console.log("goblin", Math.max(0, scene.goblin.mob.state.HP));
       if (scene.goblin.mob.state.HP <= 0) {
         console.log(1);
@@ -166,7 +168,9 @@ export function JackPlayer(scene: MainScene | MenuScene) {
     ) {
       console.log(`sp${scene.player.user.state.SP}`);
       const damage = scene.player.user.heavy_strike();
+
       scene.goblin.mob.state.HP -= (1 - scene.goblin.mob.state.Armor) * damage;
+      
       console.log("goblin", Math.max(0, scene.goblin.mob.state.HP));
     }
     if (
@@ -295,14 +299,14 @@ export function goblinMob(scene: MainScene) {
     if (
       scene.goblin.sprite.anims.getName() ===
         `goblin-attack-${scene.goblin.lastdirection}` &&
-        scene.player.user.state.HP>= 0 &&
+      scene.player.user.state.HP >= 0 &&
       Math.abs(scene.goblin.sprite.x - scene.player.sprite.x) <= 250 &&
       Number(scene.goblin.sprite.anims.getFrameName()) == goblinframe
     ) {
-      scene.player.user.state.HP-= (1 - scene.player.user.state.Armor) * scene.goblin.mob.state.ATK;
-      healtbar(scene);
+      scene.player.user.state.HP -=
+        (1 - scene.player.user.state.Armor) * scene.goblin.mob.state.ATK;
 
-      if (scene.player.user.state.HP<= 0) {
+      if (scene.player.user.state.HP <= 0) {
         scene.player.sprite.anims.play(
           `death-${scene.player.lastdirection}`,
           true
@@ -339,7 +343,7 @@ export function goblinMob(scene: MainScene) {
     repeat: -1,
   });
 }
-export function shop(scene:MainScene|MenuScene) {
+export function shop(scene: MainScene | MenuScene) {
   scene.shopobject = scene.add
     .sprite(window.innerWidth * 0.82, window.innerHeight * 0.63, "shopanim")
     .setScale(window.innerHeight / 290);

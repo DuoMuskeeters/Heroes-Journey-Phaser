@@ -13,7 +13,7 @@ import PhaserGame from "../../PhaserGame";
 import { JackPlayer } from "./Anims";
 import { JackMovement } from "./PlayerMovemet";
 import { Resize } from "./Resize";
-import { healtbar } from "./Components";
+import { goblinHealtbar, healtbar } from "./Components";
 import { Backroundmovement } from "./GameMovement";
 import { goblinMovement } from "./GoblinMovement";
 
@@ -29,6 +29,7 @@ export default class MainScene extends Phaser.Scene {
     ultimate: true,
     user: jack,
     healtbar: {} as Phaser.GameObjects.Graphics,
+    hptitle: {} as Phaser.GameObjects.Text,
   };
   goblin = {
     sprite: {} as Phaser.GameObjects.Sprite,
@@ -36,6 +37,8 @@ export default class MainScene extends Phaser.Scene {
     frameHeight: 145,
     lastdirection: Direction["left"],
     mob: goblin_1sv,
+    healtbar: {} as Phaser.GameObjects.Graphics,
+    hptitle: {} as Phaser.GameObjects.Text,
   };
   backgrounds: {
     rationx: number;
@@ -49,7 +52,6 @@ export default class MainScene extends Phaser.Scene {
   bomb: { sprite: Phaser.GameObjects.Sprite } = {
     sprite: {} as Phaser.GameObjects.Sprite,
   };
-
   shopobject?: Phaser.GameObjects.Sprite;
   constructor() {
     super("mainscene");
@@ -67,6 +69,7 @@ export default class MainScene extends Phaser.Scene {
       console.log(`goblin ${this.goblin.mob.state.HP}`);
     }, 1000);
     this.player.healtbar = this.add.graphics();
+    this.goblin.healtbar = this.add.graphics();
     forestBackground(this);
     forestRoad(this);
     JackPlayer(this);
@@ -86,11 +89,35 @@ export default class MainScene extends Phaser.Scene {
       Resize(this);
     });
     Resize(this);
+    this.player.hptitle = this.add
+      .text(0, 0, `${this.player.user.state.HP}`)
+      .setStyle({
+        fontSize: "25px Arial",
+        color: "red",
+        align: "center",
+      })
+      .setFontFamily('Georgia, "Goudy Bookletter 1911", Times, serif')
+      .setFontStyle("bold");
+    this.goblin.hptitle = this.add
+      .text(0, 0, `${this.goblin.mob.state.HP}`)
+      .setStyle({
+        fontSize: "25px Arial",
+        color: "red",
+        align: "center",
+      })
+      .setFontFamily('Georgia, "Goudy Bookletter 1911", Times, serif')
+      .setFontStyle("bold");
   }
 
   update(time: number, delta: number): void {
     JackMovement(this);
     goblinMovement(this);
     Backroundmovement(this);
+    healtbar(this);
+    goblinHealtbar(this);
+    this.player.hptitle.setPosition(this.player.sprite.x - 240, 30);
+    this.player.healtbar.setPosition(this.player.sprite.x - 240, 10);
+    this.goblin.hptitle.setPosition(this.goblin.sprite.x + 240, 30);
+    this.goblin.healtbar.setPosition(this.goblin.sprite.x + 240, 10);
   }
 }
