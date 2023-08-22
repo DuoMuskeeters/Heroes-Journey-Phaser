@@ -145,12 +145,12 @@ export function JackPlayer(scene: MainScene | MenuScene) {
     if (
       scene.player.sprite.anims.getName() ===
         `attack1-${scene.player.lastdirection}` &&
-      scene.goblin.hp >= 0 &&
+        scene.goblin.mob.state.HP >= 0 &&
       Math.abs(scene.goblin.sprite.x - scene.player.sprite.x) <= 250
     ) {
-      scene.goblin.hp -= scene.player.atk;
-      console.log("goblin", Math.max(0, scene.goblin.hp));
-      if (scene.goblin.hp <= 0) {
+      scene.goblin.mob.state.HP -= scene.player.user.state.ATK;
+      console.log("goblin", Math.max(0, scene.goblin.mob.state.HP));
+      if (scene.goblin.mob.state.HP <= 0) {
         console.log(1);
         scene.goblin.sprite.play(
           `goblin-death-${scene.goblin.lastdirection}`,
@@ -161,13 +161,13 @@ export function JackPlayer(scene: MainScene | MenuScene) {
     } else if (
       (scene.player.sprite.anims.getName() === "attack2-right" ||
         scene.player.sprite.anims.getName() === "attack2-left") &&
-      scene.goblin.hp >= 0 &&
+      scene.goblin.mob.state.HP >= 0 &&
       Math.abs(scene.goblin.sprite.x - scene.player.sprite.x) <= 250
     ) {
-      console.log(`sp${jack.state.SP}`);
-      const damage = jack.heavy_strike();
-      scene.goblin.hp -= damage;
-      console.log("goblin", Math.max(0, scene.goblin.hp));
+      console.log(`sp${scene.player.user.state.SP}`);
+      const damage = scene.player.user.heavy_strike();
+      scene.goblin.mob.state.HP -= damage;
+      console.log("goblin", Math.max(0, scene.goblin.mob.state.HP));
     }
     if (
       scene.player.sprite.anims.getName() ===
@@ -295,14 +295,14 @@ export function goblinMob(scene: MainScene) {
     if (
       scene.goblin.sprite.anims.getName() ===
         `goblin-attack-${scene.goblin.lastdirection}` &&
-      scene.player.hp >= 0 &&
+        scene.player.user.state.HP>= 0 &&
       Math.abs(scene.goblin.sprite.x - scene.player.sprite.x) <= 250 &&
       Number(scene.goblin.sprite.anims.getFrameName()) == goblinframe
     ) {
-      scene.player.hp -= scene.goblin.atk;
+      scene.player.user.state.HP-=scene.goblin.mob.state.ATK;
       healtbar(scene);
 
-      if (scene.player.hp <= 0) {
+      if (scene.player.user.state.HP<= 0) {
         scene.player.sprite.anims.play(
           `death-${scene.player.lastdirection}`,
           true

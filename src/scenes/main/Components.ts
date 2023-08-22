@@ -2,7 +2,7 @@ import MainScene from "./MainScene";
 
 export function healtbar(scene: MainScene) {
   const width = 250;
-  const percent = Phaser.Math.Clamp(scene.player.hp, 0, 100) / 100;
+  const percent = Phaser.Math.Clamp(scene.player.user.state.HP, 0, 100) / 100;
 
   scene.player.healtbar.clear();
   scene.player.healtbar.fillStyle(0x808080);

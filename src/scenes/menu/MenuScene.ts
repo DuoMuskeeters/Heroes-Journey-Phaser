@@ -8,7 +8,7 @@ import { Backroundmovement } from "../main/GameMovement";
 import { Direction } from "../main/types";
 import { Warrior, create_character, create_giant } from "../../game/Karakter";
 const jack = Warrior.from_Character(create_character("Ali"));
-const goblin_1sv = create_giant(1);
+const goblin_1sv = create_giant(3);
 export default class MenuScene extends Phaser.Scene {
   logo = {} as Phaser.GameObjects.Image;
   brand = {} as Phaser.GameObjects.Text;
@@ -20,7 +20,7 @@ export default class MenuScene extends Phaser.Scene {
     frameheight: 166,
     standbytime: 3000,
     ultimate: true,
-    atk: jack.state.ATK,
+    user: jack,
     healtbar: {} as Phaser.GameObjects.Graphics,
   };
   goblin = {
@@ -28,8 +28,7 @@ export default class MenuScene extends Phaser.Scene {
     frameWidth: 150,
     frameHeight: 145,
     lastdirection: Direction["left"],
-    hp: goblin_1sv.state.HP,
-    atk: goblin_1sv.state.ATK,
+    mob:goblin_1sv,
   };
   backgrounds: {
     rationx: number;

@@ -1,6 +1,12 @@
 import Phaser from "phaser";
 import { Direction, dirVelocity } from "./types";
-import { Warrior, create_character, create_giant } from "../../game/Karakter";
+import {
+  Character,
+  Mob,
+  Warrior,
+  create_character,
+  create_giant,
+} from "../../game/Karakter";
 import { forestBackground, forestRoad, preloadAssets } from "./assets";
 import HelloWorldScene from "../HelloWorldScene";
 import PhaserGame from "../../PhaserGame";
@@ -12,7 +18,7 @@ import { Backroundmovement } from "./GameMovement";
 import { goblinMovement } from "./GoblinMovement";
 
 const jack = Warrior.from_Character(create_character("Ali"));
-const goblin_1sv = create_giant(1);
+const goblin_1sv = create_giant(3);
 export default class MainScene extends Phaser.Scene {
   player = {
     sprite: {} as Phaser.GameObjects.Sprite,
@@ -21,8 +27,7 @@ export default class MainScene extends Phaser.Scene {
     frameheight: 166,
     standbytime: 3000,
     ultimate: true,
-    hp: jack.state.HP,
-    atk: jack.state.ATK,
+    user: jack,
     healtbar: {} as Phaser.GameObjects.Graphics,
   };
   goblin = {
@@ -30,8 +35,7 @@ export default class MainScene extends Phaser.Scene {
     frameWidth: 150,
     frameHeight: 145,
     lastdirection: Direction["left"],
-    hp: goblin_1sv.state.HP,
-    atk: goblin_1sv.state.ATK,
+    mob: goblin_1sv,
   };
   backgrounds: {
     rationx: number;
@@ -50,11 +54,18 @@ export default class MainScene extends Phaser.Scene {
   constructor() {
     super("mainscene");
   }
-  preload() {
-
-  }
+  preload() {}
 
   create() {
+    //user icin jack vermek zorunda kaldik.
+    setInterval(() => {
+      this.player.user.regeneration();
+      console.log(`player ${this.player.user.state.HP}`);
+    }, 1000);
+    setInterval(() => {
+      this.goblin.mob.regeneration();
+      console.log(`goblin ${this.goblin.mob.state.HP}`);
+    }, 1000);
     this.player.healtbar = this.add.graphics();
     forestBackground(this);
     forestRoad(this);
@@ -81,5 +92,8 @@ export default class MainScene extends Phaser.Scene {
     JackMovement(this);
     goblinMovement(this);
     Backroundmovement(this);
+    if (this.player.user.state.SP < 50) {
+      this.player.ultimate = false;
+    } else this.player.ultimate = true;
   }
 }

@@ -80,6 +80,14 @@ export class Canlı {
   constructor(state: State) {
     this.state = state;
   }
+  regeneration() {
+    if (this.state.HP >= 0){
+      const HP_reg = (this.state.HP_reg * this.state.max_hp) / 100;
+      const SP_reg = (this.state.SP_reg * this.state.max_sp) / 100;
+      this.state.HP = Math.min(this.state.max_hp, this.state.HP + HP_reg);
+      this.state.SP = Math.min(this.state.max_sp, this.state.SP + SP_reg);
+    }
+}
 }
 
 export class Character extends Canlı {
@@ -89,12 +97,7 @@ export class Character extends Canlı {
     super(state);
     this.exp = exp;
   }
-  regeneration() {
-    let HP_reg = (this.state.HP_reg * this.state.max_hp) / 100;
-    let SP_reg = (this.state.SP_reg * this.state.max_sp) / 100;
-    this.state.HP = Math.min(this.state.max_hp, this.state.HP + HP_reg);
-    this.state.SP = Math.min(this.state.max_sp, this.state.SP + SP_reg);
-  }
+  
   calculate_power() {
     this.state.HP = 100 + this.state.Constitution * 10;
     this.state.max_hp = this.state.HP;
