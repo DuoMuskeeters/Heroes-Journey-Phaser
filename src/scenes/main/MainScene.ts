@@ -117,7 +117,7 @@ export default class MainScene extends Phaser.Scene {
     goblinHealtbar(this);
     this.player.hptitle.setPosition(this.player.sprite.x - 240, 30);
     this.player.healtbar.setPosition(this.player.sprite.x - 240, 10);
-    this.goblin.hptitle.setPosition(this.goblin.sprite.x + 240, 30);
-    this.goblin.healtbar.setPosition(this.goblin.sprite.x + 240, 10);
+    this.goblin.hptitle.setPosition(this.goblin.sprite.x , this.goblin.sprite.y-40);
+    this.goblin.healtbar.setPosition(this.goblin.sprite.x , this.goblin.sprite.y-60);
   }
 }

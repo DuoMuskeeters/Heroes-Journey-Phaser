@@ -150,16 +150,8 @@ export function JackPlayer(scene: MainScene | MenuScene) {
     ) {
       scene.goblin.mob.state.HP -=
         (1 - scene.goblin.mob.state.Armor) * scene.player.user.state.ATK;
-      
-      console.log("goblin", Math.max(0, scene.goblin.mob.state.HP));
-      if (scene.goblin.mob.state.HP <= 0) {
-        console.log(1);
-        scene.goblin.sprite.play(
-          `goblin-death-${scene.goblin.lastdirection}`,
-          true
-        );
-        scene.goblin.sprite.stopAfterRepeat(0);
-      }
+
+      console.log("goblin", scene.goblin.mob.state.HP);
     } else if (
       (scene.player.sprite.anims.getName() === "attack2-right" ||
         scene.player.sprite.anims.getName() === "attack2-left") &&
@@ -170,8 +162,15 @@ export function JackPlayer(scene: MainScene | MenuScene) {
       const damage = scene.player.user.heavy_strike();
 
       scene.goblin.mob.state.HP -= (1 - scene.goblin.mob.state.Armor) * damage;
-      
+
       console.log("goblin", Math.max(0, scene.goblin.mob.state.HP));
+    }
+    if (scene.goblin.mob.state.HP <= 0) {
+      scene.goblin.sprite.play(
+        `goblin-death-${scene.goblin.lastdirection}`,
+        true
+      );
+      scene.goblin.sprite.stopAfterRepeat(0);
     }
     if (
       scene.player.sprite.anims.getName() ===
@@ -319,6 +318,8 @@ export function goblinMob(scene: MainScene) {
       `goblin-death-${scene.goblin.lastdirection}`
     ) {
       scene.goblin.sprite.setVisible(false).setActive(false);
+      scene.goblin.healtbar.setVisible(false).setActive(false)
+      scene.goblin.hptitle.setVisible(false).setActive(false)
     }
   });
 

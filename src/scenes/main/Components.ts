@@ -20,21 +20,21 @@ export function healtbar(scene: MainScene) {
   }
 }
 export function goblinHealtbar(scene: MainScene) {
-  const width = 400;
+  const width = 100;
   const percent = Math.max(0, scene.goblin.mob.state.HP) / 400;
   scene.goblin.hptitle
-    .setText(`${Math.round(Math.max(0, scene.goblin.mob.state.HP))}`)
-    .setPosition(scene.goblin.sprite.x, 30);
+    .setText(`${Math.round(Math.max(0, scene.goblin.mob.state.HP))}/${scene.goblin.mob.state.Level}-level`)
+    .setPosition(scene.goblin.sprite.x, 30).setDepth(5);
 
   scene.goblin.healtbar.clear();
   scene.goblin.healtbar.fillStyle(0x808080);
   scene.goblin.healtbar
-    .fillRoundedRect(0, 0, width, 20, 5)
+    .fillRoundedRect(0, 0, width, 10, 5)
     .setPosition(scene.goblin.sprite.x, 10);
   if (percent > 0) {
     scene.goblin.healtbar.fillStyle(0x00ff00);
     scene.goblin.healtbar
-      .fillRoundedRect(0, 0, width * percent, 20, 5)
-      .setPosition(scene.goblin.sprite.x, 10);
+      .fillRoundedRect(0, 0, width * percent, 10, 5)
+      .setPosition(scene.goblin.sprite.x, 10).setDepth(5);
   }
 }
