@@ -1,49 +1,62 @@
 import Phaser from "phaser";
-
+import { JackPlayer, shop } from "../main/Anims";
+import MainScene from "../main/MainScene";
+import { forestBackground, forestRoad, preloadAssets } from "../main/assets";
+import PhaserGame from "../../PhaserGame";
+import { Resize } from "../main/Resize";
+import { Backroundmovement } from "../main/GameMovement";
+import { Direction } from "../main/types";
+import { Warrior, create_character, create_giant } from "../../game/Karakter";
+const jack = Warrior.from_Character(create_character("Ali"));
+const goblin_1sv = create_giant(1);
 export default class MenuScene extends Phaser.Scene {
   logo = {} as Phaser.GameObjects.Image;
   brand = {} as Phaser.GameObjects.Text;
   gameTitle = {} as Phaser.GameObjects.Text;
-  backgrounds = [
-    { rationx: 0.05, sprite: {} as Phaser.GameObjects.TileSprite },
-    { rationx: 0.1, sprite: {} as Phaser.GameObjects.TileSprite },
-    { rationx: 0.15, sprite: {} as Phaser.GameObjects.TileSprite },
-  ];
-  road = {
-    rationx: 0.3,
-    sprite: {} as Phaser.GameObjects.TileSprite,
-  };
-  shopobject = {} as Phaser.GameObjects.Sprite;
   player = {
-    sprite: {} as Phaser.Physics.Arcade.Sprite,
-    lastdirection: "right",
+    sprite: {} as Phaser.GameObjects.Sprite,
+    lastdirection: Direction.right,
     framewidth: 200,
     frameheight: 166,
     standbytime: 3000,
+    ultimate: true,
+    atk: jack.state.ATK,
+    healtbar: {} as Phaser.GameObjects.Graphics,
   };
+  goblin = {
+    sprite: {} as Phaser.GameObjects.Sprite,
+    frameWidth: 150,
+    frameHeight: 145,
+    lastdirection: Direction["left"],
+    hp: goblin_1sv.state.HP,
+    atk: goblin_1sv.state.ATK,
+  };
+  backgrounds: {
+    rationx: number;
+    sprite: Phaser.GameObjects.TileSprite;
+  }[] = [];
+
+  road?: {
+    rationx: number;
+    sprite: Phaser.GameObjects.TileSprite;
+  }[] = [];
+  bomb: { sprite: Phaser.GameObjects.Sprite } = {
+    sprite: {} as Phaser.GameObjects.Sprite,
+  };
+
+  shopobject?: Phaser.GameObjects.Sprite;
+
   constructor() {
     super("menu");
   }
+
   preload() {
     this.load.on("progress", function (value: any) {
       console.log(value);
     });
     this.load.image("logo", "DuoMuskeeters.jpg");
-    this.load.image("background1", "background/background_layer_1.png");
-    this.load.image("background2", "background/background_layer_2.png");
-    this.load.image("background3", "background/background_layer_3.png");
-    this.load.image("shop", "shop_anim.png");
-    this.load.image("piskel", "Road.png");
 
-    this.load.spritesheet("ıdle-right", "Idle.png", {
-      frameWidth: this.player.framewidth,
-      frameHeight: this.player.frameheight,
-    });
-
-    this.load.spritesheet("shopanim", "shop_anim.png", {
-      frameWidth: 118,
-      frameHeight: 128,
-    });
+    preloadAssets(this);
   }
 
   create() {
@@ -82,85 +95,30 @@ export default class MenuScene extends Phaser.Scene {
     this.brand.setDepth(100);
     this.gameTitle.setDepth(100);
 
-    this.anims.create({
-      key: "ıdle-right",
-      frames: this.anims.generateFrameNumbers("ıdle-right", {
-        start: 0,
-        end: 7,
-      }),
-      frameRate: 10,
-      repeat: -1,
+    forestBackground(this);
+    forestRoad(this);
+    JackPlayer(this);
+    Resize(this);
+    shop(this);
+
+    this?.player.sprite.anims.play("fall-right", true);
+    this.player.sprite.anims.stopAfterRepeat(2);
+    this.shopobject?.anims.play("shop", true);
+
+    window.addEventListener("resize", () => {
+      this.Resize();
+      Resize(this);
     });
-
-    this.anims.create({
-      key: "fall-right",
-      frames: this.anims.generateFrameNumbers("fall-right", {
-        start: 0,
-        end: 2,
-      }),
-      frameRate: 17,
-      repeat: -1,
+    this.player.sprite.on(Phaser.Animations.Events.ANIMATION_STOP, () => {
+      if (this.player.sprite.anims.getName() === "fall-right") {
+        this.player.sprite.anims.play("ıdle-right", true);
+      }
     });
-
-    this.anims.create({
-      key: "shop",
-      frames: this.anims.generateFrameNumbers("shopanim", {
-        start: 0,
-        end: 5,
-      }),
-      frameRate: 8,
-      repeat: -1,
-    });
-
-    for (let i = 0; i < this.backgrounds.length; i++) {
-      this.backgrounds[i].sprite = this.add
-        .tileSprite(0, 0, 0, 0, "background1")
-        .setDisplaySize(window.innerWidth, window.innerHeight * 0.849)
-        .setOrigin(0, 0)
-        .setDepth(i - 3)
-        .setScrollFactor(0);
-    }
-
-    this.road.sprite = this.add
-      .tileSprite(0, window.innerHeight * 0.628, 0, 0, "piskel")
-      .setOrigin(0)
-      .setScale(window.innerHeight * 0.0039)
-      .setScrollFactor(0);
-
-    this.shopobject = this.add
-      .sprite(window.innerWidth * 0.82, window.innerHeight * 0.63, "shopanim")
-      .setScale(window.innerHeight / 290);
-
-    this.player.sprite = this.physics.add
-      .sprite(100, 0, "ıdle-right")
-      .setCollideWorldBounds(true)
-      .setScale(window.innerHeight / 300)
-      .setBounce(0.2)
-      .setDepth(4);
-
-    this.player.sprite.anims.play("ıdle-right", true);
-
-    window.addEventListener("resize", this.Resize);
     this.Resize();
   }
 
-  update(time: number, delta: number): void {
-    this.movement();
-  }
+  update(time: number, delta: number): void {}
 
-  movement() {
-    this.player.sprite.anims.chain(undefined!);
-    this.player?.sprite.anims.chain([`fall-${this.player.lastdirection}`]);
-
-    for (let i = 0; i < this.backgrounds.length; i++) {
-      const bg = this.backgrounds[i];
-      bg.sprite.tilePositionX = this.cameras.main.scrollX * bg.rationx;
-    }
-    this.road.sprite.tilePositionX =
-      this.cameras.main.scrollX * this.road.rationx;
-  }
-
-  // TODO : doesn?t change scale when change screenwidth
   Resize() {
     const logoLeft = (window.innerWidth - this.logo.width) / 2;
     const logoTop = (window.innerHeight - this.logo.height) / 2;
@@ -172,20 +130,6 @@ export default class MenuScene extends Phaser.Scene {
     this.logo.setScale(window.innerHeight / 900).setPosition(logoLeft, logoTop);
     this.brand.setPosition(brandLeft, brandTop);
     this.gameTitle.setPosition(textLeft, textTop);
-    this.player?.sprite.setScale(window.innerHeight / 300);
-
-    for (let i = 0; i < 3; i++) {
-      this.backgrounds[i].sprite.setDisplaySize(
-        window.innerWidth,
-        window.innerHeight * 0.849
-      );
-    }
-    this.road.sprite = this.road.sprite
-      .setOrigin(0)
-      .setScale(window.innerWidth * 0.001388, window.innerHeight * 0.00353658)
-      .setPosition(0, window.innerHeight * 0.6560975);
-    this.physics.world.gravity.y = window.innerHeight * 8.5365;
-    this.physics.world.setBounds(0, 0, Infinity, window.innerHeight);
   }
   handleStartGame() {
     window.removeEventListener("resize", this.Resize);
@@ -196,7 +140,7 @@ export default class MenuScene extends Phaser.Scene {
       Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
       () => {
         console.log("Starting game");
-        this.scene.start("helloworld");
+        this.scene.start("mainscene");
       }
     );
   }

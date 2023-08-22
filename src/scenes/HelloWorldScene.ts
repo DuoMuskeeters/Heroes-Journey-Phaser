@@ -190,34 +190,27 @@ export default class HelloWorldScene extends Phaser.Scene {
     });
   }
 
-  create(isrectangle: boolean) {
-    if (isrectangle === true) {
-      this.Background();
-      this.Road();
-      this.Player();
+  create() {
+    this.Background();
+    this.Road();
+    this.Player();
 
-      this.player.sprite.anims.play("fall-right", true);
-      this.player.sprite.anims.stopAfterRepeat(1);
-      this.cameras.main.startFollow(
-        this.player.sprite,
-        false,
-        1,
-        0,
-        -1 * window.innerHeight * 0.4073,
-        -1 * window.innerHeight * 0.5
-      );
-      this.Resize();
-      this.player.healtbar = this.add.graphics();
-    }
+    this.player.sprite.anims.play("fall-right", true);
+    this.player.sprite.anims.stopAfterRepeat(1);
+    this.cameras.main.startFollow(
+      this.player.sprite,
+      false,
+      1,
+      0,
+      -1 * window.innerHeight * 0.4073,
+      -1 * window.innerHeight * 0.5
+    );
+    this.Resize();
+    this.player.healtbar = this.add.graphics();
 
     window.addEventListener("resize", () => {
       this.physics.world.gravity.y = window.innerHeight * 8.5365;
-      this.physics.world.setBounds(
-        0,
-        0,
-        window.innerWidth * 5,
-        window.innerHeight
-      );
+      this.physics.world.setBounds(0, 0, Infinity, window.innerHeight);
       this.Resize();
     });
   }
@@ -246,7 +239,6 @@ export default class HelloWorldScene extends Phaser.Scene {
     if (this.player.sprite.body instanceof Phaser.Physics.Arcade.Body) {
       this.player.sprite.anims.chain(undefined!);
       this.player?.sprite.anims.chain([`fall-${this.player.lastdirection}`]);
-
       if (
         Math.floor(this.player.sprite.y) ===
         Math.floor(window.innerHeight * 0.72333333333333333333333)
@@ -624,7 +616,7 @@ export default class HelloWorldScene extends Phaser.Scene {
       repeat: -1,
     });
 
-    this.player.sprite.on("animationstop", () => {
+    this.player.sprite.on(Phaser.Animations.Events.ANIMATION_STOP, () => {
       if (
         this.player.sprite.anims.getName() ===
           `attack1-${this.player.lastdirection}` &&
@@ -860,12 +852,7 @@ export default class HelloWorldScene extends Phaser.Scene {
         .setScale(window.innerWidth * 0.001388, window.innerHeight * 0.00353658)
         .setPosition(0, window.innerHeight * 0.6560975);
     }
-    this.physics.world.setBounds(
-      0,
-      0,
-      window.innerWidth * 5,
-      window.innerHeight
-    );
+    this.physics.world.setBounds(0, 0, Infinity, window.innerHeight);
   }
   healtbar() {
     const width = 250;
