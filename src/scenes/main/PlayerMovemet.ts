@@ -1,7 +1,14 @@
 import { goblinMob } from "./Anims";
 import MainScene from "./MainScene";
 import { Direction, dirVelocity } from "./types";
-
+import {
+  Character,
+  Mob,
+  Warrior,
+  create_character,
+  create_giant,
+} from "../../game/Karakter";
+let i=0
 export function JackMovement(scene: MainScene) {
   const keySpace = scene.input.keyboard?.addKey("SPACE");
   const keyW = scene.input.keyboard?.addKey("W");
@@ -97,7 +104,10 @@ export function JackMovement(scene: MainScene) {
         scene.player.sprite.body.setVelocityX(0);
       }
       if (keyB?.isDown && !scene.goblin?.sprite.active) {
+        scene.goblin.mob = create_giant(i+=1)
         goblinMob(scene);
+         scene.goblin.healtbar.setVisible(true);
+         scene.goblin.hptitle.setVisible(true);
         scene.goblin?.sprite.anims.play("goblin-left", true);
       } else if (
         scene.player.sprite.anims.getName() ===

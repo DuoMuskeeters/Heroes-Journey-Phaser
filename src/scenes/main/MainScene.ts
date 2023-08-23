@@ -18,7 +18,7 @@ import { Backroundmovement } from "./GameMovement";
 import { goblinMovement } from "./GoblinMovement";
 
 const jack = Warrior.from_Character(create_character("Ali"));
-const goblin_1sv = create_giant(3);
+
 export default class MainScene extends Phaser.Scene {
   player = {
     sprite: {} as Phaser.GameObjects.Sprite,
@@ -36,7 +36,7 @@ export default class MainScene extends Phaser.Scene {
     frameWidth: 150,
     frameHeight: 145,
     lastdirection: Direction["left"],
-    mob: goblin_1sv,
+    mob: create_giant(1),
     healtbar: {} as Phaser.GameObjects.Graphics,
     hptitle: {} as Phaser.GameObjects.Text,
   };
@@ -62,11 +62,9 @@ export default class MainScene extends Phaser.Scene {
     //user icin jack vermek zorunda kaldik.
     setInterval(() => {
       this.player.user.regeneration();
-      console.log(`player ${this.player.user.state.HP}`);
     }, 1000);
     setInterval(() => {
       this.goblin.mob.regeneration();
-      console.log(`goblin ${this.goblin.mob.state.HP}`);
     }, 1000);
     this.player.healtbar = this.add.graphics();
     this.goblin.healtbar = this.add.graphics();

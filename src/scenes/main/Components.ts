@@ -2,9 +2,9 @@ import MainScene from "./MainScene";
 
 export function healtbar(scene: MainScene) {
   const width = 200;
-  const percent = Math.max(0, scene.player.user.state.HP) / 200;
+  const percent = Math.max(0, scene.player.user.state.HP) / scene.player.user.state.max_hp;
   scene.player.hptitle
-    .setText(`${Math.round(Math.max(0, scene.player.user.state.HP))}`)
+    .setText(`${Math.round(Math.max(0, scene.player.user.state.HP))} / Jack-${scene.player.user.state.Level} level`)
     .setPosition(scene.player.sprite.x, 30);
 
   scene.player.healtbar.clear();
@@ -21,9 +21,9 @@ export function healtbar(scene: MainScene) {
 }
 export function goblinHealtbar(scene: MainScene) {
   const width = 100;
-  const percent = Math.max(0, scene.goblin.mob.state.HP) / 400;
+  const percent = Math.max(0, scene.goblin.mob.state.HP) / scene.goblin.mob.state.max_hp;
   scene.goblin.hptitle
-    .setText(`${Math.round(Math.max(0, scene.goblin.mob.state.HP))}/${scene.goblin.mob.state.Level}-level`)
+    .setText(`${Math.round(Math.max(0, scene.goblin.mob.state.HP))} / ${scene.goblin.mob.state.Level}-level`)
     .setPosition(scene.goblin.sprite.x, 30).setDepth(5);
 
   scene.goblin.healtbar.clear();
