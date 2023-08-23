@@ -1,4 +1,4 @@
-import { Warrior, create_character } from "../../game/Karakter";
+import { Warrior, create_character, mob_exp_kazancı } from "../../game/Karakter";
 import MenuScene from "../menu/MenuScene";
 import { goblinHealtbar, healtbar } from "./Components";
 import MainScene from "./MainScene";
@@ -322,6 +322,8 @@ export function goblinMob(scene: MainScene) {
       scene.goblin.sprite.setVisible(false).setActive(false);
       scene.goblin.healtbar.setVisible(false);
       scene.goblin.hptitle.setVisible(false);
+      scene.player.user.exp += mob_exp_kazancı(scene.goblin.mob.state.Level)
+      scene.player.user.level_up()
     }
   });
 

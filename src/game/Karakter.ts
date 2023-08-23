@@ -18,19 +18,19 @@ export class State {
   Constitution: number;
 
   constructor({
-    name,//+
+    name, //+
     Level,
     stat_point,
-    HP,//+
-    max_hp,//+
-    max_sp,//+
-    SP,//+
-    ATK,//+
-    ATKRATE,//+
-    HP_reg,//+
-    Armor,//+
-    SP_reg,//+
-    m_resist,//**/
+    HP, //+
+    max_hp, //+
+    max_sp, //+
+    SP, //+
+    ATK, //+
+    ATKRATE, //+
+    HP_reg, //+
+    Armor, //+
+    SP_reg, //+
+    m_resist, //**/
     Strength,
     Agility,
     Intelligence,
@@ -81,13 +81,13 @@ export class Canlı {
     this.state = state;
   }
   regeneration() {
-    if (this.state.HP >= 0){
+    if (this.state.HP >= 0) {
       const HP_reg = (this.state.HP_reg * this.state.max_hp) / 100;
       const SP_reg = (this.state.SP_reg * this.state.max_sp) / 100;
       this.state.HP = Math.min(this.state.max_hp, this.state.HP + HP_reg);
       this.state.SP = Math.min(this.state.max_sp, this.state.SP + SP_reg);
     }
-}
+  }
 }
 
 export class Character extends Canlı {
@@ -97,7 +97,7 @@ export class Character extends Canlı {
     super(state);
     this.exp = exp;
   }
-  
+
   calculate_power() {
     this.state.HP = 100 + this.state.Constitution * 10;
     this.state.max_hp = this.state.HP;
@@ -115,7 +115,7 @@ export class Character extends Canlı {
 
   level_up() {
     const requirement_exp: number = level(this.state.Level);
-    while (this.exp < requirement_exp) {
+    while (this.exp > requirement_exp) {
       this.state.Level += 1;
       this.exp = this.exp - requirement_exp;
       this.state.stat_point += 5;
@@ -170,12 +170,8 @@ export function create_character(
 }
 
 export class Warrior extends Character {
-
-  static from_Character(character: Character){
-    return new this(
-      character.state,
-      character.exp
-    )
+  static from_Character(character: Character) {
+    return new this(character.state, character.exp);
   }
 
   heavy_strike(): number {
@@ -376,4 +372,14 @@ export function level(
   let requirement_exp = base_exp * n1 ** level;
   requirement_exp = Math.round(requirement_exp / 5) * 5;
   return requirement_exp;
+}
+
+export function mob_exp_kazancı(
+  mob_level: number,
+  n1 = 1.2,
+  base_exp = 50
+): number {
+  let mob_exp = base_exp * n1 ** mob_level;
+  mob_exp = Math.round(mob_exp / 5) * 5;
+  return mob_exp;
 }

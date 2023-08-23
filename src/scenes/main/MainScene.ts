@@ -6,6 +6,7 @@ import {
   Warrior,
   create_character,
   create_giant,
+  level,
 } from "../../game/Karakter";
 import { forestBackground, forestRoad, preloadAssets } from "./assets";
 import HelloWorldScene from "../HelloWorldScene";
