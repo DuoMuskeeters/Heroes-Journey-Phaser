@@ -13,7 +13,7 @@ import PhaserGame from "../../PhaserGame";
 import { JackPlayer } from "./Anims";
 import { JackMovement } from "./PlayerMovemet";
 import { Resize } from "./Resize";
-import { goblinHealtbar, healtbar } from "./Components";
+import { goblinHealtbar, healtbar, playerspbar } from "./Components";
 import { Backroundmovement } from "./GameMovement";
 import { goblinMovement } from "./GoblinMovement";
 
@@ -29,6 +29,7 @@ export default class MainScene extends Phaser.Scene {
     ultimate: true,
     user: jack,
     healtbar: {} as Phaser.GameObjects.Graphics,
+    spbar: {} as Phaser.GameObjects.Graphics,
     hptitle: {} as Phaser.GameObjects.Text,
   };
   goblin = {
@@ -68,6 +69,7 @@ export default class MainScene extends Phaser.Scene {
     }, 1000);
     this.player.healtbar = this.add.graphics();
     this.goblin.healtbar = this.add.graphics();
+    this.player.spbar = this.add.graphics();
     forestBackground(this);
     forestRoad(this);
     JackPlayer(this);
@@ -90,7 +92,7 @@ export default class MainScene extends Phaser.Scene {
     this.player.hptitle = this.add
       .text(0, 0, `${this.player.user.state.HP}`)
       .setStyle({
-        fontSize: "25px Arial",
+        fontSize: "22px Arial",
         color: "red",
         align: "center",
       })
@@ -99,7 +101,7 @@ export default class MainScene extends Phaser.Scene {
     this.goblin.hptitle = this.add
       .text(0, 0, `${this.goblin.mob.state.HP}`)
       .setStyle({
-        fontSize: "25px Arial",
+        fontSize: "22px Arial",
         color: "red",
         align: "center",
       })
@@ -112,10 +114,18 @@ export default class MainScene extends Phaser.Scene {
     goblinMovement(this);
     Backroundmovement(this);
     healtbar(this);
+    playerspbar(this);
     goblinHealtbar(this);
-    this.player.hptitle.setPosition(this.player.sprite.x - 240, 30);
+    this.player.hptitle.setPosition(this.player.sprite.x - 240, 10);
     this.player.healtbar.setPosition(this.player.sprite.x - 240, 10);
-    this.goblin.hptitle.setPosition(this.goblin.sprite.x , this.goblin.sprite.y-40);
-    this.goblin.healtbar.setPosition(this.goblin.sprite.x , this.goblin.sprite.y-60);
+    this.player.spbar.setPosition(this.player.sprite.x - 240, 63);
+    this.goblin.hptitle.setPosition(
+      this.goblin.sprite.x-70,
+      this.goblin.sprite.y - 72
+    );
+    this.goblin.healtbar.setPosition(
+      this.goblin.sprite.x-50,
+      this.goblin.sprite.y - 40
+    );
   }
 }

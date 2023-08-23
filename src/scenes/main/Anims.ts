@@ -151,14 +151,17 @@ export function JackPlayer(scene: MainScene | MenuScene) {
       scene.goblin.mob.state.HP -=
         (1 - scene.goblin.mob.state.Armor) * scene.player.user.state.ATK;
     } else if (
-      (scene.player.sprite.anims.getName() === "attack2-right" ||
-        scene.player.sprite.anims.getName() === "attack2-left") &&
-      scene.goblin.mob.state.HP >= 0 &&
-      Math.abs(scene.goblin.sprite.x - scene.player.sprite.x) <= 250
+      scene.player.sprite.anims.getName() === "attack2-right" ||
+      scene.player.sprite.anims.getName() === "attack2-left"
     ) {
       const damage = scene.player.user.heavy_strike();
-
-      scene.goblin.mob.state.HP -= (1 - scene.goblin.mob.state.Armor) * damage;
+      if (
+        scene.goblin.mob.state.HP >= 0 &&
+        Math.abs(scene.goblin.sprite.x - scene.player.sprite.x) <= 250
+      ) {
+        scene.goblin.mob.state.HP -=
+          (1 - scene.goblin.mob.state.Armor) * damage;
+      }
     }
     if (scene.goblin.mob.state.HP <= 0) {
       scene.goblin.sprite.play(
@@ -177,7 +180,11 @@ export function JackPlayer(scene: MainScene | MenuScene) {
 }
 export function goblinMob(scene: MainScene) {
   scene.goblin.sprite = scene.physics.add
-    .sprite(window.innerWidth * 0.82, window.innerHeight * 0.63, "goblin-left")
+    .sprite(
+      scene.player.sprite.x + 500,
+      window.innerHeight * 0.63,
+      "goblin-left"
+    )
     .setScale(window.innerHeight / 300)
     .setDepth(4)
     .setCollideWorldBounds(true)
