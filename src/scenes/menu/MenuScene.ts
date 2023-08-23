@@ -115,6 +115,7 @@ export default class MenuScene extends Phaser.Scene {
       }
     });
     this.Resize();
+    
   }
 
   update(time: number, delta: number): void {}

@@ -2,12 +2,15 @@ import Phaser from "phaser";
 import MainScene from "./MainScene";
 import MenuScene from "../menu/MenuScene";
 export function preloadAssets(scene: MainScene | MenuScene) {
-    console.log(1)
+  console.log(1);
   scene.load.image("background1", "background/background_layer_1.png");
   scene.load.image("background2", "background/background_layer_2.png");
   scene.load.image("background3", "background/background_layer_3.png");
   scene.load.image("shop", "shop_anim.png");
   scene.load.image("piskel", "Road.png");
+  scene.load.image("uisword", "dice_sword.png");
+  scene.load.image("statepanel", "statepanel.png");
+  scene.load.image("plus", "Plus.png");
 
   scene.load.spritesheet("ıdle-right", "Idle.png", {
     frameWidth: scene.player.framewidth,
@@ -153,7 +156,7 @@ export function forestBackground(scene: MainScene | MenuScene) {
       .setScrollFactor(0),
   });
 }
-export function forestRoad(scene: MainScene|MenuScene) {
+export function forestRoad(scene: MainScene | MenuScene) {
   scene.road?.push({
     rationx: 0.3,
     sprite: scene.add

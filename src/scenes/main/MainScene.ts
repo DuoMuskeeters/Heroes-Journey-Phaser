@@ -17,6 +17,7 @@ import { Resize } from "./Resize";
 import { goblinHealtbar, healtbar, playerspbar } from "./Components";
 import { Backroundmovement } from "./GameMovement";
 import { goblinMovement } from "./GoblinMovement";
+import { threadId } from "worker_threads";
 
 const jack = Warrior.from_Character(create_character("Ali"));
 
@@ -108,6 +109,8 @@ export default class MainScene extends Phaser.Scene {
       })
       .setFontFamily('Georgia, "Goudy Bookletter 1911", Times, serif')
       .setFontStyle("bold");
+      this.scene.launch("ui")
+      
   }
 
   update(time: number, delta: number): void {
