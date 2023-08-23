@@ -83,7 +83,7 @@ export class Canlı {
   regeneration() {
     if (this.state.HP >= 0) {
       const HP_reg = (this.state.HP_reg * this.state.max_hp) / 100;
-      const SP_reg = (this.state.SP_reg * this.state.max_sp) / 100;
+      const SP_reg = (this.state.SP_reg * this.state.max_sp) / 50;
       this.state.HP = Math.min(this.state.max_hp, this.state.HP + HP_reg);
       this.state.SP = Math.min(this.state.max_sp, this.state.SP + SP_reg);
     }
@@ -97,22 +97,21 @@ export class Character extends Canlı {
     super(state);
     this.exp = exp;
   }
-
   calculate_power() {
     this.state.HP = 100 + this.state.Constitution * 10;
     this.state.max_hp = this.state.HP;
     this.state.HP_reg = 5 + this.state.Constitution * 0.1;
     this.state.Armor =
-      this.state.Constitution / (this.state.Constitution + 100);
+    this.state.Constitution / (this.state.Constitution + 100);
     this.state.SP = 50 + this.state.Intelligence * 5;
     this.state.max_sp = this.state.SP;
-    this.state.SP_reg = 2.5 + this.state.Intelligence;
+    this.state.SP_reg = 2.5 + this.state.Intelligence * 0.05;
     this.state.m_resist =
       this.state.Constitution / (this.state.Constitution + 100);
-    this.state.ATK = 20 + this.state.Strength * 2;
+    this.state.ATK = 30 + this.state.Strength * 2;
     this.state.ATKRATE = 1 + this.state.Agility * 0.008;
   }
-
+  
   level_up() {
     const requirement_exp: number = level(this.state.Level);
     while (this.exp > requirement_exp) {
@@ -120,8 +119,31 @@ export class Character extends Canlı {
       this.exp = this.exp - requirement_exp;
       this.state.stat_point += 5;
     }
-    this.calculate_power();
   }
+  increase_Strenght(){
+  if (this.state.stat_point > 0) {
+    this.state.Strength += 1;
+    this.state.stat_point -= 1;
+    this.calculate_power();}
+  }
+  increase_Agility(){
+    if (this.state.stat_point > 0) {
+      this.state.Agility += 1;
+      this.state.stat_point -= 1;
+      this.calculate_power();}
+    }   
+  increase_Intelligence(){
+    if (this.state.stat_point > 0) {
+      this.state.Intelligence += 1;
+      this.state.stat_point -= 1;
+      this.calculate_power();}
+    } 
+  increase_Constitution(){
+    if (this.state.stat_point > 0) {
+      this.state.Constitution += 1;
+      this.state.stat_point -= 1;
+      this.calculate_power();}
+    }
 }
 
 export function create_character(
@@ -140,7 +162,7 @@ export function create_character(
   const max_sp = SP;
   const SP_reg = 2.5 + Intelligence * 0.05;
   const m_resist = Constitution / (Constitution + 100);
-  const ATK = 20 + Strength * 2;
+  const ATK = 30 + Strength * 2;
   const ATKRATE = 1 + Agility * 0.008;
 
   const character_state: State = new State({
@@ -206,17 +228,23 @@ export class Mob extends Canlı {
     this.state.SP_reg = 10 + this.state.Intelligence * 0.5;
     this.state.m_resist =
       this.state.Constitution / (this.state.Constitution + 100);
-    this.state.ATK = 20 + this.state.Strength * 2;
+    this.state.ATK = 30 + this.state.Strength * 2;
     this.state.ATKRATE = 1 + this.state.Agility * 0.008;
   }
   skill_barı() {
-    this.state.SP_reg = (this.state.max_sp * this.state.SP_reg) / 100;
-    this.state.SP += this.state.SP_reg;
-    if (this.state.SP >= this.state.max_sp) {
+    if (this.state.SP > this.state.max_sp) {
       this.state.SP -= this.state.max_sp;
       return true;
     } else {
       return false;
+    }
+  }
+  mob_regeneration() {
+    if (this.state.HP >= 0) {
+      const HP_reg = (this.state.HP_reg * this.state.max_hp) / 100;
+      const SP_reg = (this.state.SP_reg * this.state.max_sp) / 50;
+      this.state.HP = Math.min(this.state.max_hp, this.state.HP + HP_reg);
+      this.state.SP = this.state.SP + SP_reg;
     }
   }
 }
@@ -238,7 +266,7 @@ export function create_giant(Level: number): Giant {
   const name = `${Level} Level Giant`;
   let stat_point = Level * 5;
   let stat_turn: number = 2;
-  let Strength = 2;
+  let Strength = 10;
   let Agility = 2;
   let Intelligence = 10;
   let Constitution = 20;
@@ -251,7 +279,7 @@ export function create_giant(Level: number): Giant {
   const SP = 0;
   const SP_reg = 10 + Intelligence * 0.5;
   const m_resist = Constitution / (Constitution + 100);
-  const ATK = 20 + Strength * 2;
+  const ATK = 30 + Strength * 2;
   const ATKRATE = 1 + Agility * 0.008;
 
   while (stat_point > 0) {
@@ -320,7 +348,7 @@ export function create_bird(Level: number): Bird {
   const SP = 0;
   const SP_reg = 10 + Intelligence * 0.5;
   const m_resist = Constitution / (Constitution + 100);
-  const ATK = 20 + Strength * 2;
+  const ATK = 30 + Strength * 2;
   const ATKRATE = 1 + Agility * 0.008;
 
   while (stat_point > 0) {

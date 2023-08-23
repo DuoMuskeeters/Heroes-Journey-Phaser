@@ -104,7 +104,7 @@ export function JackMovement(scene: MainScene) {
         scene.player.sprite.body.setVelocityX(0);
       }
       if (keyB?.isDown && !scene.goblin?.sprite.active) {
-        scene.goblin.mob = create_giant(i+=1)
+        scene.goblin.mob = create_giant(scene.player.user.state.Level)
         goblinMob(scene);
          scene.goblin.healtbar.setVisible(true);
          scene.goblin.hptitle.setVisible(true);

@@ -27,7 +27,7 @@ export default class MainScene extends Phaser.Scene {
     lastdirection: Direction.right,
     framewidth: 200,
     frameheight: 166,
-    standbytime: 3000,
+    standbytime: 5000,
     ultimate: true,
     user: jack,
     healtbar: {} as Phaser.GameObjects.Graphics,
@@ -67,7 +67,7 @@ export default class MainScene extends Phaser.Scene {
       this.player.user.regeneration();
     }, 1000);
     setInterval(() => {
-      this.goblin.mob.regeneration();
+      this.goblin.mob.mob_regeneration();
     }, 1000);
     this.player.healtbar = this.add.graphics();
     this.goblin.healtbar = this.add.graphics();
