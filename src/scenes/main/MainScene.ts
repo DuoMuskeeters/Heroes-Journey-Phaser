@@ -135,5 +135,9 @@ export default class MainScene extends Phaser.Scene {
     uiscene.statemenu.remaininpoints.setText(
       `Remaining Points:${this.player.user.state.stat_point}`
     );
+    uiscene.statemenu.jacktext.setText(
+      `Name: Jack    Level: ${this.player.user.state.Level}\n
+Job: Samurai  MAX HP: ${this.player.user.state.max_hp}`
+    );
   }
 }

@@ -5,7 +5,8 @@ import PhaserGame from "../../PhaserGame";
 export default class statemenu {
   scene!: Phaser.Scene;
   container!: Phaser.GameObjects.Container;
-  remaininpoints!:Phaser.GameObjects.Text
+  remaininpoints!: Phaser.GameObjects.Text;
+  jacktext!:Phaser.GameObjects.Text
   private opened = false;
   get isOpen() {
     return this.opened;
@@ -35,13 +36,13 @@ export default class statemenu {
     const playeravatar = scene.add
       .image(-320, -370, "player-avatar")
       .setScale(2);
-    const jacktext = scene.add.text(
+    this.jacktext = scene.add.text(
       -270,
       -390,
       `Name: Jack    Level: ${mainscene.player.user.state.Level}\n
 Job: Samurai  MAX HP: ${mainscene.player.user.state.max_hp}`
     );
-     this.remaininpoints = scene.add
+    this.remaininpoints = scene.add
       .text(
         -50,
         -150,
@@ -108,11 +109,17 @@ Job: Samurai  MAX HP: ${mainscene.player.user.state.max_hp}`
         `Constitution:${mainscene.player.user.state.Constitution}`
       );
     });
-    const preesc = scene.add.text(-30, -250,` Press+C to 
-    open or close`).setOrigin(1,0);
+    const preesc = scene.add
+      .text(
+        -30,
+        -250,
+        ` Press+C to 
+    open or close`
+      )
+      .setOrigin(1, 0);
     this.container.add(panel);
     this.container.add(playeravatar);
-    this.container.add(jacktext);
+    this.container.add(this.jacktext);
     this.container.add(Constitution);
     this.container.add(Constitutiontext);
     this.container.add(Intelligence);
@@ -126,7 +133,6 @@ Job: Samurai  MAX HP: ${mainscene.player.user.state.max_hp}`
     this.container.add(titletext);
     this.container.add(this.remaininpoints);
     this.container.add(preesc);
-
   }
   show() {
     this.scene.tweens.add({
