@@ -12,7 +12,7 @@ export function JackPlayer(scene: MainScene | MenuScene) {
     .setCollideWorldBounds(true)
     .setScale(window.innerHeight / 300)
     .setBounce(0.2)
-    .setDepth(4);
+    .setDepth(300);
   scene.anims.create({
     key: "ıdle-right",
     frames: scene.anims.generateFrameNumbers("ıdle-right", {

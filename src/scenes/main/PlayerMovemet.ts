@@ -8,8 +8,14 @@ import {
   create_character,
   create_giant,
 } from "../../game/Karakter";
-let i=0
+import PhaserGame from "../../PhaserGame";
+import { UiScene } from "./uiScene";
+import statemenu from "./StateMenu";
+import { Scene } from "phaser";
+
 export function JackMovement(scene: MainScene) {
+  const UiScene = PhaserGame.scene.keys.ui as UiScene;
+
   const keySpace = scene.input.keyboard?.addKey("SPACE");
   const keyW = scene.input.keyboard?.addKey("W");
   const keyA = scene.input.keyboard?.addKey("A");
@@ -32,84 +38,89 @@ export function JackMovement(scene: MainScene) {
       Math.floor(scene.player.sprite.y) ===
       Math.floor(window.innerHeight * 0.72333333333333333333333)
     ) {
-      if (
-        keyW?.isDown &&
-        scene.player.sprite.anims.getName() !==
-          `death-${scene.player.lastdirection}`
-      ) {
-        scene.player.sprite.anims.startAnimation(
-          `jump-${scene.player.lastdirection}`
-        );
-        scene.player.sprite.anims.stopAfterRepeat(0);
+      if (UiScene.statemenu.isOpen) {
+        if (
+          keyW?.isDown &&
+          scene.player.sprite.anims.getName() !==
+            `death-${scene.player.lastdirection}`
+        ) {
+          scene.player.sprite.anims.startAnimation(
+            `jump-${scene.player.lastdirection}`
+          );
+          scene.player.sprite.anims.stopAfterRepeat(0);
 
-        scene.player.sprite.body.setVelocityY(-1 * window.innerHeight * 2.1951);
-        if (keyD?.isDown || keyA?.isDown) {
-          scene.player.sprite.body.setVelocityX(
+          scene.player.sprite.body.setVelocityY(
+            -1 * window.innerHeight * 2.1951
+          );
+          if (keyD?.isDown || keyA?.isDown) {
+            scene.player.sprite.body.setVelocityX(
+              dirVelocity[scene.player.lastdirection] * 650
+            );
+          } else {
+            scene.player.sprite.body.setVelocityX(0);
+          }
+        }
+        if (
+          (keyD?.isDown || keyA?.isDown) &&
+          !keyW?.isDown &&
+          scene.player.sprite.anims.getName() !== `attack2-right` &&
+          scene.player.sprite.anims.getName() !== `attack2-left` &&
+          scene.player.sprite.anims.getName() !== `attack1-right` &&
+          scene.player.sprite.anims.getName() !== `attack1-left` &&
+          scene.player.sprite.anims.getName() !==
+            `death-${scene.player.lastdirection}`
+        ) {
+          scene.player?.sprite.anims.play(scene.player.lastdirection, true);
+
+          scene.player?.sprite.body.setVelocityX(
             dirVelocity[scene.player.lastdirection] * 650
           );
-        } else {
+        }
+        if (
+          keyQ?.isDown &&
+          !keyD?.isDown &&
+          !keyA?.isDown &&
+          scene.player.user.state.SP >= 50 &&
+          scene.player.sprite.anims.getName() !==
+            `attack1-${scene.player.lastdirection}` &&
+          scene.player.ultimate &&
+          scene.player.sprite.anims.getName() !==
+            `death-${scene.player.lastdirection}`
+        ) {
+          scene.player.sprite.anims.play(
+            `attack2-${scene.player.lastdirection}`,
+            true
+          );
+          scene.player.sprite.anims.stopAfterRepeat(0);
+          scene.player?.sprite.body.setVelocityX(0);
+          scene.player.ultimate = false;
+          setTimeout(() => {
+            scene.player.ultimate = true;
+          }, scene.player.standbytime);
+        }
+        if (
+          (mouse || keySpace?.isDown) &&
+          scene.player.sprite.anims.getName() !==
+            `attack2-${scene.player.lastdirection}` &&
+          scene.player.sprite.anims.getName() !==
+            `death-${scene.player.lastdirection}`
+        ) {
+          scene.player?.sprite.anims.play(
+            `attack1-${scene.player.lastdirection}`,
+            true
+          );
+          scene.player.sprite.anims.stopAfterRepeat(0);
           scene.player.sprite.body.setVelocityX(0);
+        }
+        if (keyB?.isDown && !scene.goblin?.sprite.active) {
+          scene.goblin.mob = create_giant(scene.player.user.state.Level);
+          goblinMob(scene);
+          scene.goblin.healtbar.setVisible(true);
+          scene.goblin.hptitle.setVisible(true);
+          scene.goblin?.sprite.anims.play("goblin-left", true);
         }
       }
       if (
-        (keyD?.isDown || keyA?.isDown) &&
-        !keyW?.isDown &&
-        scene.player.sprite.anims.getName() !== `attack2-right` &&
-        scene.player.sprite.anims.getName() !== `attack2-left` &&
-        scene.player.sprite.anims.getName() !== `attack1-right` &&
-        scene.player.sprite.anims.getName() !== `attack1-left` &&
-        scene.player.sprite.anims.getName() !==
-          `death-${scene.player.lastdirection}`
-      ) {
-        scene.player?.sprite.anims.play(scene.player.lastdirection, true);
-
-        scene.player?.sprite.body.setVelocityX(
-          dirVelocity[scene.player.lastdirection] * 650
-        );
-      }
-      if (
-        keyQ?.isDown &&
-        !keyD?.isDown &&
-        !keyA?.isDown && 
-        scene.player.user.state.SP >= 50 &&
-        scene.player.sprite.anims.getName() !==
-          `attack1-${scene.player.lastdirection}` &&
-        scene.player.ultimate &&
-        scene.player.sprite.anims.getName() !==
-          `death-${scene.player.lastdirection}`
-      ) {
-        scene.player.sprite.anims.play(
-          `attack2-${scene.player.lastdirection}`,
-          true
-        );
-        scene.player.sprite.anims.stopAfterRepeat(0);
-        scene.player?.sprite.body.setVelocityX(0);
-        scene.player.ultimate = false;
-        setTimeout(() => {
-          scene.player.ultimate = true;
-        }, scene.player.standbytime);
-      }
-      if (
-        (mouse || keySpace?.isDown) &&
-        scene.player.sprite.anims.getName() !==
-          `attack2-${scene.player.lastdirection}` &&
-        scene.player.sprite.anims.getName() !==
-          `death-${scene.player.lastdirection}`
-      ) {
-        scene.player?.sprite.anims.play(
-          `attack1-${scene.player.lastdirection}`,
-          true
-        );
-        scene.player.sprite.anims.stopAfterRepeat(0);
-        scene.player.sprite.body.setVelocityX(0);
-      }
-      if (keyB?.isDown && !scene.goblin?.sprite.active) {
-        scene.goblin.mob = create_giant(scene.player.user.state.Level)
-        goblinMob(scene);
-         scene.goblin.healtbar.setVisible(true);
-         scene.goblin.hptitle.setVisible(true);
-        scene.goblin?.sprite.anims.play("goblin-left", true);
-      } else if (
         scene.player.sprite.anims.getName() ===
           `fall-${scene.player.lastdirection}` ||
         (!keyD?.isDown &&

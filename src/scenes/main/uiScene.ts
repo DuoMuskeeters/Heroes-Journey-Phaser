@@ -1,35 +1,48 @@
+import { listeners } from "process";
+import PhaserGame from "../../PhaserGame";
 import MainScene from "./MainScene";
-import statemenu from "./stateStatemenu";
+import statemenu from "./StateMenu";
 
 export class UiScene extends Phaser.Scene {
   statemenu!: statemenu;
+  statebutton!: Phaser.GameObjects.Image;
   constructor() {
     super("ui");
   }
 
   create() {
     this.statemenu = new statemenu(this);
-    const statebutton = this.add
-      .image(window.innerWidth - 40, 40, "uisword")
-      .setScale(0.6);
-    statebutton
+    this.statebutton = this.add
+      .image(window.innerWidth - 40, 40, "statebutton")
+      .setScale(5)
+      .setTint(0xd0d0d0)
+      .setVisible(false);
+    this.statebutton
       .setInteractive()
       .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-        statebutton.setTint(0xdedede);
+        this.statebutton.setTint(0xdedede);
       })
       .on(Phaser.Input.Events.POINTER_OUT, () => {
-        statebutton.setTint(0xffffff);
+        this.statebutton.setTint(0xd0d0d0);
       })
       .on(Phaser.Input.Events.POINTER_DOWN, () => {
-        statebutton.setTint(0x8afbff);
+        this.statebutton.setTint(0x8afbff);
       })
       .on(Phaser.Input.Events.POINTER_UP, () => {
-        statebutton.setTint(0xffffff);
+        this.statebutton.setTint(0xd0d0d0);
+
         if (this.statemenu.isOpen) {
           this.statemenu.hide();
         } else {
           this.statemenu.show();
         }
       });
+    this.input.keyboard?.on("keydown-C", () => {
+      if (this.statemenu.isOpen) {
+        this.statemenu.hide();
+      } else {
+        this.statemenu.show();
+      }
+    });
   }
 }

@@ -18,6 +18,7 @@ import { goblinHealtbar, healtbar, playerspbar } from "./Components";
 import { Backroundmovement } from "./GameMovement";
 import { goblinMovement } from "./GoblinMovement";
 import { threadId } from "worker_threads";
+import { UiScene } from "./uiScene";
 
 const jack = Warrior.from_Character(create_character("Ali"));
 
@@ -76,7 +77,7 @@ export default class MainScene extends Phaser.Scene {
     forestRoad(this);
     JackPlayer(this);
     this.player.sprite.anims.play("fall-right", true);
-    this.player.sprite.anims.stopAfterRepeat(1);
+    this.player.sprite.anims.stopAfterRepeat(0);
     this.cameras.main.startFollow(
       this.player.sprite,
       false,
@@ -109,11 +110,11 @@ export default class MainScene extends Phaser.Scene {
       })
       .setFontFamily('Georgia, "Goudy Bookletter 1911", Times, serif')
       .setFontStyle("bold");
-      this.scene.launch("ui")
-      
+    this.scene.launch("ui");
   }
 
   update(time: number, delta: number): void {
+    const uiscene = PhaserGame.scene.keys.ui as UiScene;
     JackMovement(this);
     goblinMovement(this);
     Backroundmovement(this);
@@ -124,12 +125,15 @@ export default class MainScene extends Phaser.Scene {
     this.player.healtbar.setPosition(this.player.sprite.x - 240, 10);
     this.player.spbar.setPosition(this.player.sprite.x - 240, 63);
     this.goblin.hptitle.setPosition(
-      this.goblin.sprite.x-70,
+      this.goblin.sprite.x - 70,
       this.goblin.sprite.y - 72
     );
     this.goblin.healtbar.setPosition(
-      this.goblin.sprite.x-50,
+      this.goblin.sprite.x - 50,
       this.goblin.sprite.y - 40
+    );
+    uiscene.statemenu.remaininpoints.setText(
+      `Remaining Points:${this.player.user.state.stat_point}`
     );
   }
 }

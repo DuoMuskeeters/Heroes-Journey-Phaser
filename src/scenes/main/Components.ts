@@ -7,7 +7,7 @@ export function healtbar(scene: MainScene) {
   scene.player.hptitle
     .setText(
       `${Math.round(Math.max(0, scene.player.user.state.HP))}\n\n${
-        scene.player.user.state.SP
+        Math.round(scene.player.user.state.SP)
       }\nJack/${scene.player.user.state.Level}-level`
     )
     .setPosition(scene.player.sprite.x, 30);

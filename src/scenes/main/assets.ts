@@ -8,9 +8,15 @@ export function preloadAssets(scene: MainScene | MenuScene) {
   scene.load.image("background3", "background/background_layer_3.png");
   scene.load.image("shop", "shop_anim.png");
   scene.load.image("piskel", "Road.png");
-  scene.load.image("uisword", "dice_sword.png");
+  scene.load.image("statebutton", "statebutton.png");
   scene.load.image("statepanel", "statepanel.png");
   scene.load.image("plus", "Plus.png");
+  scene.load.image("player-avatar","jack-avatar.png");
+  scene.load.image("line", "Division-line.png");
+  scene.load.image("title-iron", "title-iron.png");
+
+
+
 
   scene.load.spritesheet("ıdle-right", "Idle.png", {
     frameWidth: scene.player.framewidth,
