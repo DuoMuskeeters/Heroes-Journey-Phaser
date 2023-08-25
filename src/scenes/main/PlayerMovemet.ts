@@ -42,7 +42,9 @@ export function JackMovement(scene: MainScene) {
         if (
           keyW?.isDown &&
           scene.player.sprite.anims.getName() !==
-            `death-${scene.player.lastdirection}`
+            `death-${scene.player.lastdirection}` &&
+          scene.player.sprite.anims.getName() !==
+            `take-hit-${scene.player.lastdirection}`
         ) {
           scene.player.sprite.anims.startAnimation(
             `jump-${scene.player.lastdirection}`
@@ -68,7 +70,9 @@ export function JackMovement(scene: MainScene) {
           scene.player.sprite.anims.getName() !== `attack1-right` &&
           scene.player.sprite.anims.getName() !== `attack1-left` &&
           scene.player.sprite.anims.getName() !==
-            `death-${scene.player.lastdirection}`
+            `death-${scene.player.lastdirection}` &&
+          scene.player.sprite.anims.getName() !==
+            `take-hit-${scene.player.lastdirection}`
         ) {
           scene.player?.sprite.anims.play(scene.player.lastdirection, true);
 
@@ -85,7 +89,9 @@ export function JackMovement(scene: MainScene) {
             `attack1-${scene.player.lastdirection}` &&
           scene.player.ultimate &&
           scene.player.sprite.anims.getName() !==
-            `death-${scene.player.lastdirection}`
+            `death-${scene.player.lastdirection}` &&
+          scene.player.sprite.anims.getName() !==
+            `take-hit-${scene.player.lastdirection}`
         ) {
           scene.player.sprite.anims.play(
             `attack2-${scene.player.lastdirection}`,
@@ -103,7 +109,9 @@ export function JackMovement(scene: MainScene) {
           scene.player.sprite.anims.getName() !==
             `attack2-${scene.player.lastdirection}` &&
           scene.player.sprite.anims.getName() !==
-            `death-${scene.player.lastdirection}`
+            `death-${scene.player.lastdirection}` &&
+          scene.player.sprite.anims.getName() !==
+            `take-hit-${scene.player.lastdirection}`
         ) {
           scene.player?.sprite.anims.play(
             `attack1-${scene.player.lastdirection}`,
@@ -134,7 +142,9 @@ export function JackMovement(scene: MainScene) {
           scene.player.sprite.anims.getName() !==
             `attack2-${scene.player.lastdirection}` &&
           scene.player.sprite.anims.getName() !==
-            `death-${scene.player.lastdirection}`)
+            `death-${scene.player.lastdirection}` &&
+          scene.player.sprite.anims.getName() !==
+            `take-hit-${scene.player.lastdirection}`)
       ) {
         scene.player.sprite.body.setVelocityX(0);
         scene.player.sprite.anims.play(

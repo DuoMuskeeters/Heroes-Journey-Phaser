@@ -83,7 +83,7 @@ export default class MainScene extends Phaser.Scene {
       false,
       1,
       0,
-      -1 * window.innerHeight * 0.4073,
+      -1 * window.innerHeight * 0.1,
       -1 * window.innerHeight * 0.5
     );
     window.addEventListener("resize", () => {
@@ -111,6 +111,7 @@ export default class MainScene extends Phaser.Scene {
       .setFontFamily('Georgia, "Goudy Bookletter 1911", Times, serif')
       .setFontStyle("bold");
     this.scene.launch("ui");
+
   }
 
   update(time: number, delta: number): void {

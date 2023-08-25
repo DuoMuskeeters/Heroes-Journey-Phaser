@@ -26,6 +26,14 @@ export function preloadAssets(scene: MainScene | MenuScene) {
     frameWidth: scene.player.framewidth,
     frameHeight: scene.player.frameheight,
   });
+   scene.load.spritesheet("take-hit-right", "take-hit-right.png", {
+     frameWidth: scene.player.framewidth,
+     frameHeight: scene.player.frameheight,
+   });
+   scene.load.spritesheet("take-hit-left", "take-hit-left.png", {
+     frameWidth: scene.player.framewidth,
+     frameHeight: scene.player.frameheight,
+   });
   scene.load.spritesheet("right", "run-right.png", {
     frameWidth: scene.player.framewidth,
     frameHeight: scene.player.frameheight,
@@ -86,6 +94,10 @@ export function preloadAssets(scene: MainScene | MenuScene) {
     frameWidth: scene.goblin?.frameWidth,
     frameHeight: scene.goblin?.frameHeight,
   });
+  scene.load.spritesheet("goblin-bomb-right", "goblin-bomb-right.png", {
+    frameWidth: scene.goblin?.frameWidth,
+    frameHeight: scene.goblin?.frameHeight,
+  });
   scene.load.spritesheet("goblin-run-left", "goblin-run-left.png", {
     frameWidth: scene.goblin?.frameWidth,
     frameHeight: scene.goblin?.frameHeight,
@@ -120,10 +132,14 @@ export function preloadAssets(scene: MainScene | MenuScene) {
     frameWidth: scene.goblin?.frameWidth,
     frameHeight: scene.goblin?.frameHeight,
   });
-  scene.load.spritesheet("goblin-attack-bomb", "goblin-attack-bomb.png", {
+  scene.load.spritesheet("goblin-attack-bomb-left", "goblin-attack-bomb-left.png", {
     frameWidth: 100,
-    frameHeight: 100,
+    frameHeight: 95,
   });
+   scene.load.spritesheet("goblin-attack-bomb-right", "goblin-attack-bomb-right.png", {
+     frameWidth: 100,
+     frameHeight: 95,
+   });
   scene.load.spritesheet("shopanim", "shop_anim.png", {
     frameWidth: 118,
     frameHeight: 128,

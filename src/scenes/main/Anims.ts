@@ -1,8 +1,12 @@
-import { Warrior, create_character, mob_exp_kazancı } from "../../game/Karakter";
+import {
+  Warrior,
+  create_character,
+  mob_exp_kazancı,
+} from "../../game/Karakter";
 import MenuScene from "../menu/MenuScene";
 import { goblinHealtbar, healtbar } from "./Components";
 import MainScene from "./MainScene";
-import { Direction } from "./types";
+import { Direction, dirVelocity } from "./types";
 
 const jack = Warrior.from_Character(create_character("Ali"));
 
@@ -141,6 +145,24 @@ export function JackPlayer(scene: MainScene | MenuScene) {
     frameRate: 10,
     repeat: -1,
   });
+  scene.anims.create({
+    key: "take-hit-left",
+    frames: scene.anims.generateFrameNumbers("take-hit-left", {
+      start: 4,
+      end: 0,
+    }),
+    frameRate: 10,
+    repeat: -1,
+  });
+  scene.anims.create({
+    key: "take-hit-right",
+    frames: scene.anims.generateFrameNumbers("take-hit-right", {
+      start: 0,
+      end: 4,
+    }),
+    frameRate: 10,
+    repeat: -1,
+  });
   scene.player.sprite.on(Phaser.Animations.Events.ANIMATION_STOP, () => {
     if (
       scene.player.sprite.anims.getName() ===
@@ -189,12 +211,20 @@ export function goblinMob(scene: MainScene) {
     .setDepth(4)
     .setCollideWorldBounds(true)
     .setBounce(0.2);
-
   scene.anims.create({
-    key: "goblin-bomb",
-    frames: scene.anims.generateFrameNumbers("goblin-bomb", {
+    key: "goblin-bomb-left",
+    frames: scene.anims.generateFrameNumbers("goblin-bomb-left", {
       start: 12,
       end: 0,
+    }),
+    frameRate: 10,
+    repeat: -1,
+  });
+  scene.anims.create({
+    key: "goblin-bomb-right",
+    frames: scene.anims.generateFrameNumbers("goblin-bomb-right", {
+      start: 0,
+      end: 12,
     }),
     frameRate: 10,
     repeat: -1,
@@ -317,13 +347,31 @@ export function goblinMob(scene: MainScene) {
     }
     if (
       scene.goblin.sprite.anims.getName() ===
+        `goblin-bomb-${scene.goblin.lastdirection}` &&
+      scene.bomb.sprite.body instanceof Phaser.Physics.Arcade.Body
+    ) {
+      scene.bomb.sprite
+        .setVisible(true)
+        .setPosition(scene.player.sprite.x-(dirVelocity[scene.goblin.lastdirection] * 150), scene.goblin.sprite.y - 100)
+        .setScale(3);
+      scene.bomb.sprite.anims.play(
+        `goblin-attack-bomb-${scene.goblin.lastdirection}`,
+        true
+      );
+      scene.bomb.sprite.anims.stopAfterRepeat(0);
+      scene.bomb.sprite.body.setVelocityX(
+        dirVelocity[scene.goblin.lastdirection] * 100
+      );
+    }
+    if (
+      scene.goblin.sprite.anims.getName() ===
       `goblin-death-${scene.goblin.lastdirection}`
     ) {
       scene.goblin.sprite.setVisible(false).setActive(false);
       scene.goblin.healtbar.setVisible(false);
       scene.goblin.hptitle.setVisible(false);
-      scene.player.user.exp += mob_exp_kazancı(scene.goblin.mob.state.Level)
-      scene.player.user.level_up()
+      scene.player.user.exp += mob_exp_kazancı(scene.goblin.mob.state.Level);
+      scene.player.user.level_up();
     }
   });
 
@@ -331,21 +379,53 @@ export function goblinMob(scene: MainScene) {
     .sprite(
       window.innerWidth * 0.82,
       window.innerHeight * 0.63,
-      "goblin-attack-bomb"
+      `goblin-attack-bomb-${scene.goblin.lastdirection}`
     )
     .setScale(window.innerHeight / 300)
     .setDepth(4)
     .setCollideWorldBounds(true)
     .setBounce(0.2)
     .setVisible(false);
+
   scene.anims.create({
-    key: "goblin-attack-bomb",
-    frames: scene.anims.generateFrameNumbers("goblin-attack-bomb", {
+    key: "goblin-attack-bomb-left",
+    frames: scene.anims.generateFrameNumbers("goblin-attack-bomb-left", {
       start: 19,
       end: 0,
     }),
     frameRate: 10,
     repeat: -1,
+  });
+  scene.anims.create({
+    key: "goblin-attack-bomb-right",
+    frames: scene.anims.generateFrameNumbers("goblin-attack-bomb-right", {
+      start: 0,
+      end: 19,
+    }),
+    frameRate: 10,
+    repeat: -1,
+  });
+  scene.bomb.sprite.on("animationstop", () => {
+    if (scene.bomb.sprite.body instanceof Phaser.Physics.Arcade.Body) {
+      scene.bomb.sprite.body.setVelocityX(0);
+      scene.bomb.sprite.setVisible(false);
+    }
+  });
+  scene.bomb.sprite.on(Phaser.Animations.Events.ANIMATION_UPDATE, () => {
+    let getFrameName = 7;
+    if (scene.goblin.lastdirection === Direction.right) {
+      getFrameName = 13;
+    }
+    if (
+      Number(scene.bomb.sprite.anims.getFrameName()) === getFrameName &&
+      Math.abs(scene.player.sprite.x - scene.bomb.sprite.x) < 90
+    ) {
+      scene.player.sprite.anims.play(
+        `take-hit-${scene.player.lastdirection}`,
+        true
+      );
+      scene.player.sprite.anims.stopAfterRepeat(0);
+    }
   });
 }
 export function shop(scene: MainScene | MenuScene) {
