@@ -352,16 +352,17 @@ export function goblinMob(scene: MainScene) {
     ) {
       scene.bomb.sprite
         .setVisible(true)
-        .setPosition(scene.player.sprite.x-(dirVelocity[scene.goblin.lastdirection] * 150), scene.goblin.sprite.y - 100)
+        .setPosition(
+          scene.player.sprite.x - dirVelocity[scene.goblin.lastdirection] * 50,
+          scene.goblin.sprite.y - 100
+        )
         .setScale(3);
       scene.bomb.sprite.anims.play(
         `goblin-attack-bomb-${scene.goblin.lastdirection}`,
         true
       );
       scene.bomb.sprite.anims.stopAfterRepeat(0);
-      scene.bomb.sprite.body.setVelocityX(
-        dirVelocity[scene.goblin.lastdirection] * 100
-      );
+      scene.bomb.sprite.body.setVelocityX(0);
     }
     if (
       scene.goblin.sprite.anims.getName() ===

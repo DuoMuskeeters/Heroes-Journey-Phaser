@@ -14,6 +14,7 @@ export function goblinMovement(scene: MainScene) {
       scene.goblin.lastdirection = Direction.right;
     }
     if (keyM?.isDown && !scene.bomb.sprite.anims.isPlaying) {
+      scene.goblin.sprite.body.setVelocityX(0)
       scene.goblin.sprite.anims.play(
         `goblin-bomb-${scene.goblin.lastdirection}`,
         true
