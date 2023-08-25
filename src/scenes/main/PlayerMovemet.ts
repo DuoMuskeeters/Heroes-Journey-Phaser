@@ -12,6 +12,7 @@ import PhaserGame from "../../PhaserGame";
 import { UiScene } from "./uiScene";
 import statemenu from "./StateMenu";
 import { Scene } from "phaser";
+import { mobattack } from "./MobAttack";
 
 export function JackMovement(scene: MainScene) {
   const UiScene = PhaserGame.scene.keys.ui as UiScene;
@@ -29,6 +30,10 @@ export function JackMovement(scene: MainScene) {
   }
   if (keyD?.isDown) {
     scene.player.lastdirection = Direction.right;
+  }
+  if (scene.player.user.state.HP <= 0) {
+    scene.player.sprite.anims.play(`death-${scene.player.lastdirection}`, true);
+    scene.player.sprite.anims.stopAfterRepeat(0);
   }
   if (scene.player.sprite.body instanceof Phaser.Physics.Arcade.Body) {
     scene.player.sprite.anims.chain(undefined!);
@@ -123,8 +128,10 @@ export function JackMovement(scene: MainScene) {
         if (keyB?.isDown && !scene.goblin?.sprite.active) {
           scene.goblin.mob = create_giant(scene.player.user.state.Level);
           goblinMob(scene);
+          
           scene.goblin.healtbar.setVisible(true);
           scene.goblin.hptitle.setVisible(true);
+          scene.goblin.spbar.setVisible(true);
           scene.goblin?.sprite.anims.play("goblin-left", true);
         }
       }

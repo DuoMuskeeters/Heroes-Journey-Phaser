@@ -8,6 +8,13 @@ export function goblinMovement(scene: MainScene) {
 
   if (scene.goblin?.sprite.body instanceof Phaser.Physics.Arcade.Body) {
     const distanceofgoblin = scene.goblin.sprite.x - scene.player.sprite.x;
+    if (scene.goblin.mob.state.HP <= 0) {
+      scene.goblin.sprite.play(
+        `goblin-death-${scene.goblin.lastdirection}`,
+        true
+      );
+      scene.goblin.sprite.stopAfterRepeat(0);
+    }
     if (distanceofgoblin > 0) {
       scene.goblin.lastdirection = Direction.left;
     } else {

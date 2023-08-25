@@ -124,7 +124,7 @@ export default class MenuScene extends Phaser.Scene {
     const logoLeft = (window.innerWidth - this.logo.width) / 2;
     const logoTop = (window.innerHeight - this.logo.height) / 2;
     const brandLeft = window.innerWidth / 2;
-    const brandTop = window.innerHeight / 4;
+    const brandTop = window.innerHeight / 4;   
     const textLeft = window.innerWidth / 6;
     const textTop = window.innerHeight / 2;
 

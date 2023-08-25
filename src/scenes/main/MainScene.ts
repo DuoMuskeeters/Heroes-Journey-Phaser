@@ -14,11 +14,18 @@ import PhaserGame from "../../PhaserGame";
 import { JackPlayer } from "./Anims";
 import { JackMovement } from "./PlayerMovemet";
 import { Resize } from "./Resize";
-import { goblinHealtbar, healtbar, playerspbar } from "./Components";
+import {
+  goblinHealtbar,
+  goblinspbar,
+  healtbar,
+  playerspbar,
+} from "./Components";
 import { Backroundmovement } from "./GameMovement";
 import { goblinMovement } from "./GoblinMovement";
 import { threadId } from "worker_threads";
 import { UiScene } from "./uiScene";
+import { jackattack } from "./Jackattack";
+import { mobattack } from "./MobAttack";
 
 const jack = Warrior.from_Character(create_character("Ali"));
 
@@ -43,6 +50,7 @@ export default class MainScene extends Phaser.Scene {
     mob: create_giant(1),
     healtbar: {} as Phaser.GameObjects.Graphics,
     hptitle: {} as Phaser.GameObjects.Text,
+    spbar: {} as Phaser.GameObjects.Graphics,
   };
   backgrounds: {
     rationx: number;
@@ -73,9 +81,11 @@ export default class MainScene extends Phaser.Scene {
     this.player.healtbar = this.add.graphics();
     this.goblin.healtbar = this.add.graphics();
     this.player.spbar = this.add.graphics();
+    this.goblin.spbar = this.add.graphics();
     forestBackground(this);
     forestRoad(this);
     JackPlayer(this);
+    jackattack(this);
     this.player.sprite.anims.play("fall-right", true);
     this.player.sprite.anims.stopAfterRepeat(0);
     this.cameras.main.startFollow(
@@ -111,7 +121,6 @@ export default class MainScene extends Phaser.Scene {
       .setFontFamily('Georgia, "Goudy Bookletter 1911", Times, serif')
       .setFontStyle("bold");
     this.scene.launch("ui");
-
   }
 
   update(time: number, delta: number): void {
@@ -122,24 +131,15 @@ export default class MainScene extends Phaser.Scene {
     healtbar(this);
     playerspbar(this);
     goblinHealtbar(this);
-    this.player.hptitle.setPosition(this.player.sprite.x - 240, 10);
-    this.player.healtbar.setPosition(this.player.sprite.x - 240, 10);
-    this.player.spbar.setPosition(this.player.sprite.x - 240, 63);
-    this.goblin.hptitle.setPosition(
-      this.goblin.sprite.x - 70,
-      this.goblin.sprite.y - 72
-    );
-    this.goblin.healtbar.setPosition(
-      this.goblin.sprite.x - 50,
-      this.goblin.sprite.y - 40
-    );
+    goblinspbar(this);
     uiscene.statemenu.remaininpoints.setText(
       `Remaining Points:${this.player.user.state.stat_point}`
     );
     uiscene.statemenu.jacktext.setText(
-      `Name: Jack    Level: ${this.player.user.state.Level}\n
+      `Name: Jack    Level: ${this.player.user.state.Level}
+
 Job: Samurai  MAX HP: ${this.player.user.state.max_hp}`
     );
-    console.log(`${this.goblin.mob.state.SP}`)
+    console.log(`${this.goblin.mob.state.SP}`);
   }
 }

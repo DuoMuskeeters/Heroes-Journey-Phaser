@@ -6,9 +6,8 @@ import {
 import MenuScene from "../menu/MenuScene";
 import { goblinHealtbar, healtbar } from "./Components";
 import MainScene from "./MainScene";
+import { mobattack } from "./MobAttack";
 import { Direction, dirVelocity } from "./types";
-
-const jack = Warrior.from_Character(create_character("Ali"));
 
 export function JackPlayer(scene: MainScene | MenuScene) {
   scene.player.sprite = scene.physics.add
@@ -163,42 +162,6 @@ export function JackPlayer(scene: MainScene | MenuScene) {
     frameRate: 10,
     repeat: -1,
   });
-  scene.player.sprite.on(Phaser.Animations.Events.ANIMATION_STOP, () => {
-    if (
-      scene.player.sprite.anims.getName() ===
-        `attack1-${scene.player.lastdirection}` &&
-      scene.goblin.mob.state.HP >= 0 &&
-      Math.abs(scene.goblin.sprite.x - scene.player.sprite.x) <= 250
-    ) {
-      scene.goblin.mob.state.HP -=
-        (1 - scene.goblin.mob.state.Armor) * scene.player.user.state.ATK;
-    } else if (
-      scene.player.sprite.anims.getName() === "attack2-right" ||
-      scene.player.sprite.anims.getName() === "attack2-left"
-    ) {
-      const damage = scene.player.user.heavy_strike();
-      if (
-        scene.goblin.mob.state.HP >= 0 &&
-        Math.abs(scene.goblin.sprite.x - scene.player.sprite.x) <= 250
-      ) {
-        scene.goblin.mob.state.HP -=
-          (1 - scene.goblin.mob.state.Armor) * damage;
-      }
-    }
-    if (scene.goblin.mob.state.HP <= 0) {
-      scene.goblin.sprite.play(
-        `goblin-death-${scene.goblin.lastdirection}`,
-        true
-      );
-      scene.goblin.sprite.stopAfterRepeat(0);
-    }
-    if (
-      scene.player.sprite.anims.getName() ===
-      `death-${scene.player.lastdirection}`
-    ) {
-      scene.player.sprite.anims.destroy();
-    }
-  });
 }
 export function goblinMob(scene: MainScene) {
   scene.goblin.sprite = scene.physics.add
@@ -320,62 +283,6 @@ export function goblinMob(scene: MainScene) {
     repeat: -1,
   });
 
-  scene.goblin.sprite.on("animationstop", () => {
-    let goblinframe = 0;
-    if (scene.goblin.lastdirection == Direction.left) {
-      goblinframe = 0;
-    } else if (scene.goblin.lastdirection == Direction["right"]) {
-      goblinframe = 7;
-    }
-    if (
-      scene.goblin.sprite.anims.getName() ===
-        `goblin-attack-${scene.goblin.lastdirection}` &&
-      scene.player.user.state.HP >= 0 &&
-      Math.abs(scene.goblin.sprite.x - scene.player.sprite.x) <= 250 &&
-      Number(scene.goblin.sprite.anims.getFrameName()) == goblinframe
-    ) {
-      scene.player.user.state.HP -=
-        (1 - scene.player.user.state.Armor) * scene.goblin.mob.state.ATK;
-
-      if (scene.player.user.state.HP <= 0) {
-        scene.player.sprite.anims.play(
-          `death-${scene.player.lastdirection}`,
-          true
-        );
-        scene.player.sprite.anims.stopAfterRepeat(0);
-      }
-    }
-    if (
-      scene.goblin.sprite.anims.getName() ===
-        `goblin-bomb-${scene.goblin.lastdirection}` &&
-      scene.bomb.sprite.body instanceof Phaser.Physics.Arcade.Body
-    ) {
-      scene.bomb.sprite
-        .setVisible(true)
-        .setPosition(
-          scene.player.sprite.x - dirVelocity[scene.goblin.lastdirection] * 50,
-          scene.goblin.sprite.y - 100
-        )
-        .setScale(3);
-      scene.bomb.sprite.anims.play(
-        `goblin-attack-bomb-${scene.goblin.lastdirection}`,
-        true
-      );
-      scene.bomb.sprite.anims.stopAfterRepeat(0);
-      scene.bomb.sprite.body.setVelocityX(0);
-    }
-    if (
-      scene.goblin.sprite.anims.getName() ===
-      `goblin-death-${scene.goblin.lastdirection}`
-    ) {
-      scene.goblin.sprite.setVisible(false).setActive(false);
-      scene.goblin.healtbar.setVisible(false);
-      scene.goblin.hptitle.setVisible(false);
-      scene.player.user.exp += mob_exp_kazancı(scene.goblin.mob.state.Level);
-      scene.player.user.level_up();
-    }
-  });
-
   scene.bomb.sprite = scene.physics.add
     .sprite(
       window.innerWidth * 0.82,
@@ -406,30 +313,8 @@ export function goblinMob(scene: MainScene) {
     frameRate: 10,
     repeat: -1,
   });
-  scene.bomb.sprite.on("animationstop", () => {
-    if (scene.bomb.sprite.body instanceof Phaser.Physics.Arcade.Body) {
-      scene.bomb.sprite.body.setVelocityX(0);
-      scene.bomb.sprite.setVisible(false);
-    }
-  });
-  scene.bomb.sprite.on(Phaser.Animations.Events.ANIMATION_UPDATE, () => {
-    let getFrameName = 7;
-    if (scene.goblin.lastdirection === Direction.right) {
-      getFrameName = 13;
-    }
-    if (
-      Number(scene.bomb.sprite.anims.getFrameName()) === getFrameName &&
-      Math.abs(scene.player.sprite.x - scene.bomb.sprite.x) < 90
-    ) {
-      scene.player.sprite.anims.play(
-        `take-hit-${scene.player.lastdirection}`,
-        true
-      );
-      scene.player.sprite.anims.stopAfterRepeat(0);
-      scene.player.user.state.HP -= scene.goblin.mob.giant_skill();
-      console.log(2)
-    }
-  });
+
+  mobattack(scene);
 }
 export function shop(scene: MainScene | MenuScene) {
   scene.shopobject = scene.add
