@@ -232,7 +232,7 @@ export class Mob extends Canlı {
     this.state.ATKRATE = 1 + this.state.Agility * 0.008;
   }
   skill_barı() {
-    if (this.state.SP > this.state.max_sp) {
+    if (this.state.SP == this.state.max_sp) {
       this.state.SP -= this.state.max_sp;
       return true;
     } else {
@@ -242,9 +242,9 @@ export class Mob extends Canlı {
   mob_regeneration() {
     if (this.state.HP >= 0) {
       const HP_reg = (this.state.HP_reg * this.state.max_hp) / 100;
-      const SP_reg = (this.state.SP_reg * this.state.max_sp) / 50;
+      const SP_reg = (this.state.SP_reg * this.state.max_sp) / 200;
       this.state.HP = Math.min(this.state.max_hp, this.state.HP + HP_reg);
-      this.state.SP = this.state.SP + SP_reg;
+      this.state.SP = Math.min(this.state.max_sp,this.state.SP + SP_reg);
     }
   }
 }
@@ -255,11 +255,7 @@ export class Giant extends Mob {
   }
 
   giant_skill() {
-    this.state.HP = Math.min(this.state.max_hp, this.state.HP * 1.55);
-    this.state.HP_reg = this.state.HP_reg * 2;
-    console.log(
-      `${this.state.name} ın öfkesini hissediyorum.\n${this.state.name}ın can ve can yenılenmesı arttı.`
-    );
+    return  this.state.ATK * 3;
   }
 }
 export function create_giant(Level: number): Giant {
@@ -275,7 +271,7 @@ export function create_giant(Level: number): Giant {
   const max_hp = HP;
   const HP_reg = 5 + Constitution * 0.1;
   const Armor = Constitution / (Constitution + 100);
-  const max_sp = 150 - Intelligence * 0.5;
+  const max_sp = 105 - Intelligence * 0.5;
   const SP = 0;
   const SP_reg = 10 + Intelligence * 0.5;
   const m_resist = Constitution / (Constitution + 100);

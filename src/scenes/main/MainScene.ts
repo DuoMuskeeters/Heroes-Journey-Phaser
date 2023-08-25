@@ -140,5 +140,6 @@ export default class MainScene extends Phaser.Scene {
       `Name: Jack    Level: ${this.player.user.state.Level}\n
 Job: Samurai  MAX HP: ${this.player.user.state.max_hp}`
     );
+    console.log(`${this.goblin.mob.state.SP}`)
   }
 }

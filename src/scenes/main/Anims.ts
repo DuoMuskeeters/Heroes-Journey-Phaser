@@ -426,6 +426,8 @@ export function goblinMob(scene: MainScene) {
         true
       );
       scene.player.sprite.anims.stopAfterRepeat(0);
+      scene.player.user.state.HP -= scene.goblin.mob.giant_skill();
+      console.log(2)
     }
   });
 }
