@@ -21,7 +21,7 @@ export function goblinMovement(scene: MainScene) {
       scene.goblin.lastdirection = Direction.right;
     }
     if (scene.goblin.mob.skill_barı() && !scene.bomb.sprite.anims.isPlaying) {
-      scene.goblin.sprite.body.setVelocityX(0)
+      scene.goblin.sprite.body.setVelocityX(0);
       scene.goblin.sprite.anims.play(
         `goblin-bomb-${scene.goblin.lastdirection}`,
         true
@@ -34,7 +34,7 @@ export function goblinMovement(scene: MainScene) {
         `attack2-${scene.player.lastdirection}` &&
       Math.abs(distanceofgoblin) <= 400 &&
       scene.player.lastdirection !== scene.goblin.lastdirection &&
-      !keyW?.isDown 
+      !keyW?.isDown
     ) {
       scene.goblin.sprite.anims.play(
         `goblin-takehit-${scene.goblin.lastdirection}`,
@@ -50,7 +50,8 @@ export function goblinMovement(scene: MainScene) {
       scene.goblin.sprite.anims.getName() !==
         `goblin-attack-${scene.goblin.lastdirection}` &&
       scene.goblin.sprite.anims.getName() !==
-        `goblin-bomb-${scene.goblin.lastdirection}`
+        `goblin-bomb-${scene.goblin.lastdirection}` &&
+      scene.goblin.mob.state.HP > 0
     ) {
       scene.goblin.sprite.anims.play(
         `goblin-run-${scene.goblin.lastdirection}`,

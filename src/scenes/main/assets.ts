@@ -14,6 +14,8 @@ export function preloadAssets(scene: MainScene | MenuScene) {
   scene.load.image("player-avatar","jack-avatar.png");
   scene.load.image("line", "Division-line.png");
   scene.load.image("title-iron", "title-iron.png");
+  scene.load.image("mapbackground", "map_background.png");
+  scene.load.image("HeroesJourneyMap", "heroes-journey-map.jpg");
 
 
 

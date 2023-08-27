@@ -21,7 +21,7 @@ import {
   playerspbar,
 } from "./Components";
 import { Backroundmovement } from "./GameMovement";
-import { goblinMovement } from "./GoblinMovement";
+import { goblinMovement } from "./MobMovement";
 import { threadId } from "worker_threads";
 import { UiScene } from "./uiScene";
 import { jackattack } from "./Playerattack";
