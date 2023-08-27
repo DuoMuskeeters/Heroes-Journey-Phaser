@@ -4,18 +4,22 @@ import { Direction, dirVelocity } from "./types";
 
 export function mobattack(scene: MainScene) {
   scene.goblin.sprite.on("animationstop", () => {
-    let goblinframe = 0;
-    if (scene.goblin.lastdirection == Direction.left) {
-      goblinframe = 0;
-    } else if (scene.goblin.lastdirection == Direction["right"]) {
-      goblinframe = 7;
+    const distanceofBetweenY =
+      30 > Math.abs(scene.player.sprite.y - scene.goblin.sprite.y);
+    let goblinattackframe = 0;
+    let goblinbombframe = Number(scene.goblin.sprite.anims.getFrameName()) <= 5;
+    if (scene.goblin.lastdirection == Direction["right"]) {
+      goblinattackframe = 7;
+      goblinbombframe = Number(scene.goblin.sprite.anims.getFrameName()) >= 8
     }
+    
     if (
       scene.goblin.sprite.anims.getName() ===
         `goblin-attack-${scene.goblin.lastdirection}` &&
       scene.player.user.state.HP >= 0 &&
       Math.abs(scene.goblin.sprite.x - scene.player.sprite.x) <= 250 &&
-      Number(scene.goblin.sprite.anims.getFrameName()) == goblinframe
+      Number(scene.goblin.sprite.anims.getFrameName()) == goblinattackframe &&
+      distanceofBetweenY
     ) {
       scene.player.user.state.HP -=
         (1 - scene.player.user.state.Armor) * scene.goblin.mob.state.ATK;
@@ -23,7 +27,7 @@ export function mobattack(scene: MainScene) {
     if (
       scene.goblin.sprite.anims.getName() ===
         `goblin-bomb-${scene.goblin.lastdirection}` &&
-      scene.bomb.sprite.body instanceof Phaser.Physics.Arcade.Body
+      scene.bomb.sprite.body instanceof Phaser.Physics.Arcade.Body && goblinbombframe 
     ) {
       scene.bomb.sprite
         .setVisible(true)
@@ -59,13 +63,16 @@ export function mobattack(scene: MainScene) {
     }
   });
   scene.bomb.sprite.on(Phaser.Animations.Events.ANIMATION_UPDATE, () => {
+    const distanceofBetweenY =
+      280 > Math.abs(scene.player.sprite.y - scene.bomb.sprite.y);
     let getFrameName = 7;
     if (scene.goblin.lastdirection === Direction.right) {
       getFrameName = 13;
     }
     if (
       Number(scene.bomb.sprite.anims.getFrameName()) === getFrameName &&
-      Math.abs(scene.player.sprite.x - scene.bomb.sprite.x) < 90
+      Math.abs(scene.player.sprite.x - scene.bomb.sprite.x) < 90 &&
+      distanceofBetweenY
     ) {
       scene.player.sprite.anims.play(
         `take-hit-${scene.player.lastdirection}`,
@@ -75,5 +82,7 @@ export function mobattack(scene: MainScene) {
       scene.player.user.state.HP -= scene.goblin.mob.giant_skill();
       console.log(2);
     }
+    console.log(`player:${scene.player.sprite.y}
+    goblin:${scene.bomb.sprite.y}`);
   });
 }

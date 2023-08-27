@@ -24,7 +24,7 @@ import { Backroundmovement } from "./GameMovement";
 import { goblinMovement } from "./GoblinMovement";
 import { threadId } from "worker_threads";
 import { UiScene } from "./uiScene";
-import { jackattack } from "./Jackattack";
+import { jackattack } from "./Playerattack";
 import { mobattack } from "./MobAttack";
 
 const jack = Warrior.from_Character(create_character("Ali"));
@@ -140,6 +140,6 @@ export default class MainScene extends Phaser.Scene {
 
 Job: Samurai  MAX HP: ${this.player.user.state.max_hp}`
     );
-    console.log(`${this.goblin.mob.state.SP}`);
+    
   }
 }

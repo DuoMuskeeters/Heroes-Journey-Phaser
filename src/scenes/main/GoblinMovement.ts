@@ -34,9 +34,7 @@ export function goblinMovement(scene: MainScene) {
         `attack2-${scene.player.lastdirection}` &&
       Math.abs(distanceofgoblin) <= 400 &&
       scene.player.lastdirection !== scene.goblin.lastdirection &&
-      !keyW?.isDown &&
-      scene.goblin.sprite.anims.getName() !==
-        `goblin-bomb-${scene.goblin.lastdirection}`
+      !keyW?.isDown 
     ) {
       scene.goblin.sprite.anims.play(
         `goblin-takehit-${scene.goblin.lastdirection}`,
