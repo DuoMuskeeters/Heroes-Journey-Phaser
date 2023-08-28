@@ -11,14 +11,11 @@ export function preloadAssets(scene: MainScene | MenuScene) {
   scene.load.image("statebutton", "statebutton.png");
   scene.load.image("statepanel", "statepanel.png");
   scene.load.image("plus", "Plus.png");
-  scene.load.image("player-avatar","jack-avatar.png");
+  scene.load.image("player-avatar", "jack-avatar.png");
   scene.load.image("line", "Division-line.png");
   scene.load.image("title-iron", "title-iron.png");
   scene.load.image("mapbackground", "map_background.png");
   scene.load.image("HeroesJourneyMap", "heroes-journey-map.jpg");
-
-
-
 
   scene.load.spritesheet("ıdle-right", "Idle.png", {
     frameWidth: scene.player.framewidth,
@@ -28,14 +25,14 @@ export function preloadAssets(scene: MainScene | MenuScene) {
     frameWidth: scene.player.framewidth,
     frameHeight: scene.player.frameheight,
   });
-   scene.load.spritesheet("take-hit-right", "take-hit-right.png", {
-     frameWidth: scene.player.framewidth,
-     frameHeight: scene.player.frameheight,
-   });
-   scene.load.spritesheet("take-hit-left", "take-hit-left.png", {
-     frameWidth: scene.player.framewidth,
-     frameHeight: scene.player.frameheight,
-   });
+  scene.load.spritesheet("take-hit-right", "take-hit-right.png", {
+    frameWidth: scene.player.framewidth,
+    frameHeight: scene.player.frameheight,
+  });
+  scene.load.spritesheet("take-hit-left", "take-hit-left.png", {
+    frameWidth: scene.player.framewidth,
+    frameHeight: scene.player.frameheight,
+  });
   scene.load.spritesheet("right", "run-right.png", {
     frameWidth: scene.player.framewidth,
     frameHeight: scene.player.frameheight,
@@ -134,14 +131,22 @@ export function preloadAssets(scene: MainScene | MenuScene) {
     frameWidth: scene.goblin?.frameWidth,
     frameHeight: scene.goblin?.frameHeight,
   });
-  scene.load.spritesheet("goblin-attack-bomb-left", "goblin-attack-bomb-left.png", {
-    frameWidth: 100,
-    frameHeight: 95,
-  });
-   scene.load.spritesheet("goblin-attack-bomb-right", "goblin-attack-bomb-right.png", {
-     frameWidth: 100,
-     frameHeight: 95,
-   });
+  scene.load.spritesheet(
+    "goblin-attack-bomb-left",
+    "goblin-attack-bomb-left.png",
+    {
+      frameWidth: 100,
+      frameHeight: 95,
+    }
+  );
+  scene.load.spritesheet(
+    "goblin-attack-bomb-right",
+    "goblin-attack-bomb-right.png",
+    {
+      frameWidth: 100,
+      frameHeight: 95,
+    }
+  );
   scene.load.spritesheet("shopanim", "shop_anim.png", {
     frameWidth: 118,
     frameHeight: 128,
@@ -181,12 +186,25 @@ export function forestBackground(scene: MainScene | MenuScene) {
   });
 }
 export function forestRoad(scene: MainScene | MenuScene) {
-  scene.road?.push({
-    rationx: 0.3,
-    sprite: scene.add
-      .tileSprite(0, window.innerHeight * 0.628, 0, 0, "piskel")
-      .setOrigin(0)
-      .setScale(window.innerHeight * 0.0039)
-      .setScrollFactor(0),
-  });
+  if (scene instanceof MenuScene) {
+    scene.road?.push({
+      rationx: 0.52,
+      sprite: scene.add
+        .tileSprite(0, window.innerHeight * 0.628, 0, 0, "piskel")
+        .setOrigin(0)
+        .setScale(window.innerHeight * 0.0039)
+        .setScrollFactor(0),
+    });
+    console.log(1)
+  }else{
+    scene.road?.push({
+      rationx: 0.3,
+      sprite: scene.add
+        .tileSprite(0, window.innerHeight * 0.628, 0, 0, "piskel")
+        .setOrigin(0)
+        .setScale(window.innerHeight * 0.0039)
+        .setScrollFactor(0),
+    });
+    console.log(2)
+  }
 }

@@ -32,7 +32,7 @@ const jack = Warrior.from_Character(create_character("Ali"));
 export default class MainScene extends Phaser.Scene {
   player = {
     sprite: {} as Phaser.GameObjects.Sprite,
-    lastdirection: Direction.right,
+    lastdirection: Direction.right as Direction,
     framewidth: 200,
     frameheight: 166,
     standbytime: 5000,
@@ -46,7 +46,7 @@ export default class MainScene extends Phaser.Scene {
     sprite: {} as Phaser.GameObjects.Sprite,
     frameWidth: 150,
     frameHeight: 145,
-    lastdirection: Direction["left"],
+    lastdirection: Direction.left as Direction,
     mob: create_giant(1),
     healtbar: {} as Phaser.GameObjects.Graphics,
     hptitle: {} as Phaser.GameObjects.Text,
@@ -140,6 +140,5 @@ export default class MainScene extends Phaser.Scene {
 
 Job: Samurai  MAX HP: ${this.player.user.state.max_hp}`
     );
-    
   }
 }

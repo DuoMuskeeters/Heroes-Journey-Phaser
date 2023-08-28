@@ -6,13 +6,16 @@ export function mobattack(scene: MainScene) {
   scene.goblin.sprite.on("animationstop", () => {
     const distanceofBetweenY =
       30 > Math.abs(scene.player.sprite.y - scene.goblin.sprite.y);
+
     let goblinattackframe = 0;
-    let goblinbombframe = Number(scene.goblin.sprite.anims.getFrameName()) <= 5;
     if (scene.goblin.lastdirection == Direction["right"]) {
       goblinattackframe = 7;
-      goblinbombframe = Number(scene.goblin.sprite.anims.getFrameName()) >= 8
     }
     
+    let goblinbombframe =
+      Number(scene.goblin.sprite.anims.getFrameName()) <= 5 ||
+      Number(scene.goblin.sprite.anims.getFrameName()) >= 8;
+
     if (
       scene.goblin.sprite.anims.getName() ===
         `goblin-attack-${scene.goblin.lastdirection}` &&
@@ -25,10 +28,12 @@ export function mobattack(scene: MainScene) {
         (1 - scene.player.user.state.Armor) * scene.goblin.mob.state.ATK;
     }
     if (
-      scene.goblin.sprite.anims.getName() ===
-        `goblin-bomb-${scene.goblin.lastdirection}` &&
-      scene.bomb.sprite.body instanceof Phaser.Physics.Arcade.Body && goblinbombframe 
+      (scene.goblin.sprite.anims.getName() === `goblin-bomb-right` ||
+        scene.goblin.sprite.anims.getName() === `goblin-bomb-left`) &&
+      scene.bomb.sprite.body instanceof Phaser.Physics.Arcade.Body &&
+      goblinbombframe
     ) {
+      console.log(1);
       scene.bomb.sprite
         .setVisible(true)
         .setPosition(

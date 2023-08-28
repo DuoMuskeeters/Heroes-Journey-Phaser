@@ -1,8 +1,7 @@
 export const Direction = {
   left: "left",
   right: "right",
-  
-};
+} as const;
 export type Direction = (typeof Direction)[keyof typeof Direction];
 
 // export function getDirVelocity(direction: Direction) {

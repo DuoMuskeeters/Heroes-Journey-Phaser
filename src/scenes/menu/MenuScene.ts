@@ -28,8 +28,7 @@ export default class MenuScene extends Phaser.Scene {
     frameWidth: 150,
     frameHeight: 145,
     lastdirection: Direction["left"],
-    mob:goblin_1sv,
-    
+    mob: goblin_1sv,
   };
   backgrounds: {
     rationx: number;
@@ -40,9 +39,6 @@ export default class MenuScene extends Phaser.Scene {
     rationx: number;
     sprite: Phaser.GameObjects.TileSprite;
   }[] = [];
-  bomb: { sprite: Phaser.GameObjects.Sprite } = {
-    sprite: {} as Phaser.GameObjects.Sprite,
-  };
 
   shopobject?: Phaser.GameObjects.Sprite;
 
@@ -91,16 +87,25 @@ export default class MenuScene extends Phaser.Scene {
       .setFontFamily("Times, serif")
       .setFontStyle("italic");
 
-    this.logo.setOrigin(1, 1).setDepth(100);
-    this.brand.setDepth(100);
-    this.gameTitle.setDepth(100);
+    this.logo.setOrigin(1, 1).setDepth(100).setScrollFactor(0);
+    this.brand.setDepth(100).setScrollFactor(0);
+    this.gameTitle.setDepth(100).setScrollFactor(0);
 
     forestBackground(this);
     forestRoad(this);
     JackPlayer(this);
     Resize(this);
     shop(this);
+    
 
+    this.cameras.main.startFollow(
+      this.player.sprite,
+      false,
+      1,
+      0,
+      -1 * window.innerHeight * 0.5,
+      -1 * window.innerHeight * 0.5
+    );
     this?.player.sprite.anims.play("fall-right", true);
     this.player.sprite.anims.stopAfterRepeat(2);
     this.shopobject?.anims.play("shop", true);
@@ -110,21 +115,34 @@ export default class MenuScene extends Phaser.Scene {
       Resize(this);
     });
     this.player.sprite.on(Phaser.Animations.Events.ANIMATION_STOP, () => {
-      if (this.player.sprite.anims.getName() === "fall-right") {
-        this.player.sprite.anims.play("ıdle-right", true);
+      if (this.player.sprite.anims.getName() === "fall-right" && this.player.sprite.body instanceof Phaser.Physics.Arcade.Body) {
+        this.player.sprite.anims.play("right", true);
+        this.player.sprite.body.setVelocityX(300)
       }
     });
     this.Resize();
-    
   }
 
-  update(time: number, delta: number): void {}
+  update(time: number, delta: number): void {
+    if (this.backgrounds !== undefined) {
+      {
+        for (let i = 0; i < this.backgrounds?.length; i++) {
+          const bg = this.backgrounds[i];
+          bg.sprite.tilePositionX = this.cameras.main.scrollX * bg.rationx;
+        }
+      }
+    }
+    if (this.road !== undefined) {
+      this.road[0].sprite.tilePositionX =
+        this.cameras.main.scrollX * this.road[0].rationx;
+    }
+  }
 
   Resize() {
     const logoLeft = (window.innerWidth - this.logo.width) / 2;
     const logoTop = (window.innerHeight - this.logo.height) / 2;
     const brandLeft = window.innerWidth / 2;
-    const brandTop = window.innerHeight / 4;   
+    const brandTop = window.innerHeight / 4;
     const textLeft = window.innerWidth / 6;
     const textTop = window.innerHeight / 2;
 

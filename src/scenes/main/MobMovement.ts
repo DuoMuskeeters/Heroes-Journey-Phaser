@@ -50,7 +50,9 @@ export function goblinMovement(scene: MainScene) {
       scene.goblin.sprite.anims.getName() !==
         `goblin-attack-${scene.goblin.lastdirection}` &&
       scene.goblin.sprite.anims.getName() !==
-        `goblin-bomb-${scene.goblin.lastdirection}` &&
+        `goblin-bomb-right` &&
+      scene.goblin.sprite.anims.getName() !==
+        `goblin-bomb-left` &&
       scene.goblin.mob.state.HP > 0
     ) {
       scene.goblin.sprite.anims.play(
