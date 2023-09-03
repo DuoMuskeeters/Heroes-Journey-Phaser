@@ -14,7 +14,7 @@ export default class MenuScene extends Phaser.Scene {
   brand = {} as Phaser.GameObjects.Text;
   gameTitle = {} as Phaser.GameObjects.Text;
   player = {
-    sprite: {} as Phaser.Physics.Matter.Sprite,
+    sprite: {} as Phaser.GameObjects.Sprite,
     lastdirection: Direction.right,
     framewidth: 200,
     frameheight: 120,
@@ -92,6 +92,7 @@ export default class MenuScene extends Phaser.Scene {
     forestRoad(this);
     JackPlayer(this);
     Resize(this);
+    this.physics.world.setBounds(0, 0, Infinity, window.innerHeight - 100);
     shop(this);
 
     this.cameras.main.startFollow(
@@ -102,20 +103,21 @@ export default class MenuScene extends Phaser.Scene {
       -1 * window.innerHeight * 0.5,
       -1 * window.innerHeight * 0.5
     );
-    this?.player.sprite.anims.play("fall-right", true);
+    this?.player.sprite.anims.play("fall", true);
     this.player.sprite.anims.stopAfterRepeat(2);
     this.shopobject?.anims.play("shop", true);
 
     window.addEventListener("resize", () => {
       this.Resize();
       Resize(this);
+      this.physics.world.setBounds(0, 0, Infinity, window.innerHeight);
     });
     this.player.sprite.on(Phaser.Animations.Events.ANIMATION_STOP, () => {
       if (
-        this.player.sprite.anims.getName() === "fall-right" &&
+        this.player.sprite.anims.getName() === "fall" &&
         this.player.sprite.body instanceof Phaser.Physics.Arcade.Body
       ) {
-        this.player.sprite.anims.play("right", true);
+        this.player.sprite.anims.play("run", true);
         this.player.sprite.body.setVelocityX(300);
       }
     });

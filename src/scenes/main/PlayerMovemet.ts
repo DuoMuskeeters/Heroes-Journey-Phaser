@@ -70,10 +70,10 @@ export function JackMovement(scene: MainScene) {
   //       if (
   //         (keyD?.isDown || keyA?.isDown) &&
   //         !keyW?.isDown &&
-  //         scene.player.sprite.anims.getName() !== `attack2-right` &&
-  //         scene.player.sprite.anims.getName() !== `attack2-left` &&
+  //         scene.player.sprite.anims.getName() !== `attack2` &&
+  //         scene.player.sprite.anims.getName() !== `attack2` &&
   //         scene.player.sprite.anims.getName() !== `attack1-right` &&
-  //         scene.player.sprite.anims.getName() !== `attack1-left` &&
+  //         scene.player.sprite.anims.getName() !== `attack1` &&
   //         scene.player.sprite.anims.getName() !==
   //           `death-${scene.player.lastdirection}` &&
   //         scene.player.sprite.anims.getName() !==
@@ -132,7 +132,7 @@ export function JackMovement(scene: MainScene) {
   //         scene.goblin.healtbar.setVisible(true);
   //         scene.goblin.hptitle.setVisible(true);
   //         scene.goblin.spbar.setVisible(true);
-  //         scene.goblin?.sprite.anims.play("goblin-left", true);
+  //         scene.goblin?.sprite.anims.play("goblin", true);
   //       }
   //     }
   //     if (
@@ -177,13 +177,15 @@ export function JackMovement(scene: MainScene) {
     scene.player.sprite.setFlipX(false);
   }
   scene.player.sprite.anims.chain(undefined!);
-  scene.player?.sprite.anims.chain([`fall-right`]);
+  scene.player?.sprite.anims.chain([`fall`]);
   if (
     scene.rect.body instanceof Phaser.Physics.Arcade.Body &&
     !scene.rect.body.onFloor()
   ) {
     if (keyD?.isDown || keyA?.isDown) {
-      scene.rect.body.setVelocityX(dirVelocity[scene.player.lastdirection] * 250);
+      scene.rect.body.setVelocityX(
+        dirVelocity[scene.player.lastdirection] * 250
+      );
     } else {
       scene.rect.body.setVelocityX(0);
     }
@@ -192,39 +194,40 @@ export function JackMovement(scene: MainScene) {
     scene.rect.body instanceof Phaser.Physics.Arcade.Body &&
     scene.rect.body.onFloor()
   ) {
-
     if (
       keyW?.isDown &&
-      scene.player.sprite.anims.getName() !== `death-right` &&
-      scene.player.sprite.anims.getName() !== `take-hit-right`
+      scene.player.sprite.anims.getName() !== `death` &&
+      scene.player.sprite.anims.getName() !== `take-hit`
     ) {
-      scene.player.sprite.anims.startAnimation(`jump-right`);
+      scene.player.sprite.anims.startAnimation(`jump`);
       scene.player.sprite.anims.stopAfterRepeat(0);
       scene.rect.body.setVelocityY(-900);
     }
     if (
       (keyD?.isDown || keyA?.isDown) &&
       !keyW?.isDown &&
-      scene.player.sprite.anims.getName() !== `attack2-right` &&
-      scene.player.sprite.anims.getName() !== `attack1-right` &&
-      scene.player.sprite.anims.getName() !== `attack1-left` &&
-      scene.player.sprite.anims.getName() !== `death-right` &&
-      scene.player.sprite.anims.getName() !== `take-hit-right`
+      scene.player.sprite.anims.getName() !== `attack2` &&
+      scene.player.sprite.anims.getName() !== `attack1` &&
+      scene.player.sprite.anims.getName() !== `attack1` &&
+      scene.player.sprite.anims.getName() !== `death` &&
+      scene.player.sprite.anims.getName() !== `take-hit`
     ) {
-      scene.player?.sprite.anims.play("right", true);
+      scene.player?.sprite.anims.play("run", true);
 
-      scene.rect.body.setVelocityX(dirVelocity[scene.player.lastdirection] * 250);
+      scene.rect.body.setVelocityX(
+        dirVelocity[scene.player.lastdirection] * 250
+      );
     }
     if (
       keyQ?.isDown &&
       !keyD?.isDown &&
       !keyA?.isDown &&
-      scene.player.sprite.anims.getName() !== `attack1-right` &&
+      scene.player.sprite.anims.getName() !== `attack1` &&
       scene.player.ultimate &&
-      scene.player.sprite.anims.getName() !== `death-right` &&
-      scene.player.sprite.anims.getName() !== `take-hit-right`
+      scene.player.sprite.anims.getName() !== `death` &&
+      scene.player.sprite.anims.getName() !== `take-hit`
     ) {
-      scene.player.sprite.anims.play(`attack2-right`, true);
+      scene.player.sprite.anims.play(`attack2`, true);
       scene.player.sprite.anims.stopAfterRepeat(0);
       scene.rect.body.setVelocityX(0);
       scene.player.ultimate = false;
@@ -234,32 +237,30 @@ export function JackMovement(scene: MainScene) {
     }
     if (
       (mouse || keySpace?.isDown) &&
-      scene.player.sprite.anims.getName() !== `attack2-right` &&
-      scene.player.sprite.anims.getName() !== `death-right` &&
-      scene.player.sprite.anims.getName() !== `take-hit-right`
+      scene.player.sprite.anims.getName() !== `attack2` &&
+      scene.player.sprite.anims.getName() !== `death` &&
+      scene.player.sprite.anims.getName() !== `take-hit`
     ) {
-      scene.player?.sprite.anims.play(`attack1-right`, true);
+      scene.player?.sprite.anims.play(`attack1`, true);
       scene.player.sprite.anims.stopAfterRepeat(0);
       scene.rect.body.setVelocityX(0);
     }
     if (
-      scene.player.sprite.anims.getName() === `fall-right` ||
+      scene.player.sprite.anims.getName() === `fall` ||
       (!keyD?.isDown &&
         !keyW?.isDown &&
         !keyA?.isDown &&
         !keyB?.isDown &&
-        scene.player.sprite.anims.getName() !== `attack2-right` &&
-        scene.player.sprite.anims.getName() !== `attack1-right` &&
-        scene.player.sprite.anims.getName() !== `attack2-right` &&
-        scene.player.sprite.anims.getName() !== `death-right` &&
-        scene.player.sprite.anims.getName() !== `take-hit-right`)
+        scene.player.sprite.anims.getName() !== `attack2` &&
+        scene.player.sprite.anims.getName() !== `attack1` &&
+        scene.player.sprite.anims.getName() !== `attack2` &&
+        scene.player.sprite.anims.getName() !== `death` &&
+        scene.player.sprite.anims.getName() !== `take-hit`)
     ) {
       scene.rect.body.setVelocityX(0);
-      scene.player.sprite.anims.play(`ıdle-right`, true);
+      scene.player.sprite.anims.play(`ıdle`, true);
     }
   }
-
-  
 
   scene.player.sprite.x = scene.rect.x;
   scene.player.sprite.y = scene.rect.y - 85;

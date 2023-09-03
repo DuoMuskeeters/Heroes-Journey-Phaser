@@ -1,0 +1,76 @@
+{
+  "section1": {
+    "files": [
+      {
+        "url": "goblin-ıdle.png",
+        "type": "spritesheet",
+        "key": "goblin-ıdle",
+        "frameConfig": {
+          "frameWidth": 150,
+          "frameHeight": 145
+        }
+      },
+      {
+        "url": "goblin-bomb.png",
+        "type": "spritesheet",
+        "key": "goblin-bomb",
+        "frameConfig": {
+          "frameWidth": 150,
+          "frameHeight": 145
+        }
+      },
+      {
+        "url": "goblin-run.png",
+        "type": "spritesheet",
+        "key": "goblin-run",
+        "frameConfig": {
+          "frameWidth": 150,
+          "frameHeight": 145
+        }
+      },
+      {
+        "url": "goblin-attack.png",
+        "type": "spritesheet",
+        "key": "goblin-attack",
+        "frameConfig": {
+          "frameWidth": 150,
+          "frameHeight": 145
+        }
+      },
+      {
+        "url": "goblin-takehit.png",
+        "type": "spritesheet",
+        "key": "goblin-takehit",
+        "frameConfig": {
+          "frameWidth": 150,
+          "frameHeight": 145
+        }
+      },
+      {
+        "url": "goblin-death.png",
+        "type": "spritesheet",
+        "key": "goblin-death",
+        "frameConfig": {
+          "frameWidth": 150,
+          "frameHeight": 145
+        }
+      },
+      {
+        "url": "goblin-attack-bomb.png",
+        "type": "spritesheet",
+        "key": "goblin-attack-bomb",
+        "frameConfig": {
+          "frameWidth": 100,
+          "frameHeight": 95
+        }
+      }
+    ]
+  },
+  "meta": {
+    "generated": "1401380327373",
+    "app": "Phaser 3 Asset Packer",
+    "url": "https://phaser.io",
+    "version": "1.0",
+    "copyright": "Photon Storm Ltd. 2018"
+  }
+}

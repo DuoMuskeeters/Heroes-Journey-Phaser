@@ -1,0 +1,94 @@
+{
+  "section1": {
+    "files": [
+      {
+        "url": "Idle.png",
+        "type": "spritesheet",
+        "key": "ıdle",
+        "frameConfig": {
+          "frameWidth": 200,
+          "frameHeight": 120
+        }
+      },
+      {
+        "url": "Run.png",
+        "type": "spritesheet",
+        "key": "run",
+        "frameConfig": {
+          "frameWidth": 200,
+          "frameHeight": 120
+        }
+      },
+      {
+        "url": "hp-bar.png",
+        "type": "spritesheet",
+        "key": "hp-bar",
+        "frameConfig": {
+          "frameWidth": 48,
+          "frameHeight": 12
+        }
+      },
+      {
+        "url": "take-hit.png",
+        "type": "spritesheet",
+        "key": "take-hit",
+        "frameConfig": {
+          "frameWidth": 200,
+          "frameHeight": 120
+        }
+      },
+      {
+        "url": "Jump.png",
+        "type": "spritesheet",
+        "key": "jump",
+        "frameConfig": {
+          "frameWidth": 200,
+          "frameHeight": 120
+        }
+      },
+      {
+        "url": "Attack1.png",
+        "type": "spritesheet",
+        "key": "attack1",
+        "frameConfig": {
+          "frameWidth": 200,
+          "frameHeight": 120
+        }
+      },
+      {
+        "url": "Fall.png",
+        "type": "spritesheet",
+        "key": "fall",
+        "frameConfig": {
+          "frameWidth": 200,
+          "frameHeight": 120
+        }
+      },
+      {
+        "url": "Attack2.png",
+        "type": "spritesheet",
+        "key": "attack2",
+        "frameConfig": {
+          "frameWidth": 200,
+          "frameHeight": 120
+        }
+      },
+      {
+        "url": "Death.png",
+        "type": "spritesheet",
+        "key": "death",
+        "frameConfig": {
+          "frameWidth": 200,
+          "frameHeight": 120
+        }
+      }
+    ]
+  },
+  "meta": {
+    "generated": "1401380327373",
+    "app": "Phaser 3 Asset Packer",
+    "url": "https://phaser.io",
+    "version": "1.0",
+    "copyright": "Photon Storm Ltd. 2018"
+  }
+}

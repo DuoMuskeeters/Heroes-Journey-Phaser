@@ -11,7 +11,7 @@ import {
 import { forestBackground, forestRoad, preloadAssets } from "./assets";
 import HelloWorldScene from "../HelloWorldScene";
 import PhaserGame from "../../PhaserGame";
-import { JackPlayer } from "./Anims";
+import { JackPlayer, goblinMob } from "./Anims";
 import { JackMovement } from "./PlayerMovemet";
 import { Resize } from "./Resize";
 import {
@@ -36,7 +36,7 @@ export default class MainScene extends Phaser.Scene {
     sprite: {} as Phaser.GameObjects.Sprite,
     lastdirection: Direction.right as Direction,
     framewidth: 200,
-    frameheight: 166,
+    frameheight: 120,
     standbytime: 5000,
     ultimate: true,
     user: jack,
@@ -99,10 +99,18 @@ export default class MainScene extends Phaser.Scene {
       this.rect = this.physics.add
         .sprite(500, 0, "rect")
         .setVisible(false)
-        .setCollideWorldBounds(true)
-        // .setBounce(0.2);
+        .setCollideWorldBounds(true);
+      // .setBounce(0.2);
+      this.mobrect = this.physics.add
+        .sprite(1000, 0, "mobrect")
+        .setVisible(false)
+        .setCollideWorldBounds(true);
+      // .setBounce(0.2);
+
       this.rect.setDisplaySize(64, 125);
-      if (backroad) this.physics.add.collider(this.rect, backroad);
+      this.mobrect.setDisplaySize(64, 125);
+
+      if (backroad) this.physics.add.collider([this.rect, this.mobrect], backroad);
     }
 
     this.cameras.main.startFollow(this.rect, false, 1, 0, -150, -260);
@@ -123,15 +131,14 @@ export default class MainScene extends Phaser.Scene {
     this.player.spbar = this.add.graphics();
     this.goblin.spbar = this.add.graphics();
     forestBackground(this);
-    // forestRoad(this);
     JackPlayer(this);
+    goblinMob(this)
     jackattack(this);
     this.player.sprite.anims.play("fall-right", true);
     this.player.sprite.anims.stopAfterRepeat(0);
-   
+
     window.addEventListener("resize", () => {
-      this.physics.world.gravity.y = window.innerHeight * 8.5365;
-      this.physics.world.setBounds(0, 0, Infinity, window.innerHeight);
+      this.physics.world.gravity.y = 2000;
       Resize(this);
     });
     Resize(this);

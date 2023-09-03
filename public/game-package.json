@@ -27,6 +27,21 @@
         "key": "road-set"
       },
       {
+        "url": "background/background_layer_1.png",
+        "type": "image",
+        "key": "background1"
+      },
+      {
+        "url": "background/background_layer_2.png",
+        "type": "image",
+        "key": "background2"
+      },
+      {
+        "url": "background/background_layer_3.png",
+        "type": "image",
+        "key": "background3"
+      },
+      {
         "url": "decorations/fence_1.png",
         "type": "image",
         "key": "fence_1"
@@ -75,6 +90,54 @@
         "url": "decorations/lamp.png",
         "type": "image",
         "key": "lamp"
+      },
+      {
+        "url": "Road.png",
+        "type": "image",
+        "key": "piskel"
+      },
+      {
+        "url": "statepanel.png",
+        "type": "image",
+        "key": "statepanel"
+      },
+      {
+        "url": "Plus.png",
+        "type": "image",
+        "key": "plus"
+      },
+      {
+        "url": "jack-avatar.png",
+        "type": "image",
+        "key": "jack-avatar"
+      },
+      {
+        "url": "title-iron.png",
+        "type": "image",
+        "key": "title-iron"
+      },
+      {
+        "url": "Division-line.png",
+        "type": "image",
+        "key": "line"
+      },
+      {
+        "url": "shop_anim.png",
+        "type": "spritesheet",
+        "key": "shopanim",
+        "frameConfig": {
+          "frameWidth": 118,
+          "frameHeight": 128
+        }
+      },
+      {
+        "url": "loadspin.png",
+        "type": "spritesheet",
+        "key": "loadspin",
+        "frameConfig": {
+          "frameWidth": 52,
+          "frameHeight": 45
+        }
       }
     ]
   },
