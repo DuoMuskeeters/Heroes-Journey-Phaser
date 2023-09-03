@@ -49,10 +49,8 @@ export function goblinMovement(scene: MainScene) {
         `goblin-takehit-${scene.goblin.lastdirection}` &&
       scene.goblin.sprite.anims.getName() !==
         `goblin-attack-${scene.goblin.lastdirection}` &&
-      scene.goblin.sprite.anims.getName() !==
-        `goblin-bomb-right` &&
-      scene.goblin.sprite.anims.getName() !==
-        `goblin-bomb-left` &&
+      scene.goblin.sprite.anims.getName() !== `goblin-bomb-right` &&
+      scene.goblin.sprite.anims.getName() !== `goblin-bomb-left` &&
       scene.goblin.mob.state.HP > 0
     ) {
       scene.goblin.sprite.anims.play(
@@ -82,7 +80,11 @@ export function goblinMovement(scene: MainScene) {
 
       scene.goblin.sprite.anims.stopAfterRepeat(0);
       scene.goblin.sprite.body.setVelocityX(0);
-    } else if (!scene.goblin.sprite.anims.isPlaying) {
+    } else if (
+      !scene.goblin.sprite.anims.isPlaying &&
+      scene.goblin.sprite.anims.getName() !==
+        `goblin-death-${scene.goblin.lastdirection}`
+    ) {
       scene.goblin.sprite.body.setVelocityX(0);
       scene.goblin.sprite.anims.play(
         `goblin-${scene.goblin.lastdirection}`,

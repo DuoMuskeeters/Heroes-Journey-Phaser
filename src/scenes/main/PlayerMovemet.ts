@@ -23,8 +23,8 @@ export function JackMovement(scene: MainScene) {
   const keyD = scene.input.keyboard?.addKey("D");
   const keyQ = scene.input.keyboard?.addKey("Q");
   const keyB = scene.input.keyboard?.addKey("B");
-
   const mouse = scene.input.activePointer.leftButtonDown();
+
   if (keyA?.isDown) {
     scene.player.lastdirection = Direction.left;
   }
@@ -35,13 +35,13 @@ export function JackMovement(scene: MainScene) {
     scene.player.sprite.anims.play(`death-${scene.player.lastdirection}`, true);
     scene.player.sprite.anims.stopAfterRepeat(0);
   }
-  if (scene.player.sprite.body instanceof Phaser.Physics.Arcade.Body) {
+  if (scene.player.sprite.body instanceof Phaser.Physics.Matter.Sprite) {
     scene.player.sprite.anims.chain(undefined!);
     scene.player?.sprite.anims.chain([`fall-${scene.player.lastdirection}`]);
 
     if (
-      Math.floor(scene.player.sprite.y) ===
-      Math.floor(window.innerHeight * 0.72333333333333333333333)
+      Math.floor(scene.player.sprite.y) /*===
+      Math.floor(window.innerHeight * 0.72333333333333333333333)*/
     ) {
       if (UiScene.statemenu.isOpen) {
         if (
@@ -128,7 +128,7 @@ export function JackMovement(scene: MainScene) {
         if (keyB?.isDown && !scene.goblin?.sprite.active) {
           scene.goblin.mob = create_giant(scene.player.user.state.Level);
           goblinMob(scene);
-          
+
           scene.goblin.healtbar.setVisible(true);
           scene.goblin.hptitle.setVisible(true);
           scene.goblin.spbar.setVisible(true);

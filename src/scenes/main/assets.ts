@@ -1,8 +1,8 @@
 import Phaser from "phaser";
 import MainScene from "./MainScene";
 import MenuScene from "../menu/MenuScene";
+
 export function preloadAssets(scene: MainScene | MenuScene) {
-  console.log(1);
   scene.load.image("background1", "background/background_layer_1.png");
   scene.load.image("background2", "background/background_layer_2.png");
   scene.load.image("background3", "background/background_layer_3.png");
@@ -11,12 +11,17 @@ export function preloadAssets(scene: MainScene | MenuScene) {
   scene.load.image("statebutton", "statebutton.png");
   scene.load.image("statepanel", "statepanel.png");
   scene.load.image("plus", "Plus.png");
-  scene.load.image("player-avatar", "jack-avatar.png");
+  scene.load.image("jack-avatar", "jack-avatar.png");
   scene.load.image("line", "Division-line.png");
   scene.load.image("title-iron", "title-iron.png");
   scene.load.image("mapbackground", "map_background.png");
   scene.load.image("HeroesJourneyMap", "heroes-journey-map.jpg");
+  scene.load.pack("mainscene", "package.json");
 
+  scene.load.spritesheet("hp-bar", "hp-bar.png", {
+    frameWidth: 48,
+    frameHeight: 12,
+  });
   scene.load.spritesheet("ıdle-right", "Idle.png", {
     frameWidth: scene.player.framewidth,
     frameHeight: scene.player.frameheight,
@@ -186,25 +191,14 @@ export function forestBackground(scene: MainScene | MenuScene) {
   });
 }
 export function forestRoad(scene: MainScene | MenuScene) {
-  if (scene instanceof MenuScene) {
-    scene.road?.push({
-      rationx: 0.52,
-      sprite: scene.add
-        .tileSprite(0, window.innerHeight * 0.628, 0, 0, "piskel")
-        .setOrigin(0)
-        .setScale(window.innerHeight * 0.0039)
-        .setScrollFactor(0),
-    });
-    console.log(1)
-  }else{
-    scene.road?.push({
-      rationx: 0.3,
-      sprite: scene.add
-        .tileSprite(0, window.innerHeight * 0.628, 0, 0, "piskel")
-        .setOrigin(0)
-        .setScale(window.innerHeight * 0.0039)
-        .setScrollFactor(0),
-    });
-    console.log(2)
-  }
+  let rationx = scene instanceof MainScene ? 0.3 : 0.53;
+
+  scene.road?.push({
+    rationx: rationx,
+    sprite: scene.add
+      .tileSprite(0, window.innerHeight * 0.628, 0, 0, "piskel")
+      .setOrigin(0)
+      .setScale(window.innerHeight * 0.0039)
+      .setScrollFactor(0),
+  });
 }

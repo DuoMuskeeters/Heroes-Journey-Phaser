@@ -1,0 +1,23 @@
+{
+  "section1": {
+    "files": [
+      {
+        "url": "frame-tiled.json",
+        "type": "tilemapTiledJSON",
+        "key": "frame-tiled"
+      },
+      {
+        "url": "frame-set.png",
+        "type": "image",
+        "key": "frame-set"
+      }
+    ]
+  },
+  "meta": {
+    "generated": "1401380327373",
+    "app": "Phaser 3 Asset Packer",
+    "url": "https://phaser.io",
+    "version": "1.0",
+    "copyright": "Photon Storm Ltd. 2018"
+  }
+}

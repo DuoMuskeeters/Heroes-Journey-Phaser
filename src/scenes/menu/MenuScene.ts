@@ -14,14 +14,11 @@ export default class MenuScene extends Phaser.Scene {
   brand = {} as Phaser.GameObjects.Text;
   gameTitle = {} as Phaser.GameObjects.Text;
   player = {
-    sprite: {} as Phaser.GameObjects.Sprite,
+    sprite: {} as Phaser.Physics.Matter.Sprite,
     lastdirection: Direction.right,
     framewidth: 200,
-    frameheight: 166,
-    standbytime: 3000,
-    ultimate: true,
+    frameheight: 120,
     user: jack,
-    healtbar: {} as Phaser.GameObjects.Graphics,
   };
   goblin = {
     sprite: {} as Phaser.GameObjects.Sprite,
@@ -96,7 +93,6 @@ export default class MenuScene extends Phaser.Scene {
     JackPlayer(this);
     Resize(this);
     shop(this);
-    
 
     this.cameras.main.startFollow(
       this.player.sprite,
@@ -115,9 +111,12 @@ export default class MenuScene extends Phaser.Scene {
       Resize(this);
     });
     this.player.sprite.on(Phaser.Animations.Events.ANIMATION_STOP, () => {
-      if (this.player.sprite.anims.getName() === "fall-right" && this.player.sprite.body instanceof Phaser.Physics.Arcade.Body) {
+      if (
+        this.player.sprite.anims.getName() === "fall-right" &&
+        this.player.sprite.body instanceof Phaser.Physics.Arcade.Body
+      ) {
         this.player.sprite.anims.play("right", true);
-        this.player.sprite.body.setVelocityX(300)
+        this.player.sprite.body.setVelocityX(300);
       }
     });
     this.Resize();

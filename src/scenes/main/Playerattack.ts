@@ -54,7 +54,7 @@ export function jackattack(scene: MainScene) {
       scene.player.sprite.anims.getName() ===
       `death-${scene.player.lastdirection}`
     ) {
-      scene.player.sprite.anims.destroy();
+      // scene.player.sprite.anims.destroy();
     }
   });
 }

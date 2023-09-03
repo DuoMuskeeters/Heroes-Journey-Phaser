@@ -38,7 +38,7 @@ export default class MainScene extends Phaser.Scene {
     standbytime: 5000,
     ultimate: true,
     user: jack,
-    healtbar: {} as Phaser.GameObjects.Graphics,
+    healtbar: {} as Phaser.GameObjects.Sprite,
     spbar: {} as Phaser.GameObjects.Graphics,
     hptitle: {} as Phaser.GameObjects.Text,
   };
@@ -65,20 +65,32 @@ export default class MainScene extends Phaser.Scene {
     sprite: {} as Phaser.GameObjects.Sprite,
   };
   shopobject?: Phaser.GameObjects.Sprite;
+  tilemap!: Phaser.Tilemaps.Tilemap;
   constructor() {
     super("mainscene");
   }
   preload() {}
 
   create() {
-    //user icin jack vermek zorunda kaldik.
+    
+    this.tilemap = this.make.tilemap({ key: "frame-tiled" });
+
+    const tiles = this.tilemap.addTilesetImage("player-frame", "frame-set");
+    if (tiles) this.tilemap.createLayer("frame-layer", tiles);
+    
     setInterval(() => {
       this.player.user.regeneration();
     }, 1000);
     setInterval(() => {
       this.goblin.mob.mob_regeneration();
     }, 1000);
-    this.player.healtbar = this.add.graphics();
+    this.player.healtbar = this.add.sprite(100, 300, "hp-bar").setScale(3);
+    this.add
+      .image(0, 0, "jack-avatar")
+      .setOrigin(0)
+      .setScale(4)
+      .setPosition(-300, 0)
+      .setCrop(0, 0, 150, 21);
     this.goblin.healtbar = this.add.graphics();
     this.player.spbar = this.add.graphics();
     this.goblin.spbar = this.add.graphics();

@@ -11,7 +11,7 @@ export function mobattack(scene: MainScene) {
     if (scene.goblin.lastdirection == Direction["right"]) {
       goblinattackframe = 7;
     }
-    
+
     let goblinbombframe =
       Number(scene.goblin.sprite.anims.getFrameName()) <= 5 ||
       Number(scene.goblin.sprite.anims.getFrameName()) >= 8;
@@ -85,9 +85,6 @@ export function mobattack(scene: MainScene) {
       );
       scene.player.sprite.anims.stopAfterRepeat(0);
       scene.player.user.state.HP -= scene.goblin.mob.giant_skill();
-      console.log(2);
     }
-    console.log(`player:${scene.player.sprite.y}
-    goblin:${scene.bomb.sprite.y}`);
   });
 }

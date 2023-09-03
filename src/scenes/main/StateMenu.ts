@@ -34,7 +34,7 @@ export default class statemenu {
       .setScale(0.55, 1)
       .setTint(0x8b4513);
     const playeravatar = scene.add
-      .image(-320, -370, "player-avatar")
+      .image(-320, -370, "jack-avatar")
       .setScale(2);
     this.jacktext = scene.add.text(
       -270,

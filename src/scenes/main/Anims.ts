@@ -12,7 +12,7 @@ import { Direction, dirVelocity } from "./types";
 export function JackPlayer(scene: MainScene | MenuScene) {
   scene.player.sprite = scene.physics.add
     .sprite(100, 0, "right")
-    .setCollideWorldBounds(true)
+    // .setCollideWorldBounds(true)
     .setScale(window.innerHeight / 300)
     .setBounce(0.2)
     .setDepth(300);
@@ -25,6 +25,7 @@ export function JackPlayer(scene: MainScene | MenuScene) {
     frameRate: 10,
     repeat: -1,
   });
+
   scene.anims.create({
     key: "ıdle-left",
     frames: scene.anims.generateFrameNumbers("ıdle-left", {
