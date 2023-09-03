@@ -16,14 +16,10 @@ export default class MenuScene extends Phaser.Scene {
   player = {
     sprite: {} as Phaser.GameObjects.Sprite,
     lastdirection: Direction.right,
-    framewidth: 200,
-    frameheight: 120,
     user: jack,
   };
   goblin = {
     sprite: {} as Phaser.GameObjects.Sprite,
-    frameWidth: 150,
-    frameHeight: 145,
     lastdirection: Direction["left"],
     mob: goblin_1sv,
   };
@@ -49,7 +45,7 @@ export default class MenuScene extends Phaser.Scene {
     });
     this.load.image("logo", "DuoMuskeeters.jpg");
 
-    preloadAssets(this);
+    
   }
 
   create() {

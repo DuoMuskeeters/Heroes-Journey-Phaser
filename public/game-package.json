@@ -135,8 +135,8 @@
         "type": "spritesheet",
         "key": "loadspin",
         "frameConfig": {
-          "frameWidth": 52,
-          "frameHeight": 45
+          "frameWidth": 48,
+          "frameHeight": 44
         }
       }
     ]

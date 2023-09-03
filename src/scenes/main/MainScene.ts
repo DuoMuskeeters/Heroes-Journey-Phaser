@@ -35,8 +35,7 @@ export default class MainScene extends Phaser.Scene {
   player = {
     sprite: {} as Phaser.GameObjects.Sprite,
     lastdirection: Direction.right as Direction,
-    framewidth: 200,
-    frameheight: 120,
+
     standbytime: 5000,
     ultimate: true,
     user: jack,
@@ -46,8 +45,7 @@ export default class MainScene extends Phaser.Scene {
   };
   goblin = {
     sprite: {} as Phaser.GameObjects.Sprite,
-    frameWidth: 150,
-    frameHeight: 145,
+
     lastdirection: Direction.left as Direction,
     mob: create_giant(1),
     healtbar: {} as Phaser.GameObjects.Graphics,
@@ -110,7 +108,8 @@ export default class MainScene extends Phaser.Scene {
       this.rect.setDisplaySize(64, 125);
       this.mobrect.setDisplaySize(64, 125);
 
-      if (backroad) this.physics.add.collider([this.rect, this.mobrect], backroad);
+      if (backroad)
+        this.physics.add.collider([this.rect, this.mobrect], backroad);
     }
 
     this.cameras.main.startFollow(this.rect, false, 1, 0, -150, -260);
@@ -132,7 +131,7 @@ export default class MainScene extends Phaser.Scene {
     this.goblin.spbar = this.add.graphics();
     forestBackground(this);
     JackPlayer(this);
-    goblinMob(this)
+    goblinMob(this);
     jackattack(this);
     this.player.sprite.anims.play("fall-right", true);
     this.player.sprite.anims.stopAfterRepeat(0);
