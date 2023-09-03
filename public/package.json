@@ -10,6 +10,71 @@
         "url": "frame-set.png",
         "type": "image",
         "key": "frame-set"
+      },
+      {
+        "url": "road.json",
+        "type": "tilemapTiledJSON",
+        "key": "roadfile"
+      },
+      {
+        "url": "road-set.png",
+        "type": "image",
+        "key": "road-set"
+      },
+      {
+        "url": "road-set.png",
+        "type": "image",
+        "key": "road-set"
+      },
+      {
+        "url": "decorations/fence_1.png",
+        "type": "image",
+        "key": "fence_1"
+      },
+      {
+        "url": "decorations/fence_2.png",
+        "type": "image",
+        "key": "fence_2"
+      },
+      {
+        "url": "decorations/grass_1.png",
+        "type": "image",
+        "key": "grass_1"
+      },
+      {
+        "url": "decorations/grass_2.png",
+        "type": "image",
+        "key": "grass_2"
+      },
+      {
+        "url": "decorations/grass_3.png",
+        "type": "image",
+        "key": "grass_3"
+      },
+      {
+        "url": "decorations/sign.png",
+        "type": "image",
+        "key": "sign"
+      },
+      {
+        "url": "decorations/rock_1.png",
+        "type": "image",
+        "key": "rock_1"
+      },
+      {
+        "url": "decorations/rock_2.png",
+        "type": "image",
+        "key": "rock_2"
+      },
+      {
+        "url": "decorations/rock_3.png",
+        "type": "image",
+        "key": "rock_3"
+      },
+      {
+        "url": "decorations/lamp.png",
+        "type": "image",
+        "key": "lamp"
       }
     ]
   },

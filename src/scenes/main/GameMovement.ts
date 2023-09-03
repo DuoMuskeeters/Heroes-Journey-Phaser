@@ -9,8 +9,8 @@ export function Backroundmovement(scene: MainScene) {
       }
     }
   }
-  if (scene.road !== undefined) {
-    scene.road[0].sprite.tilePositionX =
-      scene.cameras.main.scrollX * scene.road[0].rationx;
-  }
+  // if (scene.road !== undefined) {
+  //   scene.road[0].sprite.tilePositionX =
+  //     scene.cameras.main.scrollX * scene.road[0].rationx;
+  // }
 }

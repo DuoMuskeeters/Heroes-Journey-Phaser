@@ -21,14 +21,14 @@ export function Resize(scene: MainScene|MenuScene) {
   for (let i = 0; i < 3; i++) {
     scene.backgrounds[i].sprite.setDisplaySize(
       window.innerWidth,
-      window.innerHeight * 0.849
+      window.innerHeight
     );
   }
-  if (scene.road !== undefined) {
-    scene.road[0].sprite = scene.road[0].sprite
-      .setOrigin(0)
-      .setScale(window.innerWidth * 0.001388, window.innerHeight * 0.00353658)
-      .setPosition(0, window.innerHeight * 0.6560975);
-  }
-  scene.physics.world.setBounds(0, 0, Infinity, window.innerHeight);
+  // if (scene.road !== undefined) {
+  //   scene.road[0].sprite = scene.road[0].sprite
+  //     .setOrigin(0)
+  //     .setScale(window.innerWidth * 0.001388, window.innerHeight * 0.00353658)
+  //     .setPosition(0, window.innerHeight * 0.6560975);
+  // }
+   scene.physics.world.setBounds(0, 0, 2000, window.innerHeight);
 }

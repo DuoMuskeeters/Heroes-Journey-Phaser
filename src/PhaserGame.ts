@@ -18,10 +18,12 @@ const config: Phaser.Types.Core.GameConfig = {
   physics: {
     default: "arcade",
     arcade: {
-      gravity: { y: window.innerHeight * 8.5365 },
+      debug:true,
+      gravity: { y:2000  },
     },
   },
   scene: [MenuScene, MainScene, UiScene],
 };
 //npm install phaser3-nineslice --save @ferhat and @ilker
 export default new Phaser.Game(config);
+//window.innerHeight * 8.5365

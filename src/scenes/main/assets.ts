@@ -163,7 +163,7 @@ export function forestBackground(scene: MainScene | MenuScene) {
     rationx: 0.05,
     sprite: scene.add
       .tileSprite(0, 0, 0, 0, "background1")
-      .setDisplaySize(window.innerWidth, window.innerHeight * 0.849)
+      .setDisplaySize(window.innerWidth, window.innerHeight )
       .setOrigin(0, 0)
       .setDepth(-3)
       .setScrollFactor(0),
@@ -176,7 +176,7 @@ export function forestBackground(scene: MainScene | MenuScene) {
       .setOrigin(0, 0)
       .setDepth(-2)
 
-      .setDisplaySize(window.innerWidth, window.innerHeight * 0.849)
+      .setDisplaySize(window.innerWidth, window.innerHeight )
       .setScrollFactor(0),
   });
 
@@ -186,11 +186,11 @@ export function forestBackground(scene: MainScene | MenuScene) {
       .tileSprite(0, 0, 0, 0, "background3")
       .setOrigin(0, 0)
       .setDepth(-1)
-      .setDisplaySize(window.innerWidth, window.innerHeight * 0.849)
+      .setDisplaySize(window.innerWidth, window.innerHeight )
       .setScrollFactor(0),
   });
 }
-export function forestRoad(scene: MainScene | MenuScene) {
+export function forestRoad(scene: MenuScene) {
   let rationx = scene instanceof MainScene ? 0.3 : 0.53;
 
   scene.road?.push({

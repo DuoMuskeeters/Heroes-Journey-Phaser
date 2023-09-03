@@ -30,6 +30,8 @@ import { mobattack } from "./MobAttack";
 const jack = Warrior.from_Character(create_character("Ali"));
 
 export default class MainScene extends Phaser.Scene {
+  rect!: Phaser.GameObjects.Sprite;
+  mobrect!: Phaser.GameObjects.Sprite;
   player = {
     sprite: {} as Phaser.GameObjects.Sprite,
     lastdirection: Direction.right as Direction,
@@ -72,12 +74,38 @@ export default class MainScene extends Phaser.Scene {
   preload() {}
 
   create() {
-    
-    this.tilemap = this.make.tilemap({ key: "frame-tiled" });
+    this.tilemap = this.make.tilemap({ key: "roadfile" });
 
-    const tiles = this.tilemap.addTilesetImage("player-frame", "frame-set");
-    if (tiles) this.tilemap.createLayer("frame-layer", tiles);
-    
+    const tiles = this.tilemap.addTilesetImage("road-set", "road-set");
+    const lamp = this.tilemap.addTilesetImage("lamp", "lamp");
+    const fence = this.tilemap.addTilesetImage("fence_2", "fence_2");
+
+    const rock3 = this.tilemap.addTilesetImage("rock_3", "rock_3");
+    const rock2 = this.tilemap.addTilesetImage("rock_2", "rock_2");
+    const sign = this.tilemap.addTilesetImage("sign", "sign");
+
+    if (tiles && lamp && fence && rock2 && rock3 && sign) {
+      this.tilemap.createLayer("backroad", tiles)?.setScale(2.07);
+      const backroad = this.tilemap
+        .createLayer("frontroad", tiles)
+        ?.setScale(2.07);
+      this.tilemap.createLayer("lamp", lamp, 0, -50)?.setScale(2.07);
+      this.tilemap.createLayer("fence", fence, 0, 25)?.setScale(2.07);
+      this.tilemap.createLayer("rock_3", rock3, 0, 30)?.setScale(2.07);
+      this.tilemap.createLayer("rock_2", rock2, 0, 40)?.setScale(2.07);
+      this.tilemap.createLayer("sign", sign)?.setScale(2.07);
+      // backroad.setCollisionByExclusion([-1], true);
+      backroad?.setCollisionByProperty({ collides: true });
+      this.rect = this.physics.add
+        .sprite(500, 0, "rect")
+        .setVisible(false)
+        .setCollideWorldBounds(true)
+        // .setBounce(0.2);
+      this.rect.setDisplaySize(64, 125);
+      if (backroad) this.physics.add.collider(this.rect, backroad);
+    }
+
+    this.cameras.main.startFollow(this.rect, false, 1, 0, -150, -260);
     setInterval(() => {
       this.player.user.regeneration();
     }, 1000);
@@ -95,19 +123,12 @@ export default class MainScene extends Phaser.Scene {
     this.player.spbar = this.add.graphics();
     this.goblin.spbar = this.add.graphics();
     forestBackground(this);
-    forestRoad(this);
+    // forestRoad(this);
     JackPlayer(this);
     jackattack(this);
     this.player.sprite.anims.play("fall-right", true);
     this.player.sprite.anims.stopAfterRepeat(0);
-    this.cameras.main.startFollow(
-      this.player.sprite,
-      false,
-      1,
-      0,
-      -1 * window.innerHeight * 0.1,
-      -1 * window.innerHeight * 0.5
-    );
+   
     window.addEventListener("resize", () => {
       this.physics.world.gravity.y = window.innerHeight * 8.5365;
       this.physics.world.setBounds(0, 0, Infinity, window.innerHeight);
