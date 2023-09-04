@@ -9,7 +9,7 @@ export default class LoadScene extends Phaser.Scene {
   arrayturn = 0;
 
   preload() {
-    // preloadAssets(this);
+    preloadAssets(this);
   }
   create() {
     this.loadspin = this.add

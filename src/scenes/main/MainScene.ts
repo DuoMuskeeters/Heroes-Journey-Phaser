@@ -72,7 +72,6 @@ export default class MainScene extends Phaser.Scene {
     super("mainscene");
   }
   preload() {
-    preloadAssets(this);
   }
 
   create() {

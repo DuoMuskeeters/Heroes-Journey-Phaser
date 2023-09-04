@@ -24,7 +24,7 @@ const config: Phaser.Types.Core.GameConfig = {
       gravity: { y: (2000 / 724) * window.innerHeight },
     },
   },
-  scene: [MainScene, UiScene],
+  scene: [LoadScene,MenuScene,MainScene, UiScene],
 };
 //npm install phaser3-nineslice --save @ferhat and @ilker
 export default new Phaser.Game(config);
