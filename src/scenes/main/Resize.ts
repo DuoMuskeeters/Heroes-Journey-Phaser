@@ -29,5 +29,10 @@ export function Resize(scene: MainScene | MenuScene) {
   //     .setScale(window.innerWidth * 0.001388, window.innerHeight * 0.00353658)
   //     .setPosition(0, window.innerHeight * 0.6560975);
   // }
-  scene.physics.world.setBounds(0, 0, 3000, window.innerHeight);
+  scene.physics.world.setBounds(
+    0,
+    0,
+    (6900 / 1440) * window.innerWidth,
+    window.innerHeight
+  );
 }

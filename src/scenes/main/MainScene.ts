@@ -158,8 +158,8 @@ export default class MainScene extends Phaser.Scene {
       this.rect = this.physics.add
         .sprite(500, 0, "rect")
         .setVisible(false)
-        .setCollideWorldBounds(true);
-      // .setBounce(0.2);
+        .setCollideWorldBounds(true)
+        .setBounce(0.1);
       this.attackrect = this.add.rectangle(
         this.rect.x,
         this.rect.y,
@@ -170,8 +170,8 @@ export default class MainScene extends Phaser.Scene {
       this.mobrect = this.physics.add
         .sprite(1000, 0, "mobrect")
         .setVisible(false)
-        .setCollideWorldBounds(true);
-      // .setBounce(0.2);
+        .setCollideWorldBounds(true)
+        .setBounce(0.1);
       this.mobattackrect = this.add.rectangle(
         this.mobrect.x,
         this.mobrect.y,
@@ -276,10 +276,12 @@ export default class MainScene extends Phaser.Scene {
 Job: Samurai  MAX HP: ${this.player.user.state.max_hp}`
     );
     this.attackrect.x =
-      this.rect.x + dirVelocity[this.player.lastdirection] *( 80/899)*window.innerWidth;
+      this.rect.x +
+      dirVelocity[this.player.lastdirection] * (80 / 899) * window.innerWidth;
     this.attackrect.y = this.rect.y;
     this.mobattackrect.x =
-      this.mobrect.x + dirVelocity[this.goblin.lastdirection] * (48/899)*window.innerWidth;
+      this.mobrect.x +
+      dirVelocity[this.goblin.lastdirection] * (48 / 899) * window.innerWidth;
     this.mobattackrect.y = this.mobrect.y;
   }
 }
