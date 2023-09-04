@@ -4,36 +4,29 @@ import { Direction, dirVelocity } from "./types";
 
 export function mobattack(scene: MainScene) {
   scene.goblin.sprite.on("animationstop", () => {
-    const distanceofBetweenY =
-      30 > Math.abs(scene.player.sprite.y - scene.goblin.sprite.y);
-
-    let goblinattackframe = 0;
-    if (scene.goblin.lastdirection == Direction["right"]) {
-      goblinattackframe = 7;
-    }
+    const mobattack =
+      Math.abs(scene.rect.y - scene.mobattackrect.y) < 67 &&
+      Math.abs(scene.rect.x - scene.mobattackrect.x) < 70;
+    console.log(Math.abs(scene.rect.y - scene.mobattackrect.y));
 
     let goblinbombframe =
       Number(scene.goblin.sprite.anims.getFrameName()) <= 5 ||
       Number(scene.goblin.sprite.anims.getFrameName()) >= 8;
 
     if (
-      scene.goblin.sprite.anims.getName() ===
-        `goblin-attack-${scene.goblin.lastdirection}` &&
+      scene.goblin.sprite.anims.getName() === `goblin-attack` &&
       scene.player.user.state.HP >= 0 &&
-      Math.abs(scene.goblin.sprite.x - scene.player.sprite.x) <= 250 &&
-      Number(scene.goblin.sprite.anims.getFrameName()) == goblinattackframe &&
-      distanceofBetweenY
+      Number(scene.goblin.sprite.anims.getFrameName()) < 2 &&
+      mobattack
     ) {
       scene.player.user.state.HP -=
         (1 - scene.player.user.state.Armor) * scene.goblin.mob.state.ATK;
     }
     if (
-      (scene.goblin.sprite.anims.getName() === `goblin-bomb-right` ||
-        scene.goblin.sprite.anims.getName() === `goblin-bomb-left`) &&
+      scene.goblin.sprite.anims.getName() === `goblin-bomb` &&
       scene.bomb.sprite.body instanceof Phaser.Physics.Arcade.Body &&
       goblinbombframe
     ) {
-      console.log(1);
       scene.bomb.sprite
         .setVisible(true)
         .setPosition(
@@ -41,17 +34,11 @@ export function mobattack(scene: MainScene) {
           scene.goblin.sprite.y - 100
         )
         .setScale(3);
-      scene.bomb.sprite.anims.play(
-        `goblin-attack-bomb-${scene.goblin.lastdirection}`,
-        true
-      );
+      scene.bomb.sprite.anims.play(`goblin-attack-bomb`, true);
       scene.bomb.sprite.anims.stopAfterRepeat(0);
       scene.bomb.sprite.body.setVelocityX(0);
     }
-    if (
-      scene.goblin.sprite.anims.getName() ===
-      `goblin-death-${scene.goblin.lastdirection}`
-    ) {
+    if (scene.goblin.sprite.anims.getName() === `goblin-death`) {
       scene.goblin.sprite.setVisible(false).setActive(false);
       scene.goblin.healtbar.setVisible(false);
       scene.goblin.hptitle.setVisible(false);

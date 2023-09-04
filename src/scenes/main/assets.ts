@@ -3,7 +3,7 @@ import MainScene from "./MainScene";
 import MenuScene from "../menu/MenuScene";
 import LoadScene from "../menu/Laod";
 
-export function preloadAssets(scene: LoadScene) {
+export function preloadAssets(scene: MainScene) {
   scene.load.pack("mainscene", "player-package.json");
   scene.load.pack("game", "game-package.json");
   scene.load.pack("goblin", "goblin-package.json");

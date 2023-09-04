@@ -31,12 +31,14 @@ const jack = Warrior.from_Character(create_character("Ali"));
 
 export default class MainScene extends Phaser.Scene {
   rect!: Phaser.GameObjects.Sprite;
+  attackrect!: Phaser.GameObjects.Rectangle;
   mobrect!: Phaser.GameObjects.Sprite;
+  mobattackrect!: Phaser.GameObjects.Rectangle;
   player = {
     sprite: {} as Phaser.GameObjects.Sprite,
     lastdirection: Direction.right as Direction,
 
-    standbytime: 5000,
+    standbytime: 500,
     ultimate: true,
     user: jack,
     healtbar: {} as Phaser.GameObjects.Sprite,
@@ -69,7 +71,9 @@ export default class MainScene extends Phaser.Scene {
   constructor() {
     super("mainscene");
   }
-  preload() {}
+  preload() {
+    preloadAssets(this);
+  }
 
   create() {
     this.tilemap = this.make.tilemap({ key: "roadfile" });
@@ -77,21 +81,79 @@ export default class MainScene extends Phaser.Scene {
     const tiles = this.tilemap.addTilesetImage("road-set", "road-set");
     const lamp = this.tilemap.addTilesetImage("lamp", "lamp");
     const fence = this.tilemap.addTilesetImage("fence_2", "fence_2");
-
+    const grass2 = this.tilemap.addTilesetImage("grass_2", "grass_2");
+    const grass3 = this.tilemap.addTilesetImage("grass_3", "grass_3");
+    const grass1 = this.tilemap.addTilesetImage("grass_1", "grass_1");
     const rock3 = this.tilemap.addTilesetImage("rock_3", "rock_3");
     const rock2 = this.tilemap.addTilesetImage("rock_2", "rock_2");
     const sign = this.tilemap.addTilesetImage("sign", "sign");
 
-    if (tiles && lamp && fence && rock2 && rock3 && sign) {
-      this.tilemap.createLayer("backroad", tiles)?.setScale(2.07);
+    if (
+      tiles &&
+      lamp &&
+      fence &&
+      rock2 &&
+      rock3 &&
+      sign &&
+      grass1 &&
+      grass2 &&
+      grass3
+    ) {
+      this.tilemap
+        .createLayer("backroad", tiles)
+        ?.setScale(
+          (2.04 / 1311) * window.innerWidth,
+          (2.04 / 724) * window.innerHeight
+        );
       const backroad = this.tilemap
         .createLayer("frontroad", tiles)
-        ?.setScale(2.07);
-      this.tilemap.createLayer("lamp", lamp, 0, -50)?.setScale(2.07);
-      this.tilemap.createLayer("fence", fence, 0, 25)?.setScale(2.07);
-      this.tilemap.createLayer("rock_3", rock3, 0, 30)?.setScale(2.07);
-      this.tilemap.createLayer("rock_2", rock2, 0, 40)?.setScale(2.07);
-      this.tilemap.createLayer("sign", sign)?.setScale(2.07);
+        ?.setScale(
+          (2.04 / 1311) * window.innerWidth,
+          (2.04 / 724) * window.innerHeight
+        );
+      this.tilemap
+        .createLayer("lamp", lamp, 0, -(50 / 724) * window.innerHeight)
+        ?.setScale(
+          (2.04 / 1311) * window.innerWidth,
+          (2.04 / 724) * window.innerHeight
+        );
+      this.tilemap
+        .createLayer("fence", fence, 0, (25 / 724) * window.innerHeight)
+        ?.setScale(
+          (2.04 / 1311) * window.innerWidth,
+          (2.04 / 724) * window.innerHeight
+        );
+      this.tilemap
+        .createLayer("rock_3", rock3, 0, (30 / 724) * window.innerHeight)
+        ?.setScale(
+          (2.04 / 1311) * window.innerWidth,
+          (2.04 / 724) * window.innerHeight
+        );
+      this.tilemap
+        .createLayer("rock_2", rock2, 0, (40 / 724) * window.innerHeight)
+        ?.setScale(
+          (2.04 / 1311) * window.innerWidth,
+          (2.04 / 724) * window.innerHeight
+        );
+
+      this.tilemap
+        .createLayer("sign", sign)
+        ?.setScale(
+          (2.04 / 1311) * window.innerWidth,
+          (2.04 / 724) * window.innerHeight
+        );
+      this.tilemap
+        .createLayer(
+          "grass",
+          [grass1, grass2, grass3],
+          0,
+          (60 / 724) * window.innerHeight
+        )
+        ?.setScale(
+          (2.04 / 1311) * window.innerWidth,
+          (2.04 / 724) * window.innerHeight
+        );
+
       // backroad.setCollisionByExclusion([-1], true);
       backroad?.setCollisionByProperty({ collides: true });
       this.rect = this.physics.add
@@ -99,20 +161,55 @@ export default class MainScene extends Phaser.Scene {
         .setVisible(false)
         .setCollideWorldBounds(true);
       // .setBounce(0.2);
+      this.attackrect = this.add.rectangle(
+        this.rect.x,
+        this.rect.y,
+        undefined,
+        undefined,
+        0xff2400
+      );
       this.mobrect = this.physics.add
         .sprite(1000, 0, "mobrect")
         .setVisible(false)
         .setCollideWorldBounds(true);
       // .setBounce(0.2);
+      this.mobattackrect = this.add.rectangle(
+        this.mobrect.x,
+        this.mobrect.y,
+        undefined,
+        undefined,
+        0xff2400
+      );
 
-      this.rect.setDisplaySize(64, 125);
-      this.mobrect.setDisplaySize(64, 125);
+      this.rect.setDisplaySize(
+        (64 / 1311) * window.innerWidth,
+        (125 / 724) * window.innerHeight
+      );
+      this.attackrect.setDisplaySize(
+        (160 / 1283) * window.innerWidth,
+        (32 / 724) * window.innerHeight
+      );
+      this.mobrect.setDisplaySize(
+        (64 / 1311) * window.innerWidth,
+        (125 / 724) * window.innerHeight
+      );
+      this.mobattackrect.setDisplaySize(
+        (75 / 1311) * window.innerWidth,
+        (32 / 724) * window.innerHeight
+      );
 
       if (backroad)
         this.physics.add.collider([this.rect, this.mobrect], backroad);
     }
 
-    this.cameras.main.startFollow(this.rect, false, 1, 0, -150, -260);
+    this.cameras.main.startFollow(
+      this.rect,
+      false,
+      1,
+      0,
+      -(220 / 1403) * window.innerWidth,
+      -(290 / 724) * window.innerHeight
+    );
     setInterval(() => {
       this.player.user.regeneration();
     }, 1000);
@@ -137,7 +234,7 @@ export default class MainScene extends Phaser.Scene {
     this.player.sprite.anims.stopAfterRepeat(0);
 
     window.addEventListener("resize", () => {
-      this.physics.world.gravity.y = 2000;
+      this.physics.world.gravity.y = (2000 / 724) * window.innerHeight;
       Resize(this);
     });
     Resize(this);
@@ -179,5 +276,11 @@ export default class MainScene extends Phaser.Scene {
 
 Job: Samurai  MAX HP: ${this.player.user.state.max_hp}`
     );
+    this.attackrect.x =
+      this.rect.x + dirVelocity[this.player.lastdirection] *( 80/899)*window.innerWidth;
+    this.attackrect.y = this.rect.y;
+    this.mobattackrect.x =
+      this.mobrect.x + dirVelocity[this.goblin.lastdirection] * (48/899)*window.innerWidth;
+    this.mobattackrect.y = this.mobrect.y;
   }
 }

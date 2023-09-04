@@ -5,55 +5,29 @@ export function jackattack(scene: MainScene) {
   const keyW = scene.input.keyboard?.addKey("W");
 
   scene.player.sprite.on(Phaser.Animations.Events.ANIMATION_STOP, () => {
-    const attackright =
-      Math.abs(scene.goblin.sprite.x - scene.player.sprite.x) <= 250 &&
-      scene.goblin.sprite.x - scene.player.sprite.x >= 0 &&
-      scene.goblin.mob.state.HP >= 0 &&
-      !keyW?.isDown;
-    const attackleft =
-      scene.goblin.sprite.x - scene.player.sprite.x <= 0 &&
-      Math.abs(scene.goblin.sprite.x - scene.player.sprite.x) <= 250 &&
-      !keyW?.isDown &&
-      scene.goblin.mob.state.HP >= 0;
+    const attack =
+      Math.abs(scene.mobrect.x - scene.attackrect.x) < 110 &&
+      scene.goblin.mob.state.HP >= 0 && scene.mobrect.y === scene.attackrect.y
 
     if (
-      scene.player.sprite.anims.getName() === `attack1-right` &&
-      attackright &&
+      scene.player.sprite.anims.getName() === `attack1` &&
+      attack &&
       Number(scene.player.sprite.anims.getFrameName()) >= 5
     ) {
       scene.goblin.mob.state.HP -=
         (1 - scene.goblin.mob.state.Armor) * scene.player.user.state.ATK;
     }
-    if (
-      scene.player.sprite.anims.getName() === `attack1-left` &&
-      attackleft &&
-      Number(scene.player.sprite.anims.getFrameName()) <= 2
-    ) {
-      scene.goblin.mob.state.HP -=
-        (1 - scene.goblin.mob.state.Armor) * scene.player.user.state.ATK;
-    }
-    if (
-      scene.player.sprite.anims.getName() === "attack2-right" &&
-      attackright
-    ) {
+
+    if (scene.player.sprite.anims.getName() === "attack2" && attack) {
       const damage = scene.player.user.heavy_strike();
       if (scene.goblin.mob.state.HP >= 0) {
         scene.goblin.mob.state.HP -=
           (1 - scene.goblin.mob.state.Armor) * damage;
       }
-    }
-    if (scene.player.sprite.anims.getName() === "attack2-left" && attackleft) {
-      const damage = scene.player.user.heavy_strike();
-      if (scene.goblin.mob.state.HP >= 0) {
-        scene.goblin.mob.state.HP -=
-          (1 - scene.goblin.mob.state.Armor) * damage;
-      }
+
     }
 
-    if (
-      scene.player.sprite.anims.getName() ===
-      `death-${scene.player.lastdirection}`
-    ) {
+    if (scene.player.sprite.anims.getName() === `death`) {
       // scene.player.sprite.anims.destroy();
     }
   });

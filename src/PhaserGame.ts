@@ -15,15 +15,16 @@ const config: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.ScaleModes.RESIZE,
     width: window.innerWidth,
     height: window.innerHeight,
+    zoom: 30,
   },
   physics: {
     default: "arcade",
     arcade: {
-      debug:true,
-      gravity: { y:2000  },
+      debug: true,
+      gravity: { y: (2000 / 724) * window.innerHeight },
     },
   },
-  scene: [LoadScene,MenuScene, MainScene, UiScene],
+  scene: [MainScene, UiScene],
 };
 //npm install phaser3-nineslice --save @ferhat and @ilker
 export default new Phaser.Game(config);

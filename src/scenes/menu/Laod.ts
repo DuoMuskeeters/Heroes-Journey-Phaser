@@ -9,7 +9,7 @@ export default class LoadScene extends Phaser.Scene {
   arrayturn = 0;
 
   preload() {
-    preloadAssets(this);
+    // preloadAssets(this);
   }
   create() {
     this.loadspin = this.add
@@ -26,7 +26,7 @@ export default class LoadScene extends Phaser.Scene {
     });
 
     this.loadspin.anims.play("loadspin", true);
-    this.loadspin.anims.stopAfterRepeat(3)
+    this.loadspin.anims.stopAfterRepeat(0)
     this.loadingtext = this.add.text(
       window.innerWidth / 2 - 75,
       window.innerHeight / 2 + 50,
@@ -46,7 +46,7 @@ export default class LoadScene extends Phaser.Scene {
       this.loadingtext.setText(this.array[this.arrayturn]);
       this.arrayturn =
         this.arrayturn !== 3 ? (this.arrayturn += 1) : (this.arrayturn = 0);
-      this.modnumber = 0;
+    
     }
   }
 }
