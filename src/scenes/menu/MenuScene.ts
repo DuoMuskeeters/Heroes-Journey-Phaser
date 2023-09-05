@@ -1,14 +1,10 @@
 import Phaser from "phaser";
 import { JackPlayer, shop } from "../main/Anims";
-import MainScene from "../main/MainScene";
-import { forestBackground, forestRoad, preloadAssets } from "../main/assets";
-import PhaserGame from "../../PhaserGame";
+import { forestBackground, forestRoad } from "../main/assets";
 import { Resize } from "../main/Resize";
 import { Backroundmovement } from "../main/GameMovement";
 import { Direction } from "../main/types";
-import { Warrior, create_character, create_giant } from "../../game/Karakter";
-const jack = Warrior.from_Character(create_character("Ali"));
-const goblin_1sv = create_giant(10);
+
 export default class MenuScene extends Phaser.Scene {
   logo = {} as Phaser.GameObjects.Image;
   brand = {} as Phaser.GameObjects.Text;
@@ -16,12 +12,10 @@ export default class MenuScene extends Phaser.Scene {
   player = {
     sprite: {} as Phaser.GameObjects.Sprite,
     lastdirection: Direction.right,
-    user: jack,
   };
   goblin = {
     sprite: {} as Phaser.GameObjects.Sprite,
     lastdirection: Direction["left"],
-    mob: goblin_1sv,
   };
   backgrounds: {
     rationx: number;
@@ -40,12 +34,10 @@ export default class MenuScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.on("progress", function (value: any) {
-      console.log(value);
+    this.load.on("progress", function (value: 0 | 1) {
+      console.log("loaded", !!value);
     });
     this.load.image("logo", "DuoMuskeeters.jpg");
-
-    
   }
 
   create() {
@@ -121,14 +113,7 @@ export default class MenuScene extends Phaser.Scene {
   }
 
   update(time: number, delta: number): void {
-    if (this.backgrounds !== undefined) {
-      {
-        for (let i = 0; i < this.backgrounds?.length; i++) {
-          const bg = this.backgrounds[i];
-          bg.sprite.tilePositionX = this.cameras.main.scrollX * bg.rationx;
-        }
-      }
-    }
+    Backroundmovement(this);
     if (this.road !== undefined) {
       this.road[0].sprite.tilePositionX =
         this.cameras.main.scrollX * this.road[0].rationx;

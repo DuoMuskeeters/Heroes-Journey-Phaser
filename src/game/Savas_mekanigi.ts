@@ -12,14 +12,14 @@ export function dodge(rate1: number, rate2: number): number {
 export function fight(attacker: Canlı) {
   if (attacker instanceof Warrior) {
     let input: string = "q";
-    if (input.toLowerCase() == "q") {
+    if (input.toLowerCase() === "q") {
       let skill_damage = attacker.heavy_strike();
-      if (skill_damage == attacker.state.ATK) {
+      if (skill_damage === attacker.state.ATK) {
         console.log("Yetersiz SP");
       }
       return skill_damage;
     }
-    if (input.toLowerCase() == "w") {
+    if (input.toLowerCase() === "w") {
       console.log("Vitality Boost becerisi kullanıldı.");
       attacker.vitality_boost();
       console.log(
@@ -38,7 +38,7 @@ export function fight_mechanics_with_turn(fighter: Warrior, mob: Mob) {
   const players: Canlı[] = [fighter, mob];
   let turn = 0;
 
-  while (fighter.state.HP != 0 || mob.state.HP != 0) {
+  while (fighter.state.HP !== 0 || mob.state.HP !== 0) {
     let attacker = players[turn];
     let defender = players[1 - turn];
     let dodge_rate = dodge(defender.state.ATKRATE, attacker.state.ATKRATE);
@@ -46,7 +46,7 @@ export function fight_mechanics_with_turn(fighter: Warrior, mob: Mob) {
     let SP_reg = (attacker.state.SP_reg * attacker.state.max_sp) / 100;
     if (attacker instanceof Mob) {
       let sonuc = mob.skill_barı();
-      if (sonuc == true) {
+      if (sonuc === true) {
         if (attacker instanceof Giant) {
           attacker.giant_skill();
         }
@@ -63,7 +63,7 @@ export function fight_mechanics_with_turn(fighter: Warrior, mob: Mob) {
       let damage: number = fight(attacker);
       damage = damage * (1 - defender.state.Armor);
       let Block = damage * defender.state.Armor;
-      if (damage != 0) {
+      if (damage !== 0) {
         defender.state.HP = Math.max(0, defender.state.HP - damage);
         console.log(
           `${attacker.state.name} ${defender.state.name}a ${damage}(Blok (${Block})) hasar verdi`
@@ -79,8 +79,8 @@ export function fight_mechanics_with_turn(fighter: Warrior, mob: Mob) {
         attacker.state.SP + SP_reg
       );
     }
-    if (defender.state.HP == 0) {
-      if (defender == attacker) {
+    if (defender.state.HP === 0) {
+      if (defender === attacker) {
         console.log(`Öldün.`);
         return false;
       } else {
@@ -96,7 +96,7 @@ export function fight_mechanics_with_turn(fighter: Warrior, mob: Mob) {
 function mob_fight(mob: Mob) {
   //ulti
   let sonuc = mob.skill_barı();
-  if (sonuc == true) {
+  if (sonuc) {
     if (mob instanceof Giant) {
       mob.giant_skill();
     }
@@ -110,6 +110,5 @@ function mob_fight(mob: Mob) {
 //   let HP_reg = (fighter.state.HP_reg * fighter.state.max_hp) / 100;
 //   let SP_reg = (fighter.state.SP_reg * fighter.state.max_sp) / 100;
 //   fighter.state.HP = Math.min(fighter.state.max_hp, fighter.state.HP + HP_reg);
-//   fighter.state.SP = Math.min(fighter.state.max_sp, fighter.state.SP + SP_reg);  
+//   fighter.state.SP = Math.min(fighter.state.max_sp, fighter.state.SP + SP_reg);
 // }
-

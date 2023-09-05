@@ -1,12 +1,7 @@
-import { ftruncate } from "fs";
 import MainScene from "./MainScene";
 import { Direction, dirVelocity } from "./types";
 
 export function goblinMovement(scene: MainScene) {
-  const keyW = scene.input.keyboard?.addKey("W");
-  const keySpace = scene.input.keyboard?.addKey("SPACE");
-  const keyM = scene.input.keyboard?.addKey("M");
-
   if (scene.mobrect.body instanceof Phaser.Physics.Arcade.Body) {
     const distanceofgoblin = scene.goblin.sprite.x - scene.player.sprite.x;
     if (distanceofgoblin > 0) {
@@ -74,13 +69,15 @@ export function goblinMovement(scene: MainScene) {
     if (scene.mobrect.body.onWall()) {
       scene.mobrect.body.setVelocityY(-400);
     }
-    if(Math.abs(scene.rect.x - scene.mobattackrect.x) < 70 &&
-      scene.rect.y !== scene.mobattackrect.y ){
-        scene.mobrect.body.setVelocityX(
-          dirVelocity[scene.goblin.lastdirection] * 150
-        );
-      }
+    if (
+      Math.abs(scene.rect.x - scene.mobattackrect.x) < 70 &&
+      scene.rect.y !== scene.mobattackrect.y
+    ) {
+      scene.mobrect.body.setVelocityX(
+        dirVelocity[scene.goblin.lastdirection] * 150
+      );
+    }
   }
   scene.goblin.sprite.x = scene.mobrect.x;
-  scene.goblin.sprite.y = scene.mobrect.y - (8/ 680) * window.innerHeight;
+  scene.goblin.sprite.y = scene.mobrect.y - (8 / 680) * window.innerHeight;
 }

@@ -1,12 +1,10 @@
-import MainScene from "./MainScene";
+import type MenuScene from "../menu/MenuScene";
+import type MainScene from "./MainScene";
 
-export function Backroundmovement(scene: MainScene) {
+export function Backroundmovement(scene: MainScene | MenuScene) {
   if (scene.backgrounds !== undefined) {
-    {
-      for (let i = 0; i < scene.backgrounds?.length; i++) {
-        const bg = scene.backgrounds[i];
-        bg.sprite.tilePositionX = scene.cameras.main.scrollX * bg.rationx;
-      }
+    for (const bg of scene.backgrounds) {
+      bg.sprite.tilePositionX = scene.cameras.main.scrollX * bg.rationx;
     }
   }
   // if (scene.road !== undefined) {

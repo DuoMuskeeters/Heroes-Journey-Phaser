@@ -1,7 +1,6 @@
-import Phaser from "phaser";
 import MainScene from "./MainScene";
 import MenuScene from "../menu/MenuScene";
-import LoadScene from "../menu/Laod";
+import LoadScene from "../menu/Load";
 
 export function preloadAssets(scene: LoadScene) {
   scene.load.pack("mainscene", "player-package.json");

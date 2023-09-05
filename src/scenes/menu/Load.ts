@@ -1,4 +1,3 @@
-import { ListFormat } from "typescript";
 import { preloadAssets } from "../main/assets";
 
 export default class LoadScene extends Phaser.Scene {
@@ -26,7 +25,7 @@ export default class LoadScene extends Phaser.Scene {
     });
 
     this.loadspin.anims.play("loadspin", true);
-    this.loadspin.anims.stopAfterRepeat(0)
+    this.loadspin.anims.stopAfterRepeat(0);
     this.loadingtext = this.add.text(
       window.innerWidth / 2 - 75,
       window.innerHeight / 2 + 50,
@@ -36,9 +35,9 @@ export default class LoadScene extends Phaser.Scene {
     this.array.push("Packages Loading.");
     this.array.push("Packages Loading..");
     this.array.push("Packages Loading...");
-    this.loadspin.on(Phaser.Animations.Events.ANIMATION_STOP,()=>{
-        this.scene.start("menu")
-    })
+    this.loadspin.on(Phaser.Animations.Events.ANIMATION_STOP, () => {
+      this.scene.start("menu");
+    });
   }
   update(time: number, delta: number): void {
     this.modnumber += 1;
@@ -46,8 +45,6 @@ export default class LoadScene extends Phaser.Scene {
       this.loadingtext.setText(this.array[this.arrayturn]);
       this.arrayturn =
         this.arrayturn !== 3 ? (this.arrayturn += 1) : (this.arrayturn = 0);
-    
     }
-    console.log(1)
   }
 }

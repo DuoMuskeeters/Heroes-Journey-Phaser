@@ -1,19 +1,23 @@
-import { start } from "repl";
 import MainScene from "./MainScene";
 
 export function healtbar(scene: MainScene) {
+  const getMaxHp = () =>
+    scene.player.user.state.max_hp - scene.player.user.state.HP;
   const maxframepercent = Math.floor(scene.player.user.state.max_hp / 5);
+
+  // 0 -> int
+  // 0.1 -> float
+  // 0.2 -> float
+  // 0.3 -> float
+  // 0.4 -> float
+  // * -> int
+  // 50.4 -> int (50)
+  const rawFramePercent = getMaxHp() / maxframepercent;
+
   let framepercent =
-    Math.floor(
-      (scene.player.user.state.max_hp - scene.player.user.state.HP) /
-        maxframepercent
-    ) == 0
-      ? (scene.player.user.state.max_hp - scene.player.user.state.HP) /
-        maxframepercent
-      : Math.floor(
-          (scene.player.user.state.max_hp - scene.player.user.state.HP) /
-            maxframepercent
-        );
+    Math.floor(rawFramePercent) === 0
+      ? rawFramePercent
+      : Math.floor(rawFramePercent);
 
   if (framepercent >= 1 || framepercent === 0) {
     scene.anims.remove("hp-bar");
@@ -38,7 +42,7 @@ export function playerspbar(scene: MainScene) {
     Math.floor(
       (scene.player.user.state.max_sp - scene.player.user.state.SP) /
         maxframepercent
-    ) == 0
+    ) === 0
       ? (scene.player.user.state.max_sp - scene.player.user.state.SP) /
         maxframepercent
       : Math.floor(

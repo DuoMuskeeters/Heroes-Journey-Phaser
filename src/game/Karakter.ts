@@ -102,7 +102,7 @@ export class Character extends Canlı {
     this.state.max_hp = this.state.HP;
     this.state.HP_reg = 5 + this.state.Constitution * 0.1;
     this.state.Armor =
-    this.state.Constitution / (this.state.Constitution + 100);
+      this.state.Constitution / (this.state.Constitution + 100);
     this.state.SP = 50 + this.state.Intelligence * 5;
     this.state.max_sp = this.state.SP;
     this.state.SP_reg = 2.5 + this.state.Intelligence * 0.05;
@@ -111,7 +111,7 @@ export class Character extends Canlı {
     this.state.ATK = 30 + this.state.Strength * 2;
     this.state.ATKRATE = 1 + this.state.Agility * 0.008;
   }
-  
+
   level_up() {
     const requirement_exp: number = level(this.state.Level);
     while (this.exp > requirement_exp) {
@@ -120,30 +120,34 @@ export class Character extends Canlı {
       this.state.stat_point += 5;
     }
   }
-  increase_Strenght(){
-  if (this.state.stat_point > 0) {
-    this.state.Strength += 1;
-    this.state.stat_point -= 1;
-    this.calculate_power();}
+  increase_Strenght() {
+    if (this.state.stat_point > 0) {
+      this.state.Strength += 1;
+      this.state.stat_point -= 1;
+      this.calculate_power();
+    }
   }
-  increase_Agility(){
+  increase_Agility() {
     if (this.state.stat_point > 0) {
       this.state.Agility += 1;
       this.state.stat_point -= 1;
-      this.calculate_power();}
-    }   
-  increase_Intelligence(){
+      this.calculate_power();
+    }
+  }
+  increase_Intelligence() {
     if (this.state.stat_point > 0) {
       this.state.Intelligence += 1;
       this.state.stat_point -= 1;
-      this.calculate_power();}
-    } 
-  increase_Constitution(){
+      this.calculate_power();
+    }
+  }
+  increase_Constitution() {
     if (this.state.stat_point > 0) {
       this.state.Constitution += 1;
       this.state.stat_point -= 1;
-      this.calculate_power();}
+      this.calculate_power();
     }
+  }
 }
 
 export function create_character(
@@ -214,9 +218,6 @@ export class Warrior extends Character {
 }
 
 export class Mob extends Canlı {
-  constructor(state: State) {
-    super(state);
-  }
   calculate_mob_power() {
     this.state.HP = 100 + this.state.Constitution * 10;
     this.state.max_hp = this.state.HP;
@@ -232,7 +233,7 @@ export class Mob extends Canlı {
     this.state.ATKRATE = 1 + this.state.Agility * 0.008;
   }
   skill_barı() {
-    if (this.state.SP == this.state.max_sp) {
+    if (this.state.SP === this.state.max_sp) {
       this.state.SP -= this.state.max_sp;
       return true;
     } else {
@@ -244,18 +245,14 @@ export class Mob extends Canlı {
       const HP_reg = (this.state.HP_reg * this.state.max_hp) / 100;
       const SP_reg = (this.state.SP_reg * this.state.max_sp) / 200;
       this.state.HP = Math.min(this.state.max_hp, this.state.HP + HP_reg);
-      this.state.SP = Math.min(this.state.max_sp,this.state.SP + SP_reg);
+      this.state.SP = Math.min(this.state.max_sp, this.state.SP + SP_reg);
     }
   }
 }
 
 export class Giant extends Mob {
-  constructor(state: State) {
-    super(state);
-  }
-
   giant_skill() {
-    return  this.state.ATK * 3;
+    return this.state.ATK * 3;
   }
 }
 export function create_giant(Level: number): Giant {
@@ -279,7 +276,7 @@ export function create_giant(Level: number): Giant {
   const ATKRATE = 1 + Agility * 0.008;
 
   while (stat_point > 0) {
-    if (stat_turn == 0) {
+    if (stat_turn === 0) {
       Strength += 1;
       stat_turn += 2;
     } else {
@@ -316,9 +313,6 @@ export function create_giant(Level: number): Giant {
 }
 
 export class Bird extends Mob {
-  constructor(state: State) {
-    super(state);
-  }
   bird_skill() {
     this.state.Agility = this.state.Agility * 1.5;
     this.state.ATK = this.state.ATK * 1.5;
@@ -348,11 +342,11 @@ export function create_bird(Level: number): Bird {
   const ATKRATE = 1 + Agility * 0.008;
 
   while (stat_point > 0) {
-    if (stat_turn == 0) {
+    if (stat_turn === 0) {
       Constitution += 1;
       stat_turn += 3;
     }
-    if (stat_turn == 1) {
+    if (stat_turn === 1) {
       Strength += 1;
       stat_turn -= 1;
     } else {

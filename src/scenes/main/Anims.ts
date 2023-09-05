@@ -1,16 +1,11 @@
-import {
-  Warrior,
-  create_character,
-  mob_exp_kazancı,
-} from "../../game/Karakter";
 import MenuScene from "../menu/MenuScene";
-import { goblinHealtbar, healtbar } from "./Components";
 import MainScene from "./MainScene";
 import { mobattack } from "./MobAttack";
-import { Direction, dirVelocity } from "./types";
 
 export function JackPlayer(scene: MainScene | MenuScene) {
-  if (scene instanceof MainScene) {
+  const isMainScene = scene instanceof MainScene;
+
+  if (isMainScene) {
     scene.player.sprite = scene.add
       .sprite(100, 0, "ıdle")
       // .setCollideWorldBounds(true)
@@ -54,15 +49,16 @@ export function JackPlayer(scene: MainScene | MenuScene) {
     repeat: -1,
   });
 
-  scene.anims.create({
-    key: "attack1",
-    frames: scene.anims.generateFrameNumbers("attack1", {
-      start: 0,
-      end: 6,
-    }),
-    frameRate: scene.player.user.state.ATKRATE * 10,
-    repeat: -1,
-  });
+  if (isMainScene)
+    scene.anims.create({
+      key: "attack1",
+      frames: scene.anims.generateFrameNumbers("attack1", {
+        start: 0,
+        end: 6,
+      }),
+      frameRate: scene.player.user.state.ATKRATE * 10,
+      repeat: -1,
+    });
 
   scene.anims.create({
     key: "fall",

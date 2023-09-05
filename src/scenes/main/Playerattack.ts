@@ -1,9 +1,6 @@
-import { platform } from "os";
 import MainScene from "./MainScene";
 
 export function jackattack(scene: MainScene) {
-  const keyW = scene.input.keyboard?.addKey("W");
-
   scene.player.sprite.on(Phaser.Animations.Events.ANIMATION_STOP, () => {
     const attack =
       Math.abs(scene.mobrect.x - scene.attackrect.x) < 110 &&

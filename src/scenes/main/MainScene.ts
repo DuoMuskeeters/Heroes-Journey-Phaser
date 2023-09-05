@@ -1,15 +1,7 @@
 import Phaser from "phaser";
 import { Direction, dirVelocity } from "./types";
-import {
-  Character,
-  Mob,
-  Warrior,
-  create_character,
-  create_giant,
-  level,
-} from "../../game/Karakter";
-import { forestBackground, forestRoad, preloadAssets } from "./assets";
-import HelloWorldScene from "../HelloWorldScene";
+import { Warrior, create_character, create_giant } from "../../game/Karakter";
+import { forestBackground } from "./assets";
 import PhaserGame from "../../PhaserGame";
 import { JackPlayer, goblinMob } from "./Anims";
 import { JackMovement } from "./PlayerMovemet";
@@ -22,10 +14,8 @@ import {
 } from "./Components";
 import { Backroundmovement } from "./GameMovement";
 import { goblinMovement } from "./MobMovement";
-import { threadId } from "worker_threads";
 import { UiScene } from "./uiScene";
 import { jackattack } from "./Playerattack";
-import { mobattack } from "./MobAttack";
 
 const jack = Warrior.from_Character(create_character("Ali"));
 
@@ -74,10 +64,6 @@ export default class MainScene extends Phaser.Scene {
   constructor() {
     super("mainscene");
   }
-  preload() {
-    
-  }
-
   create() {
     this.tilemap = this.make.tilemap({ key: "roadfile" });
 

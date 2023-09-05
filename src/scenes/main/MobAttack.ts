@@ -7,7 +7,6 @@ export function mobattack(scene: MainScene) {
     const mobattack =
       Math.abs(scene.rect.y - scene.mobattackrect.y) < 67 &&
       Math.abs(scene.rect.x - scene.mobattackrect.x) < 70;
-    console.log(Math.abs(scene.rect.y - scene.mobattackrect.y));
 
     let goblinbombframe =
       Number(scene.goblin.sprite.anims.getFrameName()) <= 5 ||

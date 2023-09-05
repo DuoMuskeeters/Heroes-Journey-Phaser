@@ -1,4 +1,3 @@
-import { Scene } from "phaser";
 import MainScene from "./MainScene";
 import PhaserGame from "../../PhaserGame";
 

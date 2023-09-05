@@ -1,10 +1,9 @@
 import Phaser from "phaser";
 
-import HelloWorldScene from "./scenes/HelloWorldScene";
 import MenuScene from "./scenes/menu/MenuScene";
 import MainScene from "./scenes/main/MainScene";
 import { UiScene } from "./scenes/main/uiScene";
-import LoadScene from "./scenes/menu/Laod";
+import LoadScene from "./scenes/menu/Load";
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -15,7 +14,7 @@ const config: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.ScaleModes.RESIZE,
     width: window.innerWidth,
     height: window.innerHeight,
-    zoom: 10,
+    zoom: 1,
   },
   physics: {
     default: "arcade",
@@ -24,8 +23,7 @@ const config: Phaser.Types.Core.GameConfig = {
       gravity: { y: (2000 / 724) * window.innerHeight },
     },
   },
-  scene: [LoadScene,MenuScene,MainScene, UiScene],
+  scene: [LoadScene, MenuScene, MainScene, UiScene],
 };
-//npm install phaser3-nineslice --save @ferhat and @ilker
-export default new Phaser.Game(config);
-//window.innerHeight * 8.5365
+const game = new Phaser.Game(config);
+export default game;

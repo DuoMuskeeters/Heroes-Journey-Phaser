@@ -1,22 +1,7 @@
-import { goblinMob } from "./Anims";
 import MainScene from "./MainScene";
 import { Direction, dirVelocity } from "./types";
-import {
-  Character,
-  Mob,
-  Warrior,
-  create_character,
-  create_giant,
-} from "../../game/Karakter";
-import PhaserGame from "../../PhaserGame";
-import { UiScene } from "./uiScene";
-import statemenu from "./StateMenu";
-import { Scene } from "phaser";
-import { mobattack } from "./MobAttack";
 
 export function JackMovement(scene: MainScene) {
-  const UiScene = PhaserGame.scene.keys.ui as UiScene;
-
   const keySpace = scene.input.keyboard?.addKey("SPACE");
   const keyW = scene.input.keyboard?.addKey("W");
   const keyA = scene.input.keyboard?.addKey("A");
