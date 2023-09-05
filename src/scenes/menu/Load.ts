@@ -1,3 +1,4 @@
+import { eventTypes, gameEvents } from "../../game/events";
 import { preloadAssets } from "../main/assets";
 
 export default class LoadScene extends Phaser.Scene {
@@ -9,6 +10,13 @@ export default class LoadScene extends Phaser.Scene {
 
   preload() {
     preloadAssets(this);
+
+    this.load.on("complete", () => {
+      this.scene.start("menu");
+      gameEvents.emit(eventTypes.GAME_LOADED);
+    });
+
+    this.load.image("logo", "DuoMuskeeters.jpg");
   }
   create() {
     this.loadspin = this.add
@@ -31,13 +39,14 @@ export default class LoadScene extends Phaser.Scene {
       window.innerHeight / 2 + 50,
       "Packages Loading..."
     );
-    this.array.push("Packages Loading");
-    this.array.push("Packages Loading.");
-    this.array.push("Packages Loading..");
-    this.array.push("Packages Loading...");
-    this.loadspin.on(Phaser.Animations.Events.ANIMATION_STOP, () => {
-      this.scene.start("menu");
-    });
+
+    for (let i = 0; i <= 3; i++) {
+      this.array.push("Packages Loading" + ".".repeat(i));
+    }
+
+    // this.loadspin.on(Phaser.Animations.Events.ANIMATION_STOP, () => {
+    //   this.scene.start("menu");
+    // });
   }
   update(time: number, delta: number): void {
     this.modnumber += 1;

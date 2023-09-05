@@ -1,6 +1,12 @@
 import statemenu from "./StateMenu";
 import heroesJourneyMap from "./HeroesJourneyMap";
 import HeroesJourneyMap from "./HeroesJourneyMap";
+import {
+  eventTypes,
+  gameEvents,
+  mcEventTypes,
+  mcEvents,
+} from "../../game/events";
 
 export class UiScene extends Phaser.Scene {
   statemenu!: statemenu;
@@ -51,6 +57,14 @@ export class UiScene extends Phaser.Scene {
       } else {
         this.heroesJourneyMap.show();
       }
+    });
+    this.input.keyboard?.on("keydown-Z", () => {
+      gameEvents.emit(eventTypes.PAUSE_TOGGLE_REQUESTED);
+    });
+    mcEvents.on(mcEventTypes.HEAVY_ATTACK_USED, () => {
+      console.log("heavy attack used");
+      // close the state menu
+      if (this.statemenu.isOpen) this.statemenu.hide();
     });
   }
 }

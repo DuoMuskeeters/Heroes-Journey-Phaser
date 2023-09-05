@@ -1,3 +1,4 @@
+import { mcEventTypes, mcEvents } from "../../game/events";
 import MainScene from "./MainScene";
 import { Direction, dirVelocity } from "./types";
 
@@ -32,6 +33,7 @@ export function JackMovement(scene: MainScene) {
   if (scene.player.user.state.HP <= 0) {
     scene.player.sprite.anims.play(`death`, true);
     scene.player.sprite.anims.stopAfterRepeat(0);
+    mcEvents.emit(mcEventTypes.DIED);
   }
   scene.player.sprite.anims.chain(undefined!);
   scene.player?.sprite.anims.chain([`fall`]);
@@ -90,6 +92,7 @@ export function JackMovement(scene: MainScene) {
       scene.player.sprite.anims.stopAfterRepeat(0);
       scene.rect.body.setVelocityX(0);
       scene.player.ultimate = false;
+      mcEvents.emit(mcEventTypes.HEAVY_ATTACK_USED);
       setTimeout(() => {
         scene.player.ultimate = true;
       }, scene.player.standbytime);

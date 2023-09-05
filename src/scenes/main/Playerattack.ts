@@ -23,9 +23,5 @@ export function jackattack(scene: MainScene) {
           (1 - scene.goblin.mob.state.Armor) * damage;
       }
     }
-
-    if (scene.player.sprite.anims.getName() === `death`) {
-      // scene.player.sprite.anims.destroy();
-    }
   });
 }

@@ -33,13 +33,6 @@ export default class MenuScene extends Phaser.Scene {
     super("menu");
   }
 
-  preload() {
-    this.load.on("progress", function (value: 0 | 1) {
-      console.log("loaded", !!value);
-    });
-    this.load.image("logo", "DuoMuskeeters.jpg");
-  }
-
   create() {
     this.cameras.main.fadeIn(1000, 0, 0, 0);
     this.cameras.main.postFX.addBloom(

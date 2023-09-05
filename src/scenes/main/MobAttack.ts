@@ -71,10 +71,7 @@ export function mobattack(scene: MainScene) {
       Math.abs(scene.player.sprite.x - scene.bomb.sprite.x) < 90 &&
       distanceofBetweenY
     ) {
-      scene.player.sprite.anims.play(
-        `take-hit-${scene.player.lastdirection}`,
-        true
-      );
+      scene.player.sprite.anims.play(`take-hit`, true);
       scene.player.sprite.anims.stopAfterRepeat(0);
       scene.player.user.state.HP -= scene.goblin.mob.giant_skill();
     }

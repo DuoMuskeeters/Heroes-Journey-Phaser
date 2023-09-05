@@ -16,6 +16,7 @@ import { Backroundmovement } from "./GameMovement";
 import { goblinMovement } from "./MobMovement";
 import { UiScene } from "./uiScene";
 import { jackattack } from "./Playerattack";
+import { eventTypes, gameEvents } from "../../game/events";
 
 const jack = Warrior.from_Character(create_character("Ali"));
 
@@ -65,6 +66,12 @@ export default class MainScene extends Phaser.Scene {
     super("mainscene");
   }
   create() {
+    gameEvents.on(eventTypes.PAUSE_TOGGLE_REQUESTED, () => {
+      // goblin vuracak kadar yakın ise izin verme
+      if (this.scene.isActive()) this.scene.pause();
+      else this.scene.resume();
+    });
+
     this.tilemap = this.make.tilemap({ key: "roadfile" });
 
     const tiles = this.tilemap.addTilesetImage("road-set", "road-set");
