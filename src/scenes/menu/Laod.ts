@@ -48,5 +48,6 @@ export default class LoadScene extends Phaser.Scene {
         this.arrayturn !== 3 ? (this.arrayturn += 1) : (this.arrayturn = 0);
     
     }
+    console.log(1)
   }
 }

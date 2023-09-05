@@ -15,7 +15,7 @@ const config: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.ScaleModes.RESIZE,
     width: window.innerWidth,
     height: window.innerHeight,
-    zoom: 30,
+    zoom: 10,
   },
   physics: {
     default: "arcade",

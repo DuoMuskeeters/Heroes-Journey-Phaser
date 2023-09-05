@@ -21,6 +21,12 @@ export function mobattack(scene: MainScene) {
     ) {
       scene.player.user.state.HP -=
         (1 - scene.player.user.state.Armor) * scene.goblin.mob.state.ATK;
+      scene.player.hearticon.setTint(0x020000);
+      scene.player.hptitle.setTint(0x020000);
+      setTimeout(() => {
+        scene.player.hearticon.setTint(0xffffff);
+        scene.player.hptitle.clearTint();
+      }, 400);
     }
     if (
       scene.goblin.sprite.anims.getName() === `goblin-bomb` &&

@@ -2,8 +2,8 @@ import { start } from "repl";
 import MainScene from "./MainScene";
 
 export function healtbar(scene: MainScene) {
-  const maxframepercent = Math.floor(scene.player.user.state.max_hp / 6);
-  const framepercent =
+  const maxframepercent = Math.floor(scene.player.user.state.max_hp / 5);
+  let framepercent =
     Math.floor(
       (scene.player.user.state.max_hp - scene.player.user.state.HP) /
         maxframepercent
@@ -14,7 +14,8 @@ export function healtbar(scene: MainScene) {
           (scene.player.user.state.max_hp - scene.player.user.state.HP) /
             maxframepercent
         );
-  if (framepercent >=1 || framepercent === 0  ) {
+
+  if (framepercent >= 1 || framepercent === 0) {
     scene.anims.remove("hp-bar");
     scene.anims.create({
       key: "hp-bar",
@@ -25,44 +26,48 @@ export function healtbar(scene: MainScene) {
       frameRate: 10,
       repeat: 0,
     });
-    scene.player.healtbar.anims.play("hp-bar", true);
-   
+    scene.player.hpbar.anims.play("hp-bar", true);
   }
-  scene.player.hptitle
-    .setText(
-      `${Math.round(Math.max(0, scene.player.user.state.HP))}\n\n${Math.round(
-        scene.player.user.state.SP
-      )}\nJack/${scene.player.user.state.Level}-level`
-    )
-    .setPosition(scene.player.sprite.x - 240, 10);
-  // scene.player.healtbar.clear();
-  // scene.player.healtbar.fillStyle(0x808080);
-  // scene.player.healtbar
-  //   .fillRoundedRect(0, 0, width, 24, 5)
-  //   .setPosition(scene.player.sprite.x - 240, 10);
-  // if (percent > 0) {
-  //   scene.player.healtbar.fillStyle(0x00ff00);
-  //   scene.player.healtbar
-  //     .fillRoundedRect(0, 0, width * percent, 24, 5)
-  //     .setPosition(scene.player.sprite.x - 240, 10);
-  // }
+  scene.player.hptitle.setText(
+    `${Math.round(Math.max(0, scene.player.user.state.HP))}`
+  );
 }
 export function playerspbar(scene: MainScene) {
-  const width = 200;
-  const percent =
-    Math.max(0, scene.player.user.state.SP) / scene.player.user.state.max_sp;
-
-  scene.player.spbar.clear();
-  scene.player.spbar.fillStyle(0x808080);
-  scene.player.spbar
-    .fillRoundedRect(0, 0, width, 18, 5)
-    .setPosition(scene.player.sprite.x - 240, 63);
-  if (percent > 0) {
-    scene.player.spbar.fillStyle(0x00ffff);
-    scene.player.spbar
-      .fillRoundedRect(0, 0, width * percent, 18, 5)
-      .setPosition(scene.player.sprite.x - 240, 63);
+  const maxframepercent = Math.floor(scene.player.user.state.max_sp / 5);
+  const framepercent =
+    Math.floor(
+      (scene.player.user.state.max_sp - scene.player.user.state.SP) /
+        maxframepercent
+    ) == 0
+      ? (scene.player.user.state.max_sp - scene.player.user.state.SP) /
+        maxframepercent
+      : Math.floor(
+          (scene.player.user.state.max_sp - scene.player.user.state.SP) /
+            maxframepercent
+        );
+  if (framepercent >= 1 || framepercent === 0) {
+    scene.anims.remove("mana-bar");
+    scene.anims.create({
+      key: "mana-bar",
+      frames: scene.anims.generateFrameNumbers("mana-bar", {
+        start: framepercent,
+        end: framepercent,
+      }),
+      frameRate: 10,
+      repeat: 0,
+    });
+    scene.player.manabar.anims.play("mana-bar", true);
   }
+  if (scene.player.user.state.SP >= 50) {
+    scene.player.sptitle.setTint(0x71e5f2);
+    scene.player.manaicon.setTint(0xffffff);
+  } else {
+    scene.player.sptitle.setTint(0x4396d6);
+    scene.player.manaicon.setTint(0x4396d6);
+  }
+  scene.player.sptitle.setText(
+    `${Math.round(Math.max(0, scene.player.user.state.SP))}`
+  );
 }
 
 export function goblinHealtbar(scene: MainScene) {

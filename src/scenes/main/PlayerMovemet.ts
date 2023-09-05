@@ -87,8 +87,8 @@ export function JackMovement(scene: MainScene) {
       scene.player?.sprite.anims.play("run", true);
 
       scene.rect.body.setVelocityX(
-        dirVelocity[scene.player.lastdirection] * ( (250 / 1328) *
-          window.innerWidth)
+        dirVelocity[scene.player.lastdirection] *
+          ((250 / 1328) * window.innerWidth)
       );
     }
     if (
@@ -98,7 +98,8 @@ export function JackMovement(scene: MainScene) {
       scene.player.sprite.anims.getName() !== `attack1` &&
       scene.player.ultimate &&
       scene.player.sprite.anims.getName() !== `death` &&
-      scene.player.sprite.anims.getName() !== `take-hit`
+      scene.player.sprite.anims.getName() !== `take-hit` &&
+      scene.player.user.state.SP >= scene.player.user.state.max_sp / 2
     ) {
       scene.player.sprite.anims.play(`attack2`, true);
       scene.player.sprite.anims.stopAfterRepeat(0);
@@ -107,7 +108,7 @@ export function JackMovement(scene: MainScene) {
       setTimeout(() => {
         scene.player.ultimate = true;
       }, scene.player.standbytime);
-      scene.attackrect.setVisible(true)
+      scene.attackrect.setVisible(true);
     }
     if (
       (mouse || keySpace?.isDown) &&
@@ -118,7 +119,7 @@ export function JackMovement(scene: MainScene) {
       scene.player?.sprite.anims.play(`attack1`, true);
       scene.player.sprite.anims.stopAfterRepeat(0);
       scene.rect.body.setVelocityX(0);
-      scene.attackrect.setVisible(true)
+      scene.attackrect.setVisible(true);
     }
     if (
       scene.player.sprite.anims.getName() === `fall` ||
@@ -133,11 +134,10 @@ export function JackMovement(scene: MainScene) {
     ) {
       scene.rect.body.setVelocityX(0);
       scene.player.sprite.anims.play(`ıdle`, true);
-      scene.attackrect.setVisible(false)
+      scene.attackrect.setVisible(false);
     }
   }
 
   scene.player.sprite.x = scene.rect.x;
   scene.player.sprite.y = scene.rect.y - (75 / 680) * window.innerHeight;
-
 }

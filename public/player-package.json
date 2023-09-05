@@ -27,6 +27,14 @@
           "frameWidth": 48,
           "frameHeight": 12
         }
+      }, {
+        "url": "mana-bar.png",
+        "type": "spritesheet",
+        "key": "mana-bar",
+        "frameConfig": {
+          "frameWidth": 48,
+          "frameHeight": 12
+        }
       },
       {
         "url": "take-hit.png",

@@ -2,9 +2,9 @@
   "section1": {
     "files": [
       {
-        "url": "frame-tiled.json",
+        "url": "player-avatar.json",
         "type": "tilemapTiledJSON",
-        "key": "frame-tiled"
+        "key": "player-avatar"
       },
       {
         "url": "frame-set.png",

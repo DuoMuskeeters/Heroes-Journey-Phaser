@@ -16,7 +16,6 @@ export function Resize(scene: MainScene | MenuScene) {
       (2.7 / 787) * window.innerHeight
     );
   }
-  console.log(window.innerWidth * window.innerHeight * 0.000002608);
   for (let i = 0; i < 3; i++) {
     scene.backgrounds[i].sprite.setDisplaySize(
       window.innerWidth,

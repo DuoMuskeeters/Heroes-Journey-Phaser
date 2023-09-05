@@ -37,13 +37,16 @@ export default class MainScene extends Phaser.Scene {
   player = {
     sprite: {} as Phaser.GameObjects.Sprite,
     lastdirection: Direction.right as Direction,
-
-    standbytime: 500,
+    standbytime: 5000,
     ultimate: true,
     user: jack,
-    healtbar: {} as Phaser.GameObjects.Sprite,
-    spbar: {} as Phaser.GameObjects.Graphics,
+    hpbar: {} as Phaser.GameObjects.Sprite,
+    manabar: {} as Phaser.GameObjects.Sprite,
     hptitle: {} as Phaser.GameObjects.Text,
+    sptitle: {} as Phaser.GameObjects.Text,
+    frame: {} as Phaser.Tilemaps.Tilemap,
+    hearticon: {} as Phaser.Tilemaps.TilemapLayer,
+    manaicon: {} as Phaser.Tilemaps.TilemapLayer,
   };
   goblin = {
     sprite: {} as Phaser.GameObjects.Sprite,
@@ -72,6 +75,7 @@ export default class MainScene extends Phaser.Scene {
     super("mainscene");
   }
   preload() {
+    
   }
 
   create() {
@@ -200,7 +204,84 @@ export default class MainScene extends Phaser.Scene {
       if (backroad)
         this.physics.add.collider([this.rect, this.mobrect], backroad);
     }
+    this.player.frame = this.make.tilemap({ key: "player-avatar" });
+    const avatarframe = this.player.frame.addTilesetImage(
+      "frame-set",
+      "frame-set"
+    );
+    const avatarpng = this.player.frame.addTilesetImage(
+      "jack-avatar",
+      "jack-avatar"
+    );
+    if (avatarframe && avatarpng) {
+      this.player.frame
+        .createLayer("frame", avatarframe)
+        ?.setScrollFactor(0)
+        .setDepth(200)
+        .setScale(
+          (1 / 1440) * window.innerWidth,
+          (1 / 900) * window.innerHeight
+        );
+      this.player.frame
+        .createLayer("parchment", avatarframe)
+        ?.setScrollFactor(0)
+        .setScale(
+          (1 / 1440) * window.innerWidth,
+          (1 / 900) * window.innerHeight
+        );
+      //@ts-ignore
+      this.player.hearticon = this.player.frame
+        .createLayer(
+          "hearticon",
+          avatarframe,
+          (10 / 1440) * window.innerWidth,
+          0
+        )
+        ?.setScrollFactor(0)
+        .setScale(
+          (1 / 1440) * window.innerWidth,
+          (1 / 900) * window.innerHeight
+        );
+      //@ts-ignore
+      this.player.manaicon = this.player.frame
+        .createLayer(
+          "manaicon",
+          avatarframe,
+          (10 / 1440) * window.innerWidth,
+          (3 / 900) * window.innerHeight
+        )
+        ?.setScrollFactor(0)
+        .setScale(
+          (1 / 1440) * window.innerWidth,
+          (1 / 900) * window.innerHeight
+        );
 
+      this.player.frame
+        .createLayer(
+          "bar",
+          avatarframe,
+          (-37 / 1440) * window.innerWidth,
+          (-10 / 900) * window.innerHeight
+        )
+        ?.setScale(
+          (1.1 / 1440) * window.innerWidth,
+          (1.1 / 900) * window.innerHeight
+        )
+        ?.setScrollFactor(0)
+        .setDepth(100);
+      this.player.frame
+        .createLayer(
+          "avatarpng",
+          avatarpng,
+          (-155 / 1440) * window.innerWidth,
+          (-155 / 900) * window.innerHeight
+        )
+        ?.setScale(
+          (3 / 1440) * window.innerWidth,
+          (3 / 900) * window.innerHeight
+        )
+        .setScrollFactor(0);
+    }
     this.cameras.main.startFollow(
       this.rect,
       false,
@@ -215,21 +296,38 @@ export default class MainScene extends Phaser.Scene {
     setInterval(() => {
       this.goblin.mob.mob_regeneration();
     }, 1000);
-    this.player.healtbar = this.add.sprite(100, 300, "hp-bar").setScale(3);
-    this.add
-      .image(0, 0, "jack-avatar")
-      .setOrigin(0)
-      .setScale(4)
-      .setPosition(-300, 0)
-      .setCrop(0, 0, 150, 21);
+    this.player.hpbar = this.add
+      .sprite(
+        (238 / 1440) * window.innerWidth,
+        (76 / 900) * window.innerHeight,
+        "hp-bar"
+      )
+      .setScale(
+        (5 / 1440) * window.innerWidth,
+        (2.7 / 900) * window.innerHeight
+      )
+      .setDepth(5)
+      .setScrollFactor(0);
+    this.player.manabar = this.add
+      .sprite(
+        (214 / 1440) * window.innerWidth,
+        (112 / 900) * window.innerHeight,
+        "mana-bar"
+      )
+      .setScale(
+        (3.8 / 1440) * window.innerWidth,
+        (2.7 / 900) * window.innerHeight
+      )
+      .setDepth(5)
+      .setScrollFactor(0);
+
     this.goblin.healtbar = this.add.graphics();
-    this.player.spbar = this.add.graphics();
     this.goblin.spbar = this.add.graphics();
     forestBackground(this);
     JackPlayer(this);
     goblinMob(this);
     jackattack(this);
-    this.player.sprite.anims.play("fall-right", true);
+    this.player.sprite.anims.play("fall", true);
     this.player.sprite.anims.stopAfterRepeat(0);
 
     window.addEventListener("resize", () => {
@@ -238,14 +336,35 @@ export default class MainScene extends Phaser.Scene {
     });
     Resize(this);
     this.player.hptitle = this.add
-      .text(0, 0, `${this.player.user.state.HP}`)
+      .text(
+        (370 / 1440) * window.innerWidth,
+        (65 / 900) * window.innerHeight,
+        `${this.player.user.state.HP}`
+      )
       .setStyle({
         fontSize: "22px Arial",
         color: "red",
         align: "center",
       })
-      .setFontFamily('Georgia, "Goudy Bookletter 1911", Times, serif')
-      .setFontStyle("bold");
+      .setFontFamily("URW Chancery L, cursive")
+      .setFontStyle("bold")
+      .setScrollFactor(0)
+      .setScale((1 / 1440) * window.innerWidth, (1 / 900) * window.innerHeight);
+    this.player.sptitle = this.add
+      .text(
+        (340 / 1440) * window.innerWidth,
+        (103 / 900) * window.innerHeight,
+        `${this.player.user.state.SP}`
+      )
+      .setStyle({
+        fontSize: "22px Arial",
+        align: "center",
+      })
+      .setFontFamily("URW Chancery L, cursive")
+      .setFontStyle("bold")
+      .setScrollFactor(0)
+
+      .setScale((1 / 1440) * window.innerWidth, (1 / 900) * window.innerHeight);
     this.goblin.hptitle = this.add
       .text(0, 0, `${this.goblin.mob.state.HP}`)
       .setStyle({
@@ -268,7 +387,7 @@ export default class MainScene extends Phaser.Scene {
     goblinHealtbar(this);
     goblinspbar(this);
     uiscene.statemenu.remaininpoints.setText(
-      `Remaining Points:${this.player.user.state.stat_point}`
+      `Remaining Points :  ${this.player.user.state.stat_point}`
     );
     uiscene.statemenu.jacktext.setText(
       `Name: Jack    Level: ${this.player.user.state.Level}
