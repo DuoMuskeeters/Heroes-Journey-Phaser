@@ -1,7 +1,7 @@
-import { goblinEvents, goblinEventsTypes } from "../../game/events";
+// import { goblinEvents, goblinEventsTypes } from "../../game/events";
 import MainScene from "./MainScene";
-import { Direction, dirVelocity } from "./types";
-let goblinmod = 0;
+// import { Direction, dirVelocity } from "./types";
+// let goblinmod = 0;
 export function goblinMovement(scene: MainScene) {
   // if (scene.mobrect.body instanceof Phaser.Physics.Arcade.Body) {
   //   const distanceofgoblin = scene.goblin.sprite.x - scene.player.sprite.x > 0;
@@ -38,7 +38,6 @@ export function goblinMovement(scene: MainScene) {
   //     scene.goblin.sprite.anims.getName() !== `goblin-death`
   //   ) {
   //     goblinEvents.emit(goblinEventsTypes.SAW_MC);
-
   //     scene.goblin.sprite.anims.play(`goblin-run`, true);
   //     scene.goblin.sprite.anims.stopAfterRepeat(0);
   //     scene.mobrect.body.setVelocityX(
@@ -58,7 +57,6 @@ export function goblinMovement(scene: MainScene) {
   //     scene.goblin.sprite.anims.getName() !== `goblin-bomb`
   //   ) {
   //     scene.goblin.sprite.anims.play(`goblin-attack`, true);
-
   //     scene.goblin.sprite.anims.stopAfterRepeat(0);
   //     scene.mobrect.body.setVelocityX(0);
   //     scene.mobattackrect.setVisible(true);

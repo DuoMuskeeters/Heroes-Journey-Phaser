@@ -1,6 +1,5 @@
 import MenuScene from "../menu/MenuScene";
 import MainScene from "./MainScene";
-import { mobattack } from "./MobAttack";
 
 export function JackPlayer(scene: MainScene | MenuScene) {
   const isMainScene = scene instanceof MainScene;
@@ -87,7 +86,7 @@ export function JackPlayer(scene: MainScene | MenuScene) {
       end: 6,
     }),
     frameRate: 10,
-    repeat: -1,
+    repeat: 1,
   });
 
   scene.anims.create({

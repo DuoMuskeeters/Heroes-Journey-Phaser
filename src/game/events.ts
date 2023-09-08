@@ -8,11 +8,11 @@ export const mcEventTypes = {
   HEAVY_ATTACK_USED: "HEAVY_ATTACK_USED",
 };
 export const goblinEventsTypes = {
-  TAKE_HİT: "TAKE_HİT",
+  TOOK_HIT: "TOOK_HIT",
   DIED: "DIED",
-  SAW_MC: "SAW_MC",
+  STARTED_RUNNING: "STARTED_RUNNING",
   ULTI: "ULTI",
-  ATTACKİNG: "ATTACKİNG",
+  ATTACKING: "ATTACKING",
 };
 export const gameEvents = new Phaser.Events.EventEmitter();
 export const mcEvents = new Phaser.Events.EventEmitter();

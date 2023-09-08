@@ -1,17 +1,15 @@
-import { mob_exp_kazancı } from "../../game/Karakter";
+// import { mob_exp_kazancı } from "../../game/Karakter";
 import MainScene from "./MainScene";
-import { Direction, dirVelocity } from "./types";
+// import { Direction, dirVelocity } from "./types";
 
 export function mobattack(scene: MainScene) {
   // scene.goblin.sprite.on("animationstop", () => {
   //   const mobattack =
   //     Math.abs(scene.rect.y - scene.mobattackrect.y) < 67 &&
   //     Math.abs(scene.rect.x - scene.mobattackrect.x) < (60 / 1440) * window.innerWidth;
-
   //   let goblinbombframe =
   //     Number(scene.goblin.sprite.anims.getFrameName()) <= 5 ||
   //     Number(scene.goblin.sprite.anims.getFrameName()) >= 8;
-
   //   if (
   //     scene.goblin.sprite.anims.getName() === `goblin-attack` &&
   //     scene.player.user.state.HP >= 0 &&
@@ -53,7 +51,6 @@ export function mobattack(scene: MainScene) {
   //     scene.player.user.level_up();
   //   }
   // });
-
   // scene.bomb.sprite.on("animationstop", () => {
   //   if (scene.bomb.sprite.body instanceof Phaser.Physics.Arcade.Body) {
   //     scene.bomb.sprite.body.setVelocityX(0);

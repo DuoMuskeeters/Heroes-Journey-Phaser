@@ -8,20 +8,13 @@ import {
 } from "../../game/Karakter";
 import { forestBackground } from "./assets";
 import PhaserGame from "../../PhaserGame";
-import { JackPlayer, goblinMob } from "./Anims";
+import { JackPlayer } from "./Anims";
 import { JackMovement } from "./PlayerMovemet";
 import { Resize } from "./Resize";
 import { healtbar, playerspbar } from "./Components";
 import { Backroundmovement } from "./GameMovement";
-import { goblinMovement } from "./MobMovement";
 import { UiScene } from "./uiScene";
-import { jackattack } from "./Playerattack";
-import {
-  eventTypes,
-  gameEvents,
-  goblinEvents,
-  goblinEventsTypes,
-} from "../../game/events";
+import { eventTypes, gameEvents } from "../../game/events";
 import MobController from "./mobController";
 
 const jack = Warrior.from_Character(create_character("Ali"));
@@ -216,8 +209,8 @@ export default class MainScene extends Phaser.Scene {
 
       const objectsLayer = this.tilemap.getObjectLayer("goblin");
 
-      objectsLayer?.objects.forEach((objData) => {
-        const { x = 0, y = 0, name, width = 0, height = 0 } = objData;
+      objectsLayer?.objects.forEach((objData, idx) => {
+        const { x = 0, y = 0, name } = objData;
 
         switch (name) {
           case "goblin": {
@@ -249,6 +242,7 @@ export default class MainScene extends Phaser.Scene {
               );
             this.goblinsprite.push(
               new MobController(
+                idx,
                 this,
                 {
                   sprite: sprite,
@@ -262,7 +256,7 @@ export default class MainScene extends Phaser.Scene {
                 },
                 this.mobrect,
                 mobattackrect
-              )
+              ).reset()
             );
 
             this.physics.add.collider(

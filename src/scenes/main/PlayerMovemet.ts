@@ -32,7 +32,7 @@ export function JackMovement(scene: MainScene) {
   }
   if (scene.player.user.state.HP <= 0) {
     scene.player.sprite.anims.play(`death`, true);
-    scene.player.sprite.anims.stopAfterRepeat(0);
+    scene.player.sprite.anims.stopAfterRepeat();
     mcEvents.emit(mcEventTypes.DIED);
   }
   scene.player.sprite.anims.chain(undefined!);
