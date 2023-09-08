@@ -169,9 +169,53 @@
          "width":100,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":17,
+         "name":"goblin",
+         "objects":[
+                {
+                 "height":64.5855758880517,
+                 "id":7,
+                 "name":"goblin",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":34.0868317186939,
+                 "x":1246.32984488513,
+                 "y":191.137053075931
+                }, 
+                {
+                 "height":62.9359626579955,
+                 "id":11,
+                 "name":"goblin",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":30.9435149735143,
+                 "x":2207.71987455492,
+                 "y":190.145761830586
+                }, 
+                {
+                 "height":62.2775800711744,
+                 "id":14,
+                 "name":"goblin",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":31.1387900355871,
+                 "x":2913.70106761566,
+                 "y":193.505338078292
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":17,
- "nextobjectid":1,
+ "nextlayerid":18,
+ "nextobjectid":18,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.2",

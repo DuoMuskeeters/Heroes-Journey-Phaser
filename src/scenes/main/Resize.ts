@@ -10,12 +10,12 @@ export function Resize(scene: MainScene | MenuScene) {
     (2.2 / 1328) * window.innerWidth,
     (2.6 / 787) * window.innerHeight
   );
-  if (scene instanceof MainScene) {
-    scene.goblin.sprite = scene.goblin.sprite.setScale(
-      (2.3 / 1328) * window.innerWidth,
-      (2.7 / 787) * window.innerHeight
-    );
-  }
+  // if (scene instanceof MainScene) {
+  //   scene.goblin.sprite = scene.goblin.sprite.setScale(
+  //     (2.3 / 1328) * window.innerWidth,
+  //     (2.7 / 787) * window.innerHeight
+  //   );
+  // }
   for (let i = 0; i < 3; i++) {
     scene.backgrounds[i].sprite.setDisplaySize(
       window.innerWidth,

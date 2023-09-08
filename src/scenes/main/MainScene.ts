@@ -1,30 +1,39 @@
 import Phaser from "phaser";
 import { Direction, dirVelocity } from "./types";
-import { Warrior, create_character, create_giant } from "../../game/Karakter";
+import {
+  Giant,
+  Warrior,
+  create_character,
+  create_giant,
+} from "../../game/Karakter";
 import { forestBackground } from "./assets";
 import PhaserGame from "../../PhaserGame";
 import { JackPlayer, goblinMob } from "./Anims";
 import { JackMovement } from "./PlayerMovemet";
 import { Resize } from "./Resize";
-import {
-  goblinHealtbar,
-  goblinspbar,
-  healtbar,
-  playerspbar,
-} from "./Components";
+import { healtbar, playerspbar } from "./Components";
 import { Backroundmovement } from "./GameMovement";
 import { goblinMovement } from "./MobMovement";
 import { UiScene } from "./uiScene";
 import { jackattack } from "./Playerattack";
-import { eventTypes, gameEvents } from "../../game/events";
+import {
+  eventTypes,
+  gameEvents,
+  goblinEvents,
+  goblinEventsTypes,
+} from "../../game/events";
+import MobController from "./mobController";
 
 const jack = Warrior.from_Character(create_character("Ali"));
 
 export default class MainScene extends Phaser.Scene {
-  rect!: Phaser.GameObjects.Sprite;
+  rect!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   attackrect!: Phaser.GameObjects.Rectangle;
-  mobrect!: Phaser.GameObjects.Sprite;
+  mobrect!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   mobattackrect!: Phaser.GameObjects.Rectangle;
+  frontroad!: Phaser.Tilemaps.TilemapLayer;
+  backroad!: Phaser.Tilemaps.TilemapLayer;
+  // mobreclist: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody[] = [];
   player = {
     sprite: {} as Phaser.GameObjects.Sprite,
     lastdirection: Direction.right as Direction,
@@ -39,14 +48,16 @@ export default class MainScene extends Phaser.Scene {
     hearticon: {} as Phaser.Tilemaps.TilemapLayer,
     manaicon: {} as Phaser.Tilemaps.TilemapLayer,
   };
+  goblinsprite: MobController[] = [];
   goblin = {
     sprite: {} as Phaser.GameObjects.Sprite,
-
     lastdirection: Direction.left as Direction,
-    mob: create_giant(1),
+    mob: {} as Giant,
     healtbar: {} as Phaser.GameObjects.Graphics,
     hptitle: {} as Phaser.GameObjects.Text,
     spbar: {} as Phaser.GameObjects.Graphics,
+    SawMc: {} as boolean,
+    Attacking: {} as boolean,
   };
   backgrounds: {
     rationx: number;
@@ -66,11 +77,17 @@ export default class MainScene extends Phaser.Scene {
     super("mainscene");
   }
   create() {
+    JackPlayer(this);
+
     gameEvents.on(eventTypes.PAUSE_TOGGLE_REQUESTED, () => {
       // goblin vuracak kadar yakın ise izin verme
       if (this.scene.isActive()) this.scene.pause();
       else this.scene.resume();
     });
+    // goblinEvents.on(goblinEventsTypes.TAKE_HİT, () => {
+    //   this.goblin.sprite.anims.play("goblin-takehit", true);
+    //   this.goblin.sprite.anims.stopAfterRepeat(0);
+    // });
 
     this.tilemap = this.make.tilemap({ key: "roadfile" });
 
@@ -95,13 +112,15 @@ export default class MainScene extends Phaser.Scene {
       grass2 &&
       grass3
     ) {
-      this.tilemap
+      //@ts-ignore
+      this.frontroad = this.tilemap
         .createLayer("backroad", tiles)
         ?.setScale(
           (2.04 / 1311) * window.innerWidth,
           (2.04 / 724) * window.innerHeight
         );
-      const backroad = this.tilemap
+      //@ts-ignore
+      this.backroad = this.tilemap
         .createLayer("frontroad", tiles)
         ?.setScale(
           (2.04 / 1311) * window.innerWidth,
@@ -151,7 +170,8 @@ export default class MainScene extends Phaser.Scene {
         );
 
       // backroad.setCollisionByExclusion([-1], true);
-      backroad?.setCollisionByProperty({ collides: true });
+      this.backroad?.setCollisionByProperty({ collides: true });
+      this.frontroad?.setCollisionByProperty({ collides: true });
       this.rect = this.physics.add
         .sprite(500, 0, "rect")
         .setVisible(false)
@@ -164,18 +184,18 @@ export default class MainScene extends Phaser.Scene {
         undefined,
         0xff2400
       );
-      this.mobrect = this.physics.add
-        .sprite(1000, 0, "mobrect")
-        .setVisible(false)
-        .setCollideWorldBounds(true)
-        .setBounce(0.1);
-      this.mobattackrect = this.add.rectangle(
-        this.mobrect.x,
-        this.mobrect.y,
-        undefined,
-        undefined,
-        0xff2400
-      );
+      // this.mobrect = this.physics.add
+      //   .sprite(1000, 0, "mobrect")
+      //   .setVisible(false)
+      //   .setCollideWorldBounds(true)
+      //   .setBounce(0.1);
+      // this.mobattackrect = this.add.rectangle(
+      //   this.mobrect.x,
+      //   this.mobrect.y,
+      //   undefined,
+      //   undefined,
+      //   0xff2400
+      // );
 
       this.rect.setDisplaySize(
         (64 / 1311) * window.innerWidth,
@@ -185,17 +205,77 @@ export default class MainScene extends Phaser.Scene {
         (160 / 1283) * window.innerWidth,
         (32 / 724) * window.innerHeight
       );
-      this.mobrect.setDisplaySize(
-        (64 / 1311) * window.innerWidth,
-        (125 / 724) * window.innerHeight
-      );
-      this.mobattackrect.setDisplaySize(
-        (75 / 1311) * window.innerWidth,
-        (32 / 724) * window.innerHeight
-      );
+      // this.mobrect.setDisplaySize(
+      //   (64 / 1311) * window.innerWidth,
+      //   (125 / 724) * window.innerHeight
+      // );
+      // this.mobattackrect.setDisplaySize(
+      //   (75 / 1311) * window.innerWidth,
+      //   (32 / 724) * window.innerHeight
+      // );
 
-      if (backroad)
-        this.physics.add.collider([this.rect, this.mobrect], backroad);
+      const objectsLayer = this.tilemap.getObjectLayer("goblin");
+
+      objectsLayer?.objects.forEach((objData) => {
+        const { x = 0, y = 0, name, width = 0, height = 0 } = objData;
+
+        switch (name) {
+          case "goblin": {
+            const { healtbar, hptitle, spbar, SawMc, Attacking } = this.goblin;
+            const sprite = this.add.sprite(x, y, "goblin-ıdle");
+            const mob = create_giant(1);
+            this.mobrect = this.physics.add
+              .sprite(x, y, "mobrect")
+              .setVisible(false)
+              // .setCollideWorldBounds(true)
+              // .setBounce(0.1)
+              .setDisplaySize(
+                (64 / 1311) * window.innerWidth,
+                (125 / 724) * window.innerHeight
+              );
+
+            // this.mobreclist.push(this.mobrect);
+            const mobattackrect = this.add
+              .rectangle(
+                this.mobrect.x,
+                this.mobrect.y,
+                undefined,
+                undefined,
+                0xff2400
+              )
+              .setDisplaySize(
+                (75 / 1311) * window.innerWidth,
+                (32 / 724) * window.innerHeight
+              );
+            this.goblinsprite.push(
+              new MobController(
+                this,
+                {
+                  sprite: sprite,
+                  lastdirection: Direction.left as Direction,
+                  mob: mob,
+                  healtbar,
+                  hptitle,
+                  spbar,
+                  SawMc,
+                  Attacking,
+                },
+                this.mobrect,
+                mobattackrect
+              )
+            );
+
+            this.physics.add.collider(
+              [this.mobrect],
+              [this.backroad, this.frontroad]
+            );
+            // this.obstacles.add("snowman", snowman.body as MatterJS.BodyType);
+            break;
+          }
+        }
+      });
+      // this.physics.add.collider(this.mobreclist, this.mobreclist);
+      this.physics.add.collider([this.rect], [this.backroad, this.frontroad]);
     }
     this.player.frame = this.make.tilemap({ key: "player-avatar" });
     const avatarframe = this.player.frame.addTilesetImage(
@@ -286,9 +366,7 @@ export default class MainScene extends Phaser.Scene {
     setInterval(() => {
       this.player.user.regeneration();
     }, 1000);
-    setInterval(() => {
-      this.goblin.mob.mob_regeneration();
-    }, 1000);
+
     this.player.hpbar = this.add
       .sprite(
         (238 / 1440) * window.innerWidth,
@@ -314,12 +392,8 @@ export default class MainScene extends Phaser.Scene {
       .setDepth(5)
       .setScrollFactor(0);
 
-    this.goblin.healtbar = this.add.graphics();
-    this.goblin.spbar = this.add.graphics();
     forestBackground(this);
-    JackPlayer(this);
-    goblinMob(this);
-    jackattack(this);
+    // goblinMob(this);
     this.player.sprite.anims.play("fall", true);
     this.player.sprite.anims.stopAfterRepeat(0);
 
@@ -358,27 +432,19 @@ export default class MainScene extends Phaser.Scene {
       .setScrollFactor(0)
 
       .setScale((1 / 1440) * window.innerWidth, (1 / 900) * window.innerHeight);
-    this.goblin.hptitle = this.add
-      .text(0, 0, `${this.goblin.mob.state.HP}`)
-      .setStyle({
-        fontSize: "22px Arial",
-        color: "red",
-        align: "center",
-      })
-      .setFontFamily('Georgia, "Goudy Bookletter 1911", Times, serif')
-      .setFontStyle("bold");
+
     this.scene.launch("ui");
   }
 
   update(time: number, delta: number): void {
     const uiscene = PhaserGame.scene.keys.ui as UiScene;
     JackMovement(this);
-    goblinMovement(this);
+    // goblinMovement(this);
     Backroundmovement(this);
     healtbar(this);
     playerspbar(this);
-    goblinHealtbar(this);
-    goblinspbar(this);
+    // goblinHealtbar(this);
+    // goblinspbar(this);
     uiscene.statemenu.remaininpoints.setText(
       `Remaining Points :  ${this.player.user.state.stat_point}`
     );
@@ -391,9 +457,7 @@ Job: Samurai  MAX HP: ${this.player.user.state.max_hp}`
       this.rect.x +
       dirVelocity[this.player.lastdirection] * (80 / 899) * window.innerWidth;
     this.attackrect.y = this.rect.y;
-    this.mobattackrect.x =
-      this.mobrect.x +
-      dirVelocity[this.goblin.lastdirection] * (48 / 899) * window.innerWidth;
-    this.mobattackrect.y = this.mobrect.y;
+
+    this.goblinsprite.forEach((goblinsprite) => goblinsprite.update(delta));
   }
 }

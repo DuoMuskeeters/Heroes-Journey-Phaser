@@ -37,10 +37,7 @@ export function JackMovement(scene: MainScene) {
   }
   scene.player.sprite.anims.chain(undefined!);
   scene.player?.sprite.anims.chain([`fall`]);
-  if (
-    scene.rect.body instanceof Phaser.Physics.Arcade.Body &&
-    !scene.rect.body.onFloor()
-  ) {
+  if (!scene.rect.body.onFloor()) {
     if (keyD?.isDown || keyA?.isDown) {
       scene.rect.body.setVelocityX(
         dirVelocity[scene.player.lastdirection] *
@@ -50,10 +47,7 @@ export function JackMovement(scene: MainScene) {
       scene.rect.body.setVelocityX(0);
     }
   }
-  if (
-    scene.rect.body instanceof Phaser.Physics.Arcade.Body &&
-    scene.rect.body.onFloor()
-  ) {
+  if (scene.rect.body.onFloor()) {
     if (
       keyW?.isDown &&
       scene.player.sprite.anims.getName() !== `death` &&

@@ -100,16 +100,7 @@ export function JackPlayer(scene: MainScene | MenuScene) {
     repeat: -1,
   });
 }
-export function goblinMob(scene: MainScene) {
-  scene.goblin.sprite = scene.add
-    .sprite(
-      scene.player.sprite.x + 500,
-      window.innerHeight * 0.63,
-      "goblin-ıdle"
-    )
-    .setScale(window.innerHeight / 300)
-    .setDepth(4);
-
+export function goblinMob(scene: MainScene, atkrate: number) {
   scene.anims.create({
     key: "goblin-bomb",
     frames: scene.anims.generateFrameNumbers("goblin-bomb", {
@@ -156,7 +147,7 @@ export function goblinMob(scene: MainScene) {
       start: 8,
       end: 0,
     }),
-    frameRate: 8,
+    frameRate: 7,
     repeat: -1,
   });
 
@@ -166,19 +157,19 @@ export function goblinMob(scene: MainScene) {
       start: 8,
       end: 0,
     }),
-    frameRate: scene.goblin.mob.state.ATKRATE * 6.5,
+    frameRate: atkrate * 6.5,
     repeat: -1,
   });
 
-  scene.bomb.sprite = scene.add
-    .sprite(
-      window.innerWidth * 0.82,
-      window.innerHeight * 0.63,
-      `goblin-attack-bomb`
-    )
-    .setScale(window.innerHeight / 300)
-    .setDepth(4)
-    .setVisible(false);
+  // scene.bomb.sprite = scene.add
+  //   .sprite(
+  //     window.innerWidth * 0.82,
+  //     window.innerHeight * 0.63,
+  //     `goblin-attack-bomb`
+  //   )
+  //   .setScale(window.innerHeight / 300)
+  //   .setDepth(4)
+  //   .setVisible(false);
 
   scene.anims.create({
     key: "goblin-attack-bomb",
@@ -190,7 +181,7 @@ export function goblinMob(scene: MainScene) {
     repeat: -1,
   });
 
-  mobattack(scene);
+  // mobattack(scene);
 }
 export function shop(scene: MainScene | MenuScene) {
   scene.shopobject = scene.add
