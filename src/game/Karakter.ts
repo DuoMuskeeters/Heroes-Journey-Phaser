@@ -120,7 +120,7 @@ export class Character extends Canlı {
       this.state.stat_point += 5;
     }
   }
-  increase_Strenght() {
+  increase_Strength() {
     if (this.state.stat_point > 0) {
       this.state.Strength += 1;
       this.state.stat_point -= 1;
