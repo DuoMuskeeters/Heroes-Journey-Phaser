@@ -75,49 +75,49 @@ export function playerspbar(scene: MainScene) {
   );
 }
 
-export function goblinHealtbar(scene: MobController) {
+export function goblinHealtbar(controller: MobController) {
   const width = 100;
   const percent =
-    Math.max(0, scene.mob.mob.state.HP) / scene.mob.mob.state.max_hp;
-  scene.mob.hptitle
+    Math.max(0, controller.mob.mob.state.HP) / controller.mob.mob.state.max_hp;
+  controller.mob.hptitle
     .setText(
-      `${
-        scene.mob.mob.state.Level
-      }-level\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t${Math.round(
-        Math.max(0, scene.mob.mob.state.HP)
+      `${controller.name}: (${
+        controller.mob.mob.state.Level
+      })\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t${Math.round(
+        Math.max(0, controller.mob.mob.state.HP)
       )}`
     )
-    .setPosition(scene.mobrect.x - 70, scene.mobrect.y - 72)
+    .setPosition(controller.mobrect.x - 70, controller.mobrect.y - 72)
     .setDepth(5);
 
-  scene.mob.healtbar.clear();
-  scene.mob.healtbar.fillStyle(0x808080);
-  scene.mob.healtbar
+  controller.mob.healtbar.clear();
+  controller.mob.healtbar.fillStyle(0x808080);
+  controller.mob.healtbar
     .fillRoundedRect(0, 0, width, 10, 5)
-    .setPosition(scene.mobrect.x - 50, scene.mobrect.y - 40);
+    .setPosition(controller.mobrect.x - 50, controller.mobrect.y - 40);
   if (percent > 0) {
-    scene.mob.healtbar.fillStyle(0x00ff00);
-    scene.mob.healtbar
+    controller.mob.healtbar.fillStyle(0x00ff00);
+    controller.mob.healtbar
       .fillRoundedRect(0, 0, width * percent, 10, 5)
-      .setPosition(scene.mobrect.x - 50, scene.mobrect.y - 40)
+      .setPosition(controller.mobrect.x - 50, controller.mobrect.y - 40)
       .setDepth(5);
   }
 }
-export function goblinspbar(scene: MobController) {
+export function goblinspbar(controller: MobController) {
   const width = 90;
   const percent =
-    Math.max(0, scene.mob.mob.state.SP) / scene.mob.mob.state.max_sp;
+    Math.max(0, controller.mob.mob.state.SP) / controller.mob.mob.state.max_sp;
 
-  scene.mob.spbar.clear();
-  scene.mob.spbar.fillStyle(0x808080);
-  scene.mob.spbar
+  controller.mob.spbar.clear();
+  controller.mob.spbar.fillStyle(0x808080);
+  controller.mob.spbar
     .fillRoundedRect(0, 0, width, 3, 0)
-    .setPosition(scene.mobrect.x - 45, scene.mobrect.y - 30);
+    .setPosition(controller.mobrect.x - 45, controller.mobrect.y - 30);
   if (percent > 0) {
-    scene.mob.spbar.fillStyle(0xffff00);
-    scene.mob.spbar
+    controller.mob.spbar.fillStyle(0xffff00);
+    controller.mob.spbar
       .fillRoundedRect(0, 0, width * percent, 3, 0)
-      .setPosition(scene.mobrect.x - 45, scene.mobrect.y - 30)
+      .setPosition(controller.mobrect.x - 45, controller.mobrect.y - 30)
       .setDepth(5);
   }
 }

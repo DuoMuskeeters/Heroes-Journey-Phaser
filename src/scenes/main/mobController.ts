@@ -16,6 +16,7 @@ export default class MobController {
 
   constructor(
     public index: number,
+    public name: string,
     scene: MainScene,
     mob: MainScene["goblin"],
     mobrect: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody,

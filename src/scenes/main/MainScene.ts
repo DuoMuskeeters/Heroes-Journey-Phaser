@@ -71,7 +71,6 @@ export default class MainScene extends Phaser.Scene {
   }
   create() {
     JackPlayer(this);
-
     gameEvents.on(eventTypes.PAUSE_TOGGLE_REQUESTED, () => {
       // goblin vuracak kadar yakın ise izin verme
       if (this.scene.isActive()) this.scene.pause();
@@ -207,66 +206,60 @@ export default class MainScene extends Phaser.Scene {
       //   (32 / 724) * window.innerHeight
       // );
 
-      const objectsLayer = this.tilemap.getObjectLayer("goblin");
+      this.tilemap.getObjectLayer("goblin")?.objects.forEach((objData) => {
+        const { x = 0, y = 0, name, id } = objData;
 
-      objectsLayer?.objects.forEach((objData, idx) => {
-        const { x = 0, y = 0, name } = objData;
+        const { healtbar, hptitle, spbar, SawMc, Attacking } = this.goblin;
+        const sprite = this.add.sprite(x, y, "goblin-ıdle");
+        const mob = create_giant(this.player.user.state.Level);
+        this.mobrect = this.physics.add
+          .sprite(x, y, "mobrect")
+          .setVisible(false)
+          // .setCollideWorldBounds(true)
+          // .setBounce(0.1)
+          .setDisplaySize(
+            (64 / 1311) * window.innerWidth,
+            (125 / 724) * window.innerHeight
+          );
 
-        switch (name) {
-          case "goblin": {
-            const { healtbar, hptitle, spbar, SawMc, Attacking } = this.goblin;
-            const sprite = this.add.sprite(x, y, "goblin-ıdle");
-            const mob = create_giant(1);
-            this.mobrect = this.physics.add
-              .sprite(x, y, "mobrect")
-              .setVisible(false)
-              // .setCollideWorldBounds(true)
-              // .setBounce(0.1)
-              .setDisplaySize(
-                (64 / 1311) * window.innerWidth,
-                (125 / 724) * window.innerHeight
-              );
+        // this.mobreclist.push(this.mobrect);
+        const mobattackrect = this.add
+          .rectangle(
+            this.mobrect.x,
+            this.mobrect.y,
+            undefined,
+            undefined,
+            0xff2400
+          )
+          .setDisplaySize(
+            (75 / 1311) * window.innerWidth,
+            (32 / 724) * window.innerHeight
+          );
+        this.goblinsprite.push(
+          new MobController(
+            id,
+            name,
+            this,
+            {
+              sprite: sprite,
+              lastdirection: Direction.left as Direction,
+              mob: mob,
+              healtbar,
+              hptitle,
+              spbar,
+              SawMc,
+              Attacking,
+            },
+            this.mobrect,
+            mobattackrect
+          ).reset()
+        );
 
-            // this.mobreclist.push(this.mobrect);
-            const mobattackrect = this.add
-              .rectangle(
-                this.mobrect.x,
-                this.mobrect.y,
-                undefined,
-                undefined,
-                0xff2400
-              )
-              .setDisplaySize(
-                (75 / 1311) * window.innerWidth,
-                (32 / 724) * window.innerHeight
-              );
-            this.goblinsprite.push(
-              new MobController(
-                idx,
-                this,
-                {
-                  sprite: sprite,
-                  lastdirection: Direction.left as Direction,
-                  mob: mob,
-                  healtbar,
-                  hptitle,
-                  spbar,
-                  SawMc,
-                  Attacking,
-                },
-                this.mobrect,
-                mobattackrect
-              ).reset()
-            );
-
-            this.physics.add.collider(
-              [this.mobrect],
-              [this.backroad, this.frontroad]
-            );
-            // this.obstacles.add("snowman", snowman.body as MatterJS.BodyType);
-            break;
-          }
-        }
+        this.physics.add.collider(
+          [this.mobrect],
+          [this.backroad, this.frontroad]
+        );
+        // this.obstacles.add("snowman", snowman.body as MatterJS.BodyType);
       });
       // this.physics.add.collider(this.mobreclist, this.mobreclist);
       this.physics.add.collider([this.rect], [this.backroad, this.frontroad]);

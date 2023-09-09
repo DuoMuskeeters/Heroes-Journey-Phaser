@@ -72,7 +72,7 @@ Job: Samurai    MAX HP:   ${mainscene.player.user.state.max_hp}`
       .setFontStyle("bold")
       .setScale(
         (1.1 / 1440) * window.innerWidth,
-        (1.1/ 900) * window.innerHeight
+        (1.1 / 900) * window.innerHeight
       );
     this.remaininpoints = scene.add
       .text(
@@ -105,10 +105,7 @@ Job: Samurai    MAX HP:   ${mainscene.player.user.state.max_hp}`
       .setFontFamily("Bradley Hand, cursive")
       .setFontStyle("bold")
       .setScale((1 / 1440) * window.innerWidth, (1 / 900) * window.innerHeight);
-    Strenght.setInteractive().on(Phaser.Input.Events.POINTER_UP, () => {
-      mainscene.player.user.increase_Strenght();
-      Strenghttext.setText(`Strenght:  ${mainscene.player.user.state.Strength}`);
-    });
+
     const Agility = scene.add
       .image(
         (-200 / 1440) * window.innerWidth,
@@ -130,10 +127,7 @@ Job: Samurai    MAX HP:   ${mainscene.player.user.state.max_hp}`
       .setFontFamily("Bradley Hand, cursive")
       .setFontStyle("bold")
       .setScale((1 / 1440) * window.innerWidth, (1 / 900) * window.innerHeight);
-    Agility.setInteractive().on(Phaser.Input.Events.POINTER_UP, () => {
-      mainscene.player.user.increase_Agility();
-      Agilitytext.setText(`Agility:  ${mainscene.player.user.state.Agility}`);
-    });
+
     const Intelligence = scene.add
       .image(
         (-200 / 1440) * window.innerWidth,
@@ -155,12 +149,7 @@ Job: Samurai    MAX HP:   ${mainscene.player.user.state.max_hp}`
       .setFontFamily("Bradley Hand, cursive")
       .setFontStyle("bold")
       .setScale((1 / 1440) * window.innerWidth, (1 / 900) * window.innerHeight);
-    Intelligence.setInteractive().on(Phaser.Input.Events.POINTER_UP, () => {
-      mainscene.player.user.increase_Intelligence();
-      Intelligencetext.setText(
-        `Intelligence: ${mainscene.player.user.state.Intelligence}`
-      );
-    });
+
     const Constitution = scene.add
       .image(
         (-200 / 1440) * window.innerWidth,
@@ -182,12 +171,34 @@ Job: Samurai    MAX HP:   ${mainscene.player.user.state.max_hp}`
       .setFontFamily("Bradley Hand, cursive")
       .setFontStyle("bold")
       .setScale((1 / 1440) * window.innerWidth, (1 / 900) * window.innerHeight);
-    Constitution.setInteractive().on(Phaser.Input.Events.POINTER_UP, () => {
-      mainscene.player.user.increase_Constitution();
-      Constitutiontext.setText(
-        `Constitution: ${mainscene.player.user.state.Constitution}`
-      );
+
+    const buttons = [
+      { type: "Strength", button: Strenght, text: Strenghttext },
+      { type: "Agility", button: Agility, text: Agilitytext },
+      { type: "Intelligence", button: Intelligence, text: Intelligencetext },
+      { type: "Constitution", button: Constitution, text: Constitutiontext },
+    ] as const;
+
+    buttons.forEach((button) => {
+      button.button.setInteractive().on(Phaser.Input.Events.POINTER_UP, () => {
+        if (mainscene.player.user.state.stat_point > 0) {
+          // button type -> "Agility"
+          mainscene.player.user[`increase_${button.type}`]();
+          button.text.setText(
+            `${button.type}: ${mainscene.player.user.state[button.type]}`
+          );
+          this.remaininpoints.setText(
+            `Remaining Points :  ${mainscene.player.user.state.stat_point}`
+          );
+        }
+      });
     });
+
+    // TODO: .setFontFamily .setFontStyle .setScale forEach
+    // .setFontFamily("Bradley Hand, cursive")
+    //   .setFontStyle("bold")
+    //   .setScale((1 / 1440) * window.innerWidth, (1 / 900) * window.innerHeight);
+
     const preesc = scene.add
       .text(
         (-30 / 1440) * window.innerWidth,
