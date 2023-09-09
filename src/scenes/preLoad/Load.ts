@@ -1,5 +1,5 @@
-import { eventTypes, gameEvents } from "../../game/events";
-import { preloadAssets } from "../main/assets";
+import { eventTypes, gameEvents } from "../../game/types/events";
+import { preloadAssets } from "./assets";
 
 export default class LoadScene extends Phaser.Scene {
   loadspin!: Phaser.GameObjects.Sprite;

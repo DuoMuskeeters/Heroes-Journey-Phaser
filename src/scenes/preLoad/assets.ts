@@ -1,6 +1,6 @@
-import MainScene from "./MainScene";
+import MainScene from "../main/MainScene";
 import MenuScene from "../menu/MenuScene";
-import LoadScene from "../menu/Load";
+import LoadScene from "./Load";
 
 export function preloadAssets(scene: LoadScene) {
   scene.load.pack("mainscene", "player-package.json");
@@ -9,7 +9,7 @@ export function preloadAssets(scene: LoadScene) {
 }
 
 export function forestBackground(scene: MainScene | MenuScene) {
-  scene.backgrounds?.push({
+  const bg1 = {
     rationx: 0.05,
     sprite: scene.add
       .tileSprite(0, 0, 0, 0, "background1")
@@ -17,9 +17,9 @@ export function forestBackground(scene: MainScene | MenuScene) {
       .setOrigin(0, 0)
       .setDepth(-3)
       .setScrollFactor(0),
-  });
+  };
 
-  scene.backgrounds?.push({
+  const bg2 = {
     rationx: 0.1,
     sprite: scene.add
       .tileSprite(0, 0, 0, 0, "background2")
@@ -28,9 +28,9 @@ export function forestBackground(scene: MainScene | MenuScene) {
 
       .setDisplaySize(window.innerWidth, window.innerHeight)
       .setScrollFactor(0),
-  });
+  };
 
-  scene.backgrounds?.push({
+  const bg3 = {
     rationx: 0.15,
     sprite: scene.add
       .tileSprite(0, 0, 0, 0, "background3")
@@ -38,15 +38,18 @@ export function forestBackground(scene: MainScene | MenuScene) {
       .setDepth(-1)
       .setDisplaySize(window.innerWidth, window.innerHeight)
       .setScrollFactor(0),
-  });
+  };
+  scene.backgrounds = [bg1, bg3, bg3];
 }
 export function forestRoad(scene: MenuScene) {
-  scene.road?.push({
+  const road = {
     rationx: 0.3,
     sprite: scene.add
       .tileSprite(0, window.innerHeight * 0.628, 0, 0, "piskel")
       .setOrigin(0)
       .setScale(window.innerHeight * 0.0039)
       .setScrollFactor(0),
-  });
+  };
+
+  scene.road = road;
 }

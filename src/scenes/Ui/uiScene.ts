@@ -1,12 +1,14 @@
-import statemenu from "./StateMenu";
-import heroesJourneyMap from "./HeroesJourneyMap";
-import HeroesJourneyMap from "./HeroesJourneyMap";
+import statemenu from "../menu/StateMenu";
+import heroesJourneyMap from "./Map";
+import HeroesJourneyMap from "./Map";
 import {
   eventTypes,
   gameEvents,
   mcEventTypes,
   mcEvents,
-} from "../../game/events";
+} from "../../game/types/events";
+import PhaserGame from "../../PhaserGame";
+import MainScene from "../main/MainScene";
 
 export class UiScene extends Phaser.Scene {
   statemenu!: statemenu;
@@ -19,6 +21,7 @@ export class UiScene extends Phaser.Scene {
   create() {
     this.statemenu = new statemenu(this);
     this.heroesJourneyMap = new heroesJourneyMap(this);
+    const mainscene = PhaserGame.scene.keys.mainscene as MainScene;
     // this.statebutton = this.add
     //   .image(window.innerWidth - 40, 40, "statebutton")
     //   .setScale(5)
@@ -65,6 +68,11 @@ export class UiScene extends Phaser.Scene {
       console.log("heavy attack used");
       // close the state menu
       if (this.statemenu.isOpen) this.statemenu.hide();
+    });
+    gameEvents.on(eventTypes.PAUSE_TOGGLE_REQUESTED, () => {
+      // goblin vuracak kadar yakın ise izin verme
+      if (mainscene.scene.isActive()) mainscene.scene.pause();
+      else mainscene.scene.resume();
     });
   }
 }

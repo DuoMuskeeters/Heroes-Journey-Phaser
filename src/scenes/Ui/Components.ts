@@ -1,5 +1,5 @@
-import MainScene from "./MainScene";
-import MobController from "./mobController";
+import MainScene from "../main/MainScene";
+import MobController from "../main/mobController";
 
 export function healtbar(scene: MainScene) {
   const getMaxHp = () =>

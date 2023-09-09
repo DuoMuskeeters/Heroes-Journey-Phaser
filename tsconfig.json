@@ -22,5 +22,5 @@
   },
   "include": [
     "src"
-, "src/scenes/types"  ]
+, "src/game/types"  ]
 }

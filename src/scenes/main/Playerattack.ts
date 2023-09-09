@@ -1,4 +1,4 @@
-import { goblinEvents, goblinEventsTypes } from "../../game/events";
+import { goblinEvents, goblinEventsTypes } from "../../game/types/events";
 import MainScene from "./MainScene";
 import MobController from "./mobController";
 
@@ -23,7 +23,7 @@ export function jackattack(controller: MobController) {
       if (controller.scene.player.sprite.anims.getName() === "attack2") {
         const damage = controller.scene.player.user.heavy_strike();
         if (controller.mob.mob.state.HP >= 0 && attack) {
-          goblinEvents.emit(goblinEventsTypes.TOOK_HIT);
+          goblinEvents.emit(goblinEventsTypes.TOOK_HIT, controller.index);
           controller.mob.mob.state.HP -=
             (1 - controller.mob.mob.state.Armor) * damage;
         }

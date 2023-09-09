@@ -1,6 +1,6 @@
-import { mcEventTypes, mcEvents } from "../../game/events";
+import { mcEventTypes, mcEvents } from "../../game/types/events";
 import MainScene from "./MainScene";
-import { Direction, dirVelocity } from "./types";
+import { Direction, dirVelocity } from "../../game/types/types";
 
 export function JackMovement(scene: MainScene) {
   const keySpace = scene.input.keyboard?.addKey("SPACE");

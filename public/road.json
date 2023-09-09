@@ -177,7 +177,7 @@
          "objects":[
                 {
                  "height":64.5855758880517,
-                 "id":7,
+                 "id":1,
                  "name":"goblin ferhat",
                  "rotation":0,
                  "type":"",
@@ -188,7 +188,7 @@
                 }, 
                 {
                  "height":62.9359626579955,
-                 "id":11,
+                 "id":2,
                  "name":"goblin ferhat 2",
                  "rotation":0,
                  "type":"",
@@ -199,7 +199,7 @@
                 }, 
                 {
                  "height":62.2775800711744,
-                 "id":14,
+                 "id":3,
                  "name":"goblin ferhat 3",
                  "rotation":0,
                  "type":"",

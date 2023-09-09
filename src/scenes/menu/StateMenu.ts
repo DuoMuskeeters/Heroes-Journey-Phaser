@@ -1,4 +1,4 @@
-import MainScene from "./MainScene";
+import MainScene from "../main/MainScene";
 import PhaserGame from "../../PhaserGame";
 
 export default class statemenu {

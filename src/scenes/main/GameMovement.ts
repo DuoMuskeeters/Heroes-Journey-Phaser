@@ -7,8 +7,5 @@ export function Backroundmovement(scene: MainScene | MenuScene) {
       bg.sprite.tilePositionX = scene.cameras.main.scrollX * bg.rationx;
     }
   }
-  // if (scene.road !== undefined) {
-  //   scene.road[0].sprite.tilePositionX =
-  //     scene.cameras.main.scrollX * scene.road[0].rationx;
-  // }
+
 }

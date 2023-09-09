@@ -1,9 +1,9 @@
 import Phaser from "phaser";
 import { JackPlayer, shop } from "../main/Anims";
-import { forestBackground, forestRoad } from "../main/assets";
+import { forestBackground, forestRoad } from "../preLoad/assets";
 import { Resize } from "../main/Resize";
 import { Backroundmovement } from "../main/GameMovement";
-import { Direction } from "../main/types";
+import { Direction } from "../../game/types/types";
 
 export default class MenuScene extends Phaser.Scene {
   logo = {} as Phaser.GameObjects.Image;
@@ -17,16 +17,15 @@ export default class MenuScene extends Phaser.Scene {
     sprite: {} as Phaser.GameObjects.Sprite,
     lastdirection: Direction["left"],
   };
-  backgrounds: {
+
+  backgrounds!: {
     rationx: number;
     sprite: Phaser.GameObjects.TileSprite;
-  }[] = [];
-
-  road?: {
+  }[];
+  road!: {
     rationx: number;
     sprite: Phaser.GameObjects.TileSprite;
-  }[] = [];
-
+  };
   shopobject?: Phaser.GameObjects.Sprite;
 
   constructor() {
@@ -108,8 +107,8 @@ export default class MenuScene extends Phaser.Scene {
   update(time: number, delta: number): void {
     Backroundmovement(this);
     if (this.road !== undefined) {
-      this.road[0].sprite.tilePositionX =
-        this.cameras.main.scrollX * this.road[0].rationx;
+      this.road.sprite.tilePositionX =
+        this.cameras.main.scrollX * this.road.rationx;
     }
   }
 
