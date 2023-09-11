@@ -1,12 +1,12 @@
 import Phaser from "phaser";
 import { Direction, dirVelocity } from "../../game/types/types";
 import { Giant, Warrior, create_character } from "../../game/Karakter";
-import { forestBackground as createBackground } from "../preLoad/assets";
+import { createBackground as createBackground } from "../preLoad/assets";
 import PhaserGame from "../../PhaserGame";
-import { JackPlayer as createPlayeranims } from "./Anims";
+import { createPlayeranims as createPlayeranims } from "./Anims";
 import { JackMovement } from "./PlayerMovemet";
 import { Resize } from "./Resize";
-import { healtbar, playerspbar } from "../Ui/Components";
+import { playerhealtbar, playerspbar } from "../Ui/Components";
 import { Backroundmovement } from "./GameMovement";
 import { UiScene } from "../Ui/uiScene";
 import MobController from "./mobController";
@@ -17,15 +17,12 @@ import { createAvatarFrame } from "../Ui/AvatarUi";
 const jack = Warrior.from_Character(create_character("Ali"));
 
 export default class MainScene extends Phaser.Scene {
-  rect!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
-  attackrect!: Phaser.GameObjects.Rectangle;
-  mobrect!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
-  mobattackrect!: Phaser.GameObjects.Rectangle;
   frontroad!: Phaser.Tilemaps.TilemapLayer;
   backroad!: Phaser.Tilemaps.TilemapLayer;
 
   player = {
-    sprite: {} as Phaser.GameObjects.Sprite,
+    sprite: {} as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody,
+    attackrect: {} as Phaser.GameObjects.Rectangle,
     lastdirection: Direction.right as Direction,
     standbytime: 5000,
     ultimate: true,
@@ -40,7 +37,8 @@ export default class MainScene extends Phaser.Scene {
   };
   goblinsprite: MobController[] = [];
   goblin = {
-    sprite: {} as Phaser.GameObjects.Sprite,
+    sprite: {} as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody,
+    attackrect: {} as Phaser.GameObjects.Rectangle,
     lastdirection: Direction.left as Direction,
     mob: {} as Giant,
     healtbar: {} as Phaser.GameObjects.Graphics,
@@ -63,19 +61,40 @@ export default class MainScene extends Phaser.Scene {
   constructor() {
     super("mainscene");
   }
+
   create() {
+    this.tilemap = this.make.tilemap({ key: "roadfile" });
     createBackground(this);
-    createground(this);
-    createPlayeranims(this);
-    createMob(this);
     createAvatarFrame(this);
+    createPlayeranims(this);
+    createground(this);
+    this.player.attackrect = this.add.rectangle(
+      500,
+      500,
+      undefined,
+      undefined,
+      0xff2400
+    );
+
+    this.player.attackrect.setDisplaySize(
+      (250 / 1440) * window.innerWidth,
+      (200 / 900) * window.innerHeight
+    );
+
+    // this.frontroad.setCollisionByExclusion([-1], true);
+
+    this.physics.add.collider(
+      [this.player.sprite],
+      [this.backroad, this.frontroad]
+    );
+    createMob(this);
 
     setInterval(() => {
       this.player.user.regeneration();
     }, 1000);
 
     this.cameras.main.startFollow(
-      this.rect,
+      this.player.sprite,
       false,
       1,
       0,
@@ -154,7 +173,7 @@ export default class MainScene extends Phaser.Scene {
     const uiscene = PhaserGame.scene.keys.ui as UiScene;
     JackMovement(this);
     Backroundmovement(this);
-    healtbar(this);
+    playerhealtbar(this);
     playerspbar(this);
     uiscene.statemenu.remaininpoints.setText(
       `Remaining Points :  ${this.player.user.state.stat_point}`
@@ -164,10 +183,6 @@ export default class MainScene extends Phaser.Scene {
 
 Job: Samurai  MAX HP: ${this.player.user.state.max_hp}`
     );
-    this.attackrect.x =
-      this.rect.x +
-      dirVelocity[this.player.lastdirection] * (80 / 899) * window.innerWidth;
-    this.attackrect.y = this.rect.y;
 
     this.goblinsprite.forEach((goblinsprite) => goblinsprite.update(delta));
   }

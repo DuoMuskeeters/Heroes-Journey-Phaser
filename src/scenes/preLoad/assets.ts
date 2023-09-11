@@ -8,7 +8,7 @@ export function preloadAssets(scene: LoadScene) {
   scene.load.pack("goblin", "goblin-package.json");
 }
 
-export function forestBackground(scene: MainScene | MenuScene) {
+export function createBackground(scene: MainScene | MenuScene) {
   const bg1 = {
     rationx: 0.05,
     sprite: scene.add
@@ -39,7 +39,7 @@ export function forestBackground(scene: MainScene | MenuScene) {
       .setDisplaySize(window.innerWidth, window.innerHeight)
       .setScrollFactor(0),
   };
-  scene.backgrounds = [bg1, bg3, bg3];
+  scene.backgrounds = [bg1, bg3, bg3] ;
 }
 export function forestRoad(scene: MenuScene) {
   const road = {

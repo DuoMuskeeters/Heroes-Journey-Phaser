@@ -8,52 +8,41 @@ export function createMob(scene: MainScene) {
     const { x = 0, y = 0, name, id } = objData;
 
     const { healtbar, hptitle, spbar, SawMc, Attacking, stun } = scene.goblin;
-    const sprite = scene.add.sprite(x, y, "goblin-ıdle");
+    const sprite = scene.physics.add
+      .sprite(x, y, "goblin-ıdle")
+      .setBodySize(30, 46, true)
+      .setCollideWorldBounds(true)
+      .setBounce(0)
+      .setDepth(100);
+
     const mob = create_giant(scene.player.user.state.Level);
-    scene.mobrect = scene.physics.add
-      .sprite(x, y, "mobrect")
-      .setVisible(false)
-      .setDisplaySize(
-        (64 / 1311) * window.innerWidth,
-        (125 / 724) * window.innerHeight
-      );
 
     const mobattackrect = scene.add
       .rectangle(
-        scene.mobrect.x,
-        scene.mobrect.y,
+        scene.goblin.sprite.x,
+        scene.goblin.sprite.y,
         undefined,
         undefined,
         0xff2400
       )
       .setDisplaySize(
-        (75 / 1311) * window.innerWidth,
-        (32 / 724) * window.innerHeight
-      );
-    scene.goblinsprite.push(
-      new MobController(
-        id,
-        name,
-        scene,
-        {
-          sprite: sprite,
-          lastdirection: Direction.left as Direction,
-          mob: mob,
-          healtbar,
-          hptitle,
-          spbar,
-          SawMc,
-          Attacking,
-          stun,
-        },
-        scene.mobrect,
-        mobattackrect
+        (200 / 1311) * window.innerWidth,
+        (110 / 724) * window.innerHeight
       )
-    );
-
-    scene.physics.add.collider(
-      [scene.mobrect],
-      [scene.backroad, scene.frontroad]
+      .setDepth(0);
+    scene.goblinsprite.push(
+      new MobController(id, name, scene, {
+        sprite: sprite,
+        lastdirection: Direction.left as Direction,
+        mob: mob,
+        healtbar,
+        hptitle,
+        spbar,
+        SawMc,
+        Attacking,
+        stun,
+        attackrect: mobattackrect,
+      })
     );
   });
 }

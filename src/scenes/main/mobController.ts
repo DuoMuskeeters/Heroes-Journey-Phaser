@@ -6,11 +6,8 @@ import { jackattack } from "./Playerattack";
 import { Direction, dirVelocity } from "../../game/types/types";
 
 export default class MobController {
-  // 1 tane moba bakıyoz (index)
   scene: MainScene;
   mob: MainScene["goblin"];
-  mobrect!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
-  private mobattackrect!: Phaser.GameObjects.Rectangle;
 
   private goblinmod = 0;
   private ıdletime = 0;
@@ -19,23 +16,23 @@ export default class MobController {
     public index: number,
     public name: string,
     scene: MainScene,
-    mob: MainScene["goblin"],
-    mobrect: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody,
-    mobattackrect: Phaser.GameObjects.Rectangle
+    mob: MainScene["goblin"]
   ) {
     this.scene = scene;
     this.mob = mob;
-    this.mobrect = mobrect;
-    this.mobattackrect = mobattackrect;
+   
 
     this.createAnimations();
     this.mob.stun = false;
     this.mob.sprite.on(Phaser.Animations.Events.ANIMATION_STOP, () => {
+      const playerBodyTopY = Math.floor(scene.player.sprite.body.top);
+      const attackrectBottomY = Math.floor(mob.attackrect.getBottomCenter().y!);
+      const playerBodyBotY = Math.floor(scene.player.sprite.body.bottom);
+      const attackrectTopY = Math.floor(mob.attackrect.getTopCenter().y!);
       const attackActive_Y_line =
-        //@ts-ignore
-        this.scene.rect.getBottomCenter().y >
-        //@ts-ignore
-        this.mobattackrect.getTopCenter().y;
+        (playerBodyTopY <= attackrectBottomY &&
+          playerBodyBotY >= attackrectBottomY) ||
+        (playerBodyTopY <= attackrectTopY && playerBodyBotY >= attackrectTopY);
 
       if (
         this.mob.sprite?.anims.getName() === "goblin-attack" &&
@@ -58,7 +55,7 @@ export default class MobController {
     });
     goblinEvents.on(goblinEventsTypes.TOOK_HIT, (index: number) => {
       if (this.index === index) {
-        mobrect.setVelocityX(0);
+        mob.sprite.setVelocityX(0);
         this.mob.sprite.anims.play("goblin-takehit", true);
         this.mob.sprite.anims.stopAfterRepeat(0);
         this.mob.stun = true;
@@ -70,21 +67,31 @@ export default class MobController {
   }
   canSeeMc() {
     return (
-      Math.abs(this.scene.rect.x - this.mobrect.x) <=
+      Math.abs(this.scene.player.sprite.body.x - this.mob.sprite.x) <=
         (300 / 1440) * window.innerWidth && !this.OnStun()
     );
   }
   canHitMc() {
-    return (
-      Math.abs(this.scene.rect.x - this.mobrect.x) <
-        (120 / 1440) * window.innerWidth && !this.OnStun()
-    );
+    const mcOntHeLeft =
+      this.mob.sprite.body.x - this.scene.player.sprite.body.x > 0;
+
+    if (
+      mcOntHeLeft &&
+      this.scene.player.sprite.body.center.x >=
+        this.mob.attackrect.getLeftCenter().x!
+    ) {
+      return true;
+    }
+    if (
+      !mcOntHeLeft &&
+      this.scene.player.sprite.body.center.x <=
+        this.mob.attackrect.getRightCenter().x!
+    ) {
+      return true;
+    }
   }
 
   update(dt: number) {
-    this.mob.sprite.x = this.mobrect.x;
-    this.mob.sprite.y = this.mobrect.y - (8 / 680) * window.innerHeight;
-
     if (this.canHitMc()) {
       this.mob.SawMc = true;
       this.mob.Attacking = true;
@@ -101,10 +108,11 @@ export default class MobController {
       this.ıdleOnUpdate(dt);
     }
 
-    this.mobattackrect.x =
-      this.mobrect.x +
-      dirVelocity[this.mob.lastdirection] * (48 / 899) * window.innerWidth;
-    this.mobattackrect.y = this.mobrect.y;
+    this.mob.attackrect.setPosition(
+      this.mob.sprite.x +
+        dirVelocity[this.mob.lastdirection] * (5 / 1440) * window.innerWidth,
+      this.mob.sprite.y + (5 / 900) * window.innerHeight
+    );
     goblinspbar(this);
     goblinHealtbar(this);
   }
@@ -130,12 +138,16 @@ export default class MobController {
       this.mob.mob.mob_regeneration();
     }, 1000);
     jackattack(this);
+    this.scene.physics.add.collider(
+      [this.mob.sprite],
+      [this.scene.backroad, this.scene.frontroad]
+    );
   }
 
   private ıdleOnUpdate(dt: number) {
     this.ıdletime += dt;
-    this.mobrect.setVelocityX(0);
-
+    this.mob.sprite.setVelocityX(0);
+    this.mob.attackrect.setVisible(false);
     if (this.ıdletime > 4000) {
       if (this.mob.lastdirection === Direction.left) {
         this.mob.sprite.setFlipX(true);
@@ -150,19 +162,20 @@ export default class MobController {
   }
 
   private runOnUpdate(dt: number) {
-    const distanceofgoblin = this.mobrect.x - this.scene.rect.x > 0;
+    this.mob.attackrect.setVisible(false);
+    const mcOntHeLeft = this.mob.sprite.x - this.scene.player.sprite.body.x > 0;
     this.goblinmod += 1;
-    if (this.mobrect.body.onWall() && this.mob.SawMc) {
-      this.mobrect.setVelocityY(-300);
+    if (this.mob.sprite.body.onWall() && this.mob.SawMc) {
+      this.mob.sprite.setVelocityY(-300);
     }
-    if (distanceofgoblin && this.mob.SawMc) {
-      this.mobrect.setVelocityX(-150);
+    if (mcOntHeLeft && this.mob.SawMc) {
+      this.mob.sprite.setVelocityX((-150 / 1440) * window.innerWidth);
       this.mob.sprite.setFlipX(false);
       this.mob.lastdirection = Direction.left;
       this.mob.sprite.anims.play("goblin-run", true);
       this.mob.sprite.anims.stopAfterRepeat(0);
     } else if (this.mob.SawMc) {
-      this.mobrect.setVelocityX(+150);
+      this.mob.sprite.setVelocityX((+150 / 1440) * window.innerWidth);
       this.mob.sprite.setFlipX(true);
       this.mob.lastdirection = Direction.right;
       this.mob.sprite.anims.play("goblin-run", true);
@@ -171,15 +184,16 @@ export default class MobController {
   }
 
   private attackOnUpdate(dt: number) {
-    const mobOnTheLeft = this.mobrect.x - this.scene.rect.x > 0;
-    if (mobOnTheLeft && this.mob.Attacking) {
-      this.mobrect.setVelocityX(0);
+    const mcOntHeLeft = this.mob.sprite.x - this.scene.player.sprite.body.x > 0;
+    this.mob.attackrect.setVisible(true);
+    if (mcOntHeLeft && this.mob.Attacking) {
+      this.mob.sprite.setVelocityX(0);
       this.mob.sprite.setFlipX(false);
       this.mob.lastdirection = Direction.left;
       this.mob.sprite.anims.play("goblin-attack", true);
       this.mob.sprite.anims.stopAfterRepeat(0);
     } else if (this.mob.Attacking) {
-      this.mobrect.setVelocityX(0);
+      this.mob.sprite.setVelocityX(0);
       this.mob.sprite.setFlipX(true);
       this.mob.lastdirection = Direction.right;
       this.mob.sprite.anims.play("goblin-attack", true);

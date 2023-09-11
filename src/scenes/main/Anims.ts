@@ -1,22 +1,15 @@
 import MenuScene from "../menu/MenuScene";
 import MainScene from "./MainScene";
 
-export function JackPlayer(scene: MainScene | MenuScene) {
+export function createPlayeranims(scene: MainScene | MenuScene) {
   const isMainScene = scene instanceof MainScene;
-
-  if (isMainScene) {
-    scene.player.sprite = scene.add
-      .sprite(100, 0, "ıdle")
-      // .setCollideWorldBounds(true)
-      .setScale(window.innerHeight / 300)
-      .setDepth(300);
-  } else {
-    scene.player.sprite = scene.physics.add
-      .sprite(100, 0, "ıdle")
-      .setCollideWorldBounds(true)
-      .setScale(window.innerHeight / 300)
-      .setDepth(300);
-  }
+  scene.player.sprite = scene.physics.add
+    .sprite(300, 0, "ıdle")
+    .setCollideWorldBounds(true)
+    .setBounce(0.1)
+    .setScale(window.innerHeight / 300)
+    .setDepth(300)
+    .setBodySize(30, 40, true);
 
   scene.anims.create({
     key: "ıdle",

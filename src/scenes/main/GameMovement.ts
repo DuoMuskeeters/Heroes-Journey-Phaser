@@ -7,5 +7,4 @@ export function Backroundmovement(scene: MainScene | MenuScene) {
       bg.sprite.tilePositionX = scene.cameras.main.scrollX * bg.rationx;
     }
   }
-
 }

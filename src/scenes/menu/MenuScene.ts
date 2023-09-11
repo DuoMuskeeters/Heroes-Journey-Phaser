@@ -1,6 +1,6 @@
 import Phaser from "phaser";
-import { JackPlayer, shop } from "../main/Anims";
-import { forestBackground, forestRoad } from "../preLoad/assets";
+import { createPlayeranims, shop } from "../main/Anims";
+import { createBackground, forestRoad } from "../preLoad/assets";
 import { Resize } from "../main/Resize";
 import { Backroundmovement } from "../main/GameMovement";
 import { Direction } from "../../game/types/types";
@@ -68,11 +68,16 @@ export default class MenuScene extends Phaser.Scene {
     this.brand.setDepth(100).setScrollFactor(0);
     this.gameTitle.setDepth(100).setScrollFactor(0);
 
-    forestBackground(this);
+    createBackground(this);
     forestRoad(this);
-    JackPlayer(this);
+    createPlayeranims(this);
     Resize(this);
-    this.physics.world.setBounds(0, 0, Infinity, window.innerHeight - 100);
+    this.physics.world.setBounds(
+      0,
+      0,
+      Infinity,
+      window.innerHeight - (140 / 900) * window.innerHeight
+    );
     shop(this);
 
     this.cameras.main.startFollow(
@@ -84,13 +89,11 @@ export default class MenuScene extends Phaser.Scene {
       -1 * window.innerHeight * 0.5
     );
     this?.player.sprite.anims.play("fall", true);
-    this.player.sprite.anims.stopAfterRepeat(2);
+    this.player.sprite.anims.stopAfterRepeat(4);
     this.shopobject?.anims.play("shop", true);
 
     window.addEventListener("resize", () => {
       this.Resize();
-      Resize(this);
-      this.physics.world.setBounds(0, 0, Infinity, window.innerHeight);
     });
     this.player.sprite.on(Phaser.Animations.Events.ANIMATION_STOP, () => {
       if (

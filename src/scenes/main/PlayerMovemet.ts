@@ -10,22 +10,27 @@ export function JackMovement(scene: MainScene) {
   const keyQ = scene.input.keyboard?.addKey("Q");
   const keyB = scene.input.keyboard?.addKey("B");
   const mouse = scene.input.activePointer.leftButtonDown();
+  const attckQActive = scene.player.sprite.anims.getName() === `attack2`;
+  const attack1Active = scene.player.sprite.anims.getName() === `attack1`;
+  const playerDeath = scene.player.sprite.anims.getName() === `death`;
+  const OnStun = scene.player.sprite.anims.getName() === `take-hit`;
+  console.log(scene.player.sprite.anims.getName());
   if (
     keyA?.isDown &&
-    scene.player.sprite.anims.getName() !== `attack2` &&
-    scene.player.sprite.anims.getName() !== `attack1` &&
-    scene.player.sprite.anims.getName() !== `death` &&
-    scene.player.sprite.anims.getName() !== `take-hit`
+    !attckQActive &&
+    !attack1Active &&
+    !playerDeath &&
+    !OnStun
   ) {
     scene.player.lastdirection = Direction.left;
     scene.player.sprite.setFlipX(true);
   }
   if (
     keyD?.isDown &&
-    scene.player.sprite.anims.getName() !== `attack2` &&
-    scene.player.sprite.anims.getName() !== `attack1` &&
-    scene.player.sprite.anims.getName() !== `death` &&
-    scene.player.sprite.anims.getName() !== `take-hit`
+    !attckQActive &&
+    !attack1Active &&
+    !playerDeath &&
+    !OnStun
   ) {
     scene.player.lastdirection = Direction.right;
     scene.player.sprite.setFlipX(false);
@@ -37,37 +42,33 @@ export function JackMovement(scene: MainScene) {
   }
   scene.player.sprite.anims.chain(undefined!);
   scene.player?.sprite.anims.chain([`fall`]);
-  if (!scene.rect.body.onFloor()) {
+  if (!scene.player.sprite.body.onFloor()) {
     if (keyD?.isDown || keyA?.isDown) {
-      scene.rect.body.setVelocityX(
+      scene.player.sprite.body.setVelocityX(
         dirVelocity[scene.player.lastdirection] *
           ((250 / 1328) * window.innerWidth)
       );
     } else {
-      scene.rect.body.setVelocityX(0);
+      scene.player.sprite.body.setVelocityX(0);
     }
   }
-  if (scene.rect.body.onFloor()) {
-    if (
-      keyW?.isDown &&
-      scene.player.sprite.anims.getName() !== `death` &&
-      scene.player.sprite.anims.getName() !== `take-hit`
-    ) {
+  if (scene.player.sprite.body.onFloor()) {
+    if (keyW?.isDown && !playerDeath && !OnStun) {
       scene.player.sprite.anims.startAnimation(`jump`);
       scene.player.sprite.anims.stopAfterRepeat(0);
-      scene.rect.body.setVelocityY(-(900 / 744) * window.innerHeight);
+      scene.player.sprite.body.setVelocityY(-(900 / 744) * window.innerHeight);
     }
     if (
       (keyD?.isDown || keyA?.isDown) &&
       !keyW?.isDown &&
-      scene.player.sprite.anims.getName() !== `attack2` &&
-      scene.player.sprite.anims.getName() !== `attack1` &&
-      scene.player.sprite.anims.getName() !== `death` &&
-      scene.player.sprite.anims.getName() !== `take-hit`
+      !attckQActive &&
+      !attack1Active &&
+      !playerDeath &&
+      !OnStun
     ) {
       scene.player?.sprite.anims.play("run", true);
 
-      scene.rect.body.setVelocityX(
+      scene.player.sprite.body.setVelocityX(
         dirVelocity[scene.player.lastdirection] *
           ((250 / 1328) * window.innerWidth)
       );
@@ -76,50 +77,54 @@ export function JackMovement(scene: MainScene) {
       keyQ?.isDown &&
       !keyD?.isDown &&
       !keyA?.isDown &&
-      scene.player.sprite.anims.getName() !== `attack1` &&
+      !attack1Active &&
       scene.player.ultimate &&
-      scene.player.sprite.anims.getName() !== `death` &&
-      scene.player.sprite.anims.getName() !== `take-hit` &&
+      !playerDeath &&
+      !OnStun &&
       scene.player.user.state.SP >= scene.player.user.state.max_sp / 2
     ) {
       scene.player.sprite.anims.play(`attack2`, true);
       scene.player.sprite.anims.stopAfterRepeat(0);
-      scene.rect.body.setVelocityX(0);
+      scene.player.sprite.body.setVelocityX(0);
       scene.player.ultimate = false;
       mcEvents.emit(mcEventTypes.HEAVY_ATTACK_USED);
       setTimeout(() => {
         scene.player.ultimate = true;
       }, scene.player.standbytime);
-      scene.attackrect.setVisible(true);
+      scene.player.attackrect.setVisible(true);
     }
     if (
       (mouse || keySpace?.isDown) &&
-      scene.player.sprite.anims.getName() !== `attack2` &&
-      scene.player.sprite.anims.getName() !== `death` &&
-      scene.player.sprite.anims.getName() !== `take-hit`
+      !attckQActive &&
+      !playerDeath &&
+      !OnStun
     ) {
       scene.player?.sprite.anims.play(`attack1`, true);
       scene.player.sprite.anims.stopAfterRepeat(0);
-      scene.rect.body.setVelocityX(0);
-      scene.attackrect.setVisible(true);
-    }
-    if (
-      scene.player.sprite.anims.getName() === `fall` ||
-      (!keyD?.isDown &&
-        !keyW?.isDown &&
-        !keyA?.isDown &&
-        !keyB?.isDown &&
-        scene.player.sprite.anims.getName() !== `attack1` &&
-        scene.player.sprite.anims.getName() !== `attack2` &&
-        scene.player.sprite.anims.getName() !== `death` &&
-        scene.player.sprite.anims.getName() !== `take-hit`)
+      scene.player.sprite.body.setVelocityX(0);
+      scene.player.attackrect.setVisible(true);
+    } else if (
+      !keyD?.isDown &&
+      !keyW?.isDown &&
+      !keyA?.isDown &&
+      !keyB?.isDown &&
+      !attack1Active &&
+      !attckQActive &&
+      !playerDeath &&
+      !keySpace?.isDown &&
+      !OnStun &&
+      !mouse &&
+      !keyQ?.isDown
     ) {
-      scene.rect.body.setVelocityX(0);
+      scene.player.sprite.body.setVelocityX(0);
       scene.player.sprite.anims.play(`ıdle`, true);
-      scene.attackrect.setVisible(false);
+      scene.player.attackrect.setVisible(false);
     }
   }
 
-  scene.player.sprite.x = scene.rect.x;
-  scene.player.sprite.y = scene.rect.y - (75 / 680) * window.innerHeight;
+  scene.player.attackrect.setPosition(
+    scene.player.sprite.x +
+      dirVelocity[scene.player.lastdirection] * (85 / 1440) * window.innerWidth,
+    scene.player.sprite.y - (40 / 900) * window.innerHeight
+  );
 }

@@ -1,7 +1,7 @@
 import MainScene from "../main/MainScene";
 import MobController from "../main/mobController";
 
-export function healtbar(scene: MainScene) {
+export function playerhealtbar(scene: MainScene) {
   const getMaxHp = () =>
     scene.player.user.state.max_hp - scene.player.user.state.HP;
   const maxframepercent = Math.floor(scene.player.user.state.max_hp / 5);
@@ -87,19 +87,19 @@ export function goblinHealtbar(controller: MobController) {
         Math.max(0, controller.mob.mob.state.HP)
       )}`
     )
-    .setPosition(controller.mobrect.x - 70, controller.mobrect.y - 72)
+    .setPosition(controller.mob.sprite.x - 70, controller.mob.sprite.y - 72)
     .setDepth(5);
 
   controller.mob.healtbar.clear();
   controller.mob.healtbar.fillStyle(0x808080);
   controller.mob.healtbar
     .fillRoundedRect(0, 0, width, 10, 5)
-    .setPosition(controller.mobrect.x - 50, controller.mobrect.y - 40);
+    .setPosition(controller.mob.sprite.x - 50, controller.mob.sprite.y - 40);
   if (percent > 0) {
     controller.mob.healtbar.fillStyle(0x00ff00);
     controller.mob.healtbar
       .fillRoundedRect(0, 0, width * percent, 10, 5)
-      .setPosition(controller.mobrect.x - 50, controller.mobrect.y - 40)
+      .setPosition(controller.mob.sprite.x - 50, controller.mob.sprite.y - 40)
       .setDepth(5);
   }
 }
@@ -112,12 +112,12 @@ export function goblinspbar(controller: MobController) {
   controller.mob.spbar.fillStyle(0x808080);
   controller.mob.spbar
     .fillRoundedRect(0, 0, width, 3, 0)
-    .setPosition(controller.mobrect.x - 45, controller.mobrect.y - 30);
+    .setPosition(controller.mob.sprite.x - 45, controller.mob.sprite.y - 30);
   if (percent > 0) {
     controller.mob.spbar.fillStyle(0xffff00);
     controller.mob.spbar
       .fillRoundedRect(0, 0, width * percent, 3, 0)
-      .setPosition(controller.mobrect.x - 45, controller.mobrect.y - 30)
+      .setPosition(controller.mob.sprite.x - 45, controller.mob.sprite.y - 30)
       .setDepth(5);
   }
 }
