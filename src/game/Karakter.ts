@@ -232,7 +232,7 @@ export class Mob extends Canlı {
     this.state.ATK = 30 + this.state.Strength * 2;
     this.state.ATKRATE = 1 + this.state.Agility * 0.008;
   }
-  skill_barı() {
+  OnUltimate() {
     if (this.state.SP === this.state.max_sp) {
       this.state.SP -= this.state.max_sp;
       return true;

@@ -10,11 +10,12 @@ export function JackMovement(scene: MainScene) {
   const keyQ = scene.input.keyboard?.addKey("Q");
   const keyB = scene.input.keyboard?.addKey("B");
   const mouse = scene.input.activePointer.leftButtonDown();
-  const attckQActive = scene.player.sprite.anims.getName() === `attack2`;
-  const attack1Active = scene.player.sprite.anims.getName() === `attack1`;
-  const playerDeath = scene.player.sprite.anims.getName() === `death`;
-  const OnStun = scene.player.sprite.anims.getName() === `take-hit`;
-  console.log(scene.player.sprite.anims.getName());
+  const attckQActive =
+    scene.player.sprite.anims.getName() === mcEventTypes.ULTI;
+  const attack1Active =
+    scene.player.sprite.anims.getName() === mcEventTypes.REGULAR_ATTACK;
+  const playerDeath = scene.player.sprite.anims.getName() === mcEventTypes.DIED;
+  const OnStun = scene.player.sprite.anims.getName() === mcEventTypes.TOOK_HIT;
   if (
     keyA?.isDown &&
     !attckQActive &&
@@ -36,12 +37,12 @@ export function JackMovement(scene: MainScene) {
     scene.player.sprite.setFlipX(false);
   }
   if (scene.player.user.state.HP <= 0) {
-    scene.player.sprite.anims.play(`death`, true);
+    scene.player.sprite.anims.play(mcEventTypes.DIED, true);
     scene.player.sprite.anims.stopAfterRepeat();
     mcEvents.emit(mcEventTypes.DIED);
   }
   scene.player.sprite.anims.chain(undefined!);
-  scene.player?.sprite.anims.chain([`fall`]);
+  scene.player?.sprite.anims.chain([mcEventTypes.FALL]);
   if (!scene.player.sprite.body.onFloor()) {
     if (keyD?.isDown || keyA?.isDown) {
       scene.player.sprite.body.setVelocityX(
@@ -54,7 +55,7 @@ export function JackMovement(scene: MainScene) {
   }
   if (scene.player.sprite.body.onFloor()) {
     if (keyW?.isDown && !playerDeath && !OnStun) {
-      scene.player.sprite.anims.startAnimation(`jump`);
+      scene.player.sprite.anims.startAnimation(mcEventTypes.JUMP);
       scene.player.sprite.anims.stopAfterRepeat(0);
       scene.player.sprite.body.setVelocityY(-(900 / 744) * window.innerHeight);
     }
@@ -66,7 +67,7 @@ export function JackMovement(scene: MainScene) {
       !playerDeath &&
       !OnStun
     ) {
-      scene.player?.sprite.anims.play("run", true);
+      scene.player?.sprite.anims.play(mcEventTypes.RUN, true);
 
       scene.player.sprite.body.setVelocityX(
         dirVelocity[scene.player.lastdirection] *
@@ -83,7 +84,7 @@ export function JackMovement(scene: MainScene) {
       !OnStun &&
       scene.player.user.state.SP >= scene.player.user.state.max_sp / 2
     ) {
-      scene.player.sprite.anims.play(`attack2`, true);
+      scene.player.sprite.anims.play(mcEventTypes.ULTI, true);
       scene.player.sprite.anims.stopAfterRepeat(0);
       scene.player.sprite.body.setVelocityX(0);
       scene.player.ultimate = false;
@@ -92,32 +93,32 @@ export function JackMovement(scene: MainScene) {
         scene.player.ultimate = true;
       }, scene.player.standbytime);
       scene.player.attackrect.setVisible(true);
-    }
-    if (
+    } else if (
       (mouse || keySpace?.isDown) &&
       !attckQActive &&
       !playerDeath &&
       !OnStun
     ) {
-      scene.player?.sprite.anims.play(`attack1`, true);
+      scene.player?.sprite.anims.play(mcEventTypes.REGULAR_ATTACK, true);
       scene.player.sprite.anims.stopAfterRepeat(0);
       scene.player.sprite.body.setVelocityX(0);
       scene.player.attackrect.setVisible(true);
     } else if (
-      !keyD?.isDown &&
-      !keyW?.isDown &&
-      !keyA?.isDown &&
-      !keyB?.isDown &&
-      !attack1Active &&
-      !attckQActive &&
-      !playerDeath &&
-      !keySpace?.isDown &&
-      !OnStun &&
-      !mouse &&
-      !keyQ?.isDown
+      scene.player.sprite.anims.getName() === mcEventTypes.FALL ||
+      (!keyD?.isDown &&
+        !keyW?.isDown &&
+        !keyA?.isDown &&
+        !keyB?.isDown &&
+        !attack1Active &&
+        !attckQActive &&
+        !playerDeath &&
+        !keySpace?.isDown &&
+        !OnStun &&
+        !mouse &&
+        !keyQ?.isDown)
     ) {
       scene.player.sprite.body.setVelocityX(0);
-      scene.player.sprite.anims.play(`ıdle`, true);
+      scene.player.sprite.anims.play(mcEventTypes.IDLE, true);
       scene.player.attackrect.setVisible(false);
     }
   }

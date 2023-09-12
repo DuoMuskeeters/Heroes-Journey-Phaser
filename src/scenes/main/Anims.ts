@@ -1,5 +1,8 @@
+import { goblinEventsTypes } from "../../game/types/events";
+import { dirVelocity } from "../../game/types/types";
 import MenuScene from "../menu/MenuScene";
 import MainScene from "./MainScene";
+import MobController from "./mobController";
 
 export function createPlayeranims(scene: MainScene | MenuScene) {
   const isMainScene = scene instanceof MainScene;
@@ -92,10 +95,10 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
     repeat: -1,
   });
 }
-export function goblinMob(scene: MainScene, atkrate: number) {
-  scene.anims.create({
+export function goblinMob(controller: MobController) {
+  controller.scene.anims.create({
     key: "goblin-bomb",
-    frames: scene.anims.generateFrameNumbers("goblin-bomb", {
+    frames: controller.scene.anims.generateFrameNumbers("goblin-bomb", {
       start: 12,
       end: 0,
     }),
@@ -103,9 +106,9 @@ export function goblinMob(scene: MainScene, atkrate: number) {
     repeat: -1,
   });
 
-  scene.anims.create({
+  controller.scene.anims.create({
     key: "goblin-ıdle",
-    frames: scene.anims.generateFrameNumbers("goblin-ıdle", {
+    frames: controller.scene.anims.generateFrameNumbers("goblin-ıdle", {
       start: 4,
       end: 0,
     }),
@@ -113,9 +116,9 @@ export function goblinMob(scene: MainScene, atkrate: number) {
     repeat: -1,
   });
 
-  scene.anims.create({
+  controller.scene.anims.create({
     key: "goblin-takehit",
-    frames: scene.anims.generateFrameNumbers("goblin-takehit", {
+    frames: controller.scene.anims.generateFrameNumbers("goblin-takehit", {
       start: 4,
       end: 0,
     }),
@@ -123,9 +126,9 @@ export function goblinMob(scene: MainScene, atkrate: number) {
     repeat: -1,
   });
 
-  scene.anims.create({
+  controller.scene.anims.create({
     key: "goblin-death",
-    frames: scene.anims.generateFrameNumbers("goblin-death", {
+    frames: controller.scene.anims.generateFrameNumbers("goblin-death", {
       start: 4,
       end: 0,
     }),
@@ -133,9 +136,9 @@ export function goblinMob(scene: MainScene, atkrate: number) {
     repeat: -1,
   });
 
-  scene.anims.create({
+  controller.scene.anims.create({
     key: "goblin-run",
-    frames: scene.anims.generateFrameNumbers("goblin-run", {
+    frames: controller.scene.anims.generateFrameNumbers("goblin-run", {
       start: 8,
       end: 0,
     }),
@@ -143,37 +146,30 @@ export function goblinMob(scene: MainScene, atkrate: number) {
     repeat: -1,
   });
 
-  scene.anims.create({
+  controller.scene.anims.create({
     key: "goblin-attack",
-    frames: scene.anims.generateFrameNumbers("goblin-attack", {
+    frames: controller.scene.anims.generateFrameNumbers("goblin-attack", {
       start: 8,
       end: 0,
     }),
-    frameRate: atkrate * 6.5,
+    frameRate: controller.mob.goblin.state.ATKRATE * 6.5,
     repeat: -1,
   });
-
-  // scene.bomb.sprite = scene.add
-  //   .sprite(
-  //     window.innerWidth * 0.82,
-  //     window.innerHeight * 0.63,
-  //     `goblin-attack-bomb`
-  //   )
-  //   .setScale(window.innerHeight / 300)
-  //   .setDepth(4)
-  //   .setVisible(false);
-
-  scene.anims.create({
-    key: "goblin-attack-bomb",
-    frames: scene.anims.generateFrameNumbers("goblin-attack-bomb", {
-      start: 19,
-      end: 0,
-    }),
+ 
+  controller.scene.anims.create({
+    key: goblinEventsTypes.BOMB,
+    frames: controller.scene.anims.generateFrameNumbers(
+      goblinEventsTypes.BOMB,
+      {
+        start: 19,
+        end: 0,
+      }
+    ),
     frameRate: 10,
     repeat: -1,
   });
 
-  // mobattack(scene);
+  
 }
 export function shop(scene: MainScene | MenuScene) {
   scene.shopobject = scene.add

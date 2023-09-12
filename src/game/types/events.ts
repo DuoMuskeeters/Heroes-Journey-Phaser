@@ -4,15 +4,24 @@ export const eventTypes = {
 } as const;
 
 export const mcEventTypes = {
-  DIED: "DIED",
   HEAVY_ATTACK_USED: "HEAVY_ATTACK_USED",
+  DIED: "death",
+  REGULAR_ATTACK: "attack1",
+  ULTI: "attack2",
+  IDLE: "ıdle",
+  RUN: "run",
+  TOOK_HIT: "take-hit",
+  JUMP: "jump",
+  FALL: "fall",
 };
 export const goblinEventsTypes = {
-  TOOK_HIT: "TOOK_HIT",
-  DIED: "DIED",
-  STARTED_RUNNING: "STARTED_RUNNING",
-  ULTI: "ULTI",
-  ATTACKING: "ATTACKING",
+  TOOK_HIT: "goblin-takehit",
+  DIED: "goblin-death",
+  STARTED_RUNNING: "goblin-run",
+  ULTI: "goblin-bomb",
+  ATTACKING: "goblin-attack",
+  IDLE: "goblin-ıdle",
+  BOMB:"goblin-attack-bomb"
 };
 export const gameEvents = new Phaser.Events.EventEmitter();
 export const mcEvents = new Phaser.Events.EventEmitter();

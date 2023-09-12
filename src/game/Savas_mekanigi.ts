@@ -45,7 +45,7 @@ export function fight_mechanics_with_turn(fighter: Warrior, mob: Mob) {
     let HP_reg = (attacker.state.HP_reg * attacker.state.max_hp) / 100;
     let SP_reg = (attacker.state.SP_reg * attacker.state.max_sp) / 100;
     if (attacker instanceof Mob) {
-      let sonuc = mob.skill_barı();
+      let sonuc = mob.OnUltimate();
       if (sonuc === true) {
         if (attacker instanceof Giant) {
           attacker.giant_skill();
@@ -95,7 +95,7 @@ export function fight_mechanics_with_turn(fighter: Warrior, mob: Mob) {
 }
 function mob_fight(mob: Mob) {
   //ulti
-  let sonuc = mob.skill_barı();
+  let sonuc = mob.OnUltimate();
   if (sonuc) {
     if (mob instanceof Giant) {
       mob.giant_skill();

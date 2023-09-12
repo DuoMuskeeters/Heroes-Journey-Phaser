@@ -66,7 +66,7 @@ export class UiScene extends Phaser.Scene {
     });
     mcEvents.on(mcEventTypes.HEAVY_ATTACK_USED, () => {
       console.log("heavy attack used");
-      // close the state menu
+      mainscene.player.ultiDamage = mainscene.player.user.heavy_strike();
       if (this.statemenu.isOpen) this.statemenu.hide();
     });
     gameEvents.on(eventTypes.PAUSE_TOGGLE_REQUESTED, () => {

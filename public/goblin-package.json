@@ -61,7 +61,7 @@
         "key": "goblin-attack-bomb",
         "frameConfig": {
           "frameWidth": 100,
-          "frameHeight": 95
+          "frameHeight": 100
         }
       }
     ]

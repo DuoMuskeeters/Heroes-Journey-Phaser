@@ -2,7 +2,7 @@
   "section1": {
     "files": [
       {
-        "url": "Idle200.png",
+        "url": "Idle.png",
         "type": "spritesheet",
         "key": "ıdle",
         "frameConfig": {

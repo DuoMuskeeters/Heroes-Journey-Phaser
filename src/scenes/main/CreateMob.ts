@@ -7,7 +7,7 @@ export function createMob(scene: MainScene) {
   scene.tilemap.getObjectLayer("goblin")?.objects.forEach((objData) => {
     const { x = 0, y = 0, name, id } = objData;
 
-    const { healtbar, hptitle, spbar, SawMc, Attacking, stun } = scene.goblin;
+    const { healtbar, hptitle, spbar, SawMc, Attacking, stun ,bomb} = scene.mob;
     const sprite = scene.physics.add
       .sprite(x, y, "goblin-ıdle")
       .setBodySize(30, 46, true)
@@ -19,8 +19,8 @@ export function createMob(scene: MainScene) {
 
     const mobattackrect = scene.add
       .rectangle(
-        scene.goblin.sprite.x,
-        scene.goblin.sprite.y,
+        scene.mob.sprite.x,
+        scene.mob.sprite.y,
         undefined,
         undefined,
         0xff2400
@@ -30,11 +30,11 @@ export function createMob(scene: MainScene) {
         (110 / 724) * window.innerHeight
       )
       .setDepth(0);
-    scene.goblinsprite.push(
+    scene.mobController.push(
       new MobController(id, name, scene, {
         sprite: sprite,
         lastdirection: Direction.left as Direction,
-        mob: mob,
+        goblin: mob,
         healtbar,
         hptitle,
         spbar,
@@ -42,6 +42,7 @@ export function createMob(scene: MainScene) {
         Attacking,
         stun,
         attackrect: mobattackrect,
+        bomb
       })
     );
   });

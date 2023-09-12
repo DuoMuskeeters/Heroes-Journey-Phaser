@@ -13,6 +13,7 @@ import MobController from "./mobController";
 import { createground as createground } from "./TileGround";
 import { createMob } from "./CreateMob";
 import { createAvatarFrame } from "../Ui/AvatarUi";
+import { goblinEvents, goblinEventsTypes } from "../../game/types/events";
 
 const jack = Warrior.from_Character(create_character("Ali"));
 
@@ -34,28 +35,28 @@ export default class MainScene extends Phaser.Scene {
     frame: {} as Phaser.Tilemaps.Tilemap,
     hearticon: {} as Phaser.Tilemaps.TilemapLayer,
     manaicon: {} as Phaser.Tilemaps.TilemapLayer,
+    tookhit: {} as boolean,
+    ultiDamage: {} as number,
   };
-  goblinsprite: MobController[] = [];
-  goblin = {
+  mobController: MobController[] = [];
+  mob = {
     sprite: {} as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody,
     attackrect: {} as Phaser.GameObjects.Rectangle,
     lastdirection: Direction.left as Direction,
-    mob: {} as Giant,
+    goblin: {} as Giant,
     healtbar: {} as Phaser.GameObjects.Graphics,
     hptitle: {} as Phaser.GameObjects.Text,
     spbar: {} as Phaser.GameObjects.Graphics,
     SawMc: {} as boolean,
     Attacking: {} as boolean,
     stun: {} as boolean,
+    bomb: {} as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody,
   };
   backgrounds!: {
     rationx: number;
     sprite: Phaser.GameObjects.TileSprite;
   }[];
 
-  bomb = {
-    sprite: {} as Phaser.GameObjects.Sprite,
-  };
   shopobject?: Phaser.GameObjects.Sprite;
   tilemap!: Phaser.Tilemaps.Tilemap;
   constructor() {
@@ -82,7 +83,7 @@ export default class MainScene extends Phaser.Scene {
     );
 
     // this.frontroad.setCollisionByExclusion([-1], true);
-
+    
     this.physics.add.collider(
       [this.player.sprite],
       [this.backroad, this.frontroad]
@@ -184,6 +185,9 @@ export default class MainScene extends Phaser.Scene {
 Job: Samurai  MAX HP: ${this.player.user.state.max_hp}`
     );
 
-    this.goblinsprite.forEach((goblinsprite) => goblinsprite.update(delta));
+    this.mobController.forEach((mobCcontroller) => {
+      if (mobCcontroller.mob.sprite.body) mobCcontroller.update(delta);
+    });
+    // this.player.attackrect.setVisible(true);
   }
 }
