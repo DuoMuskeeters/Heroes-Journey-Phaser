@@ -83,7 +83,7 @@ export default class MainScene extends Phaser.Scene {
     );
 
     // this.frontroad.setCollisionByExclusion([-1], true);
-    
+
     this.physics.add.collider(
       [this.player.sprite],
       [this.backroad, this.frontroad]
@@ -188,6 +188,6 @@ Job: Samurai  MAX HP: ${this.player.user.state.max_hp}`
     this.mobController.forEach((mobCcontroller) => {
       if (mobCcontroller.mob.sprite.body) mobCcontroller.update(delta);
     });
-    // this.player.attackrect.setVisible(true);
+    this.player.attackrect.setVisible(false);
   }
 }
