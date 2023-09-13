@@ -13,11 +13,13 @@ export function fight(attacker: Canlı) {
   if (attacker instanceof Warrior) {
     let input: string = "q";
     if (input.toLowerCase() === "q") {
-      let skill_damage = attacker.heavy_strike();
-      if (skill_damage === attacker.state.ATK) {
+      let { damage, hit } = attacker.heavy_strike();
+      if (!hit) {
         console.log("Yetersiz SP");
+      } else {
+        hit();
       }
-      return skill_damage;
+      return damage;
     }
     if (input.toLowerCase() === "w") {
       console.log("Vitality Boost becerisi kullanıldı.");
@@ -38,7 +40,7 @@ export function fight_mechanics_with_turn(fighter: Warrior, mob: Mob) {
   const players: Canlı[] = [fighter, mob];
   let turn = 0;
 
-  while (fighter.state.HP !== 0 || mob.state.HP !== 0) {
+  while (!fighter.isDead() || !mob.isDead()) {
     let attacker = players[turn];
     let defender = players[1 - turn];
     let dodge_rate = dodge(defender.state.ATKRATE, attacker.state.ATKRATE);
@@ -79,7 +81,7 @@ export function fight_mechanics_with_turn(fighter: Warrior, mob: Mob) {
         attacker.state.SP + SP_reg
       );
     }
-    if (defender.state.HP === 0) {
+    if (defender.isDead()) {
       if (defender === attacker) {
         console.log(`Öldün.`);
         return false;

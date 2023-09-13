@@ -2,6 +2,12 @@ import { mcEventTypes, mcEvents } from "../../game/types/events";
 import MainScene from "./MainScene";
 import { Direction, dirVelocity } from "../../game/types/types";
 
+export function JackDied(scene: MainScene) {
+  scene.player.sprite.anims.play(mcEventTypes.DIED, true);
+  scene.player.sprite.anims.stopAfterRepeat(0);
+  scene.player.sprite.body.setVelocityX(0);
+}
+
 export function JackMovement(scene: MainScene) {
   const keySpace = scene.input.keyboard?.addKey("SPACE");
   const keyW = scene.input.keyboard?.addKey("W");
@@ -14,7 +20,10 @@ export function JackMovement(scene: MainScene) {
     scene.player.sprite.anims.getName() === mcEventTypes.ULTI;
   const attack1Active =
     scene.player.sprite.anims.getName() === mcEventTypes.REGULAR_ATTACK;
-  const playerDeath = scene.player.sprite.anims.getName() === mcEventTypes.DIED;
+
+  const playerDeath = scene.player.user.isDead();
+  if (playerDeath) return;
+
   const OnStun = scene.player.sprite.anims.getName() === mcEventTypes.TOOK_HIT;
   if (
     keyA?.isDown &&
@@ -36,13 +45,13 @@ export function JackMovement(scene: MainScene) {
     scene.player.lastdirection = Direction.right;
     scene.player.sprite.setFlipX(false);
   }
-  if (scene.player.user.state.HP <= 0) {
-    scene.player.sprite.anims.play(mcEventTypes.DIED, true);
-    scene.player.sprite.anims.stopAfterRepeat();
-    mcEvents.emit(mcEventTypes.DIED);
-  }
+
   scene.player.sprite.anims.chain(undefined!);
   scene.player?.sprite.anims.chain([mcEventTypes.FALL]);
+
+  const { damage: heavyStrikeDamage, hit: heavyStrikeHit } =
+    scene.player.user.heavy_strike();
+
   if (!scene.player.sprite.body.onFloor()) {
     if (keyD?.isDown || keyA?.isDown) {
       scene.player.sprite.body.setVelocityX(
@@ -82,12 +91,14 @@ export function JackMovement(scene: MainScene) {
       scene.player.ultimate &&
       !playerDeath &&
       !OnStun &&
-      scene.player.user.state.SP >= scene.player.user.state.max_sp / 2
+      heavyStrikeHit
     ) {
       scene.player.sprite.anims.play(mcEventTypes.ULTI, true);
       scene.player.sprite.anims.stopAfterRepeat(0);
       scene.player.sprite.body.setVelocityX(0);
       scene.player.ultimate = false;
+      heavyStrikeHit();
+      scene.player.ultiDamage = heavyStrikeDamage;
       mcEvents.emit(mcEventTypes.HEAVY_ATTACK_USED);
       setTimeout(() => {
         scene.player.ultimate = true;

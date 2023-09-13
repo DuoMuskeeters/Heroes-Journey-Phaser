@@ -80,8 +80,11 @@ export class Canlı {
   constructor(state: State) {
     this.state = state;
   }
+  isDead() {
+    return this.state.HP === 0;
+  }
   regeneration() {
-    if (this.state.HP >= 0) {
+    if (!this.isDead()) {
       const HP_reg = (this.state.HP_reg * this.state.max_hp) / 100;
       const SP_reg = (this.state.SP_reg * this.state.max_sp) / 50;
       this.state.HP = Math.min(this.state.max_hp, this.state.HP + HP_reg);
@@ -148,6 +151,10 @@ export class Character extends Canlı {
       this.calculate_power();
     }
   }
+
+  attack(rakip: Canlı) {
+    throw new Error("TODO: attack hesaplama henüz yazılmadı");
+  }
 }
 
 export function create_character(
@@ -199,15 +206,15 @@ export class Warrior extends Character {
   static from_Character(character: Character) {
     return new this(character.state, character.exp);
   }
+  heavy_strike() {
+    const half = this.state.max_sp / 2;
+    if (this.state.SP >= half)
+      return {
+        damage: this.state.ATK * 2,
+        hit: () => (this.state.SP = Math.max(this.state.SP - half, 0)),
+      };
 
-  heavy_strike(): number {
-    if (this.state.SP >= 50) {
-      const strike_damage = this.state.ATK * 2;
-      this.state.SP -= 50;
-      return strike_damage;
-    } else {
-      return this.state.ATK;
-    }
+    return { damage: 0 as const };
   }
   vitality_boost() {
     this.state.HP = this.state.max_hp * 0.35 + this.state.HP;
@@ -219,18 +226,17 @@ export class Warrior extends Character {
 
 export class Mob extends Canlı {
   calculate_mob_power() {
-    this.state.HP = 100 + this.state.Constitution * 10;
-    this.state.max_hp = this.state.HP;
-    this.state.HP_reg = 5 + this.state.Constitution * 0.1;
-    this.state.Armor =
-      this.state.Constitution / (this.state.Constitution + 100);
-    this.state.max_sp = 150 - this.state.Intelligence * 0.5;
-    this.state.SP = 0;
-    this.state.SP_reg = 10 + this.state.Intelligence * 0.5;
-    this.state.m_resist =
-      this.state.Constitution / (this.state.Constitution + 100);
-    this.state.ATK = 30 + this.state.Strength * 2;
-    this.state.ATKRATE = 1 + this.state.Agility * 0.008;
+    const s = this.state;
+    s.HP = 100 + s.Constitution * 10;
+    s.max_hp = s.HP;
+    s.HP_reg = 5 + s.Constitution * 0.1;
+    s.Armor = s.Constitution / (s.Constitution + 100);
+    s.max_sp = 150 - s.Intelligence * 0.5;
+    s.SP = 0;
+    s.SP_reg = 10 + s.Intelligence * 0.5;
+    s.m_resist = s.Constitution / (s.Constitution + 100);
+    s.ATK = 30 + s.Strength * 2;
+    s.ATKRATE = 1 + s.Agility * 0.008;
   }
   OnUltimate() {
     if (this.state.SP === this.state.max_sp) {
@@ -240,8 +246,8 @@ export class Mob extends Canlı {
       return false;
     }
   }
-  mob_regeneration() {
-    if (this.state.HP >= 0) {
+  regeneration() {
+    if (!this.isDead()) {
       const HP_reg = (this.state.HP_reg * this.state.max_hp) / 100;
       const SP_reg = (this.state.SP_reg * this.state.max_sp) / 200;
       this.state.HP = Math.min(this.state.max_hp, this.state.HP + HP_reg);
@@ -313,6 +319,9 @@ export function create_giant(Level: number): Giant {
 }
 
 export class Bird extends Mob {
+  calculate_bird_skill() {
+    return this.state.Agility * 1.5 + this.state.ATK * 1.5;
+  }
   bird_skill() {
     this.state.Agility = this.state.Agility * 1.5;
     this.state.ATK = this.state.ATK * 1.5;

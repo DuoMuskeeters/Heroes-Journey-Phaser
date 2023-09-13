@@ -1,6 +1,5 @@
 export const eventTypes = {
   GAME_LOADED: "GAME_LOADED",
-  PAUSE_TOGGLE_REQUESTED: "PAUSE_TOGGLE_REQUESTED",
 } as const;
 
 export const mcEventTypes = {
@@ -21,8 +20,16 @@ export const goblinEventsTypes = {
   ULTI: "goblin-bomb",
   ATTACKING: "goblin-attack",
   IDLE: "goblin-ıdle",
-  BOMB:"goblin-attack-bomb"
+  BOMB: "goblin-attack-bomb",
 };
+
+// Details
+export type GoblinTookHit = {
+  damage: number;
+  stun: boolean;
+  fromJack: true;
+};
+
 export const gameEvents = new Phaser.Events.EventEmitter();
 export const mcEvents = new Phaser.Events.EventEmitter();
 export const goblinEvents = new Phaser.Events.EventEmitter();

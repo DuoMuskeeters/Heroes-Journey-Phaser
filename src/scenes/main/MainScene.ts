@@ -1,19 +1,25 @@
 import Phaser from "phaser";
-import { Direction, dirVelocity } from "../../game/types/types";
+import { Direction } from "../../game/types/types";
 import { Giant, Warrior, create_character } from "../../game/Karakter";
-import { createBackground as createBackground } from "../preLoad/assets";
+import { createBackground } from "../preLoad/assets";
 import PhaserGame from "../../PhaserGame";
-import { createPlayeranims as createPlayeranims } from "./Anims";
-import { JackMovement } from "./PlayerMovemet";
+import { createPlayeranims } from "./Anims";
+import { JackDied, JackMovement } from "./PlayerMovemet";
 import { Resize } from "./Resize";
 import { playerhealtbar, playerspbar } from "../Ui/Components";
 import { Backroundmovement } from "./GameMovement";
 import { UiScene } from "../Ui/uiScene";
 import MobController from "./mobController";
-import { createground as createground } from "./TileGround";
+import { createground } from "./TileGround";
 import { createMob } from "./CreateMob";
 import { createAvatarFrame } from "../Ui/AvatarUi";
-import { goblinEvents, goblinEventsTypes } from "../../game/types/events";
+import {
+  GoblinTookHit,
+  goblinEvents,
+  goblinEventsTypes,
+  mcEventTypes,
+  mcEvents,
+} from "../../game/types/events";
 
 const jack = Warrior.from_Character(create_character("Ali"));
 
@@ -47,8 +53,16 @@ export default class MainScene extends Phaser.Scene {
     healtbar: {} as Phaser.GameObjects.Graphics,
     hptitle: {} as Phaser.GameObjects.Text,
     spbar: {} as Phaser.GameObjects.Graphics,
+    /**
+     * @deprecated
+     * @see {@link MobController.canSeeMc} instead.
+     */
     SawMc: {} as boolean,
     Attacking: {} as boolean,
+    /**
+     * @deprecated
+     * @see {@link goblinEventsTypes.TOOK_HIT} instead.
+     */
     stun: {} as boolean,
     bomb: {} as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody,
   };
@@ -64,6 +78,34 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
+    mcEvents.on(mcEventTypes.TOOK_HIT, (damage: number) => {
+      console.log(`mc took hit damage: ${damage} after hp: ${jack.state.HP}`);
+      if (jack.isDead()) {
+        mcEvents.emit(mcEventTypes.DIED);
+      }
+    });
+    mcEvents.on(mcEventTypes.DIED, () => {
+      JackDied(this);
+      console.log(`mc died`);
+    });
+    goblinEvents.on(goblinEventsTypes.DIED, () => {
+      console.log(`goblin died`);
+    });
+    goblinEvents.on(
+      goblinEventsTypes.TOOK_HIT,
+      (id: number, details: GoblinTookHit) => {
+        const controller = this.mobController[id - 1]!;
+        console.log(
+          `goblin ${controller.name} took hit ${
+            details.stun ? "(STUN)" : "(NORMAL)"
+          } damage: ${details.damage} after hp: ${jack.state.HP}`
+        );
+        if (controller.mob.goblin.isDead()) {
+          goblinEvents.emit(goblinEventsTypes.DIED);
+        }
+      }
+    );
+
     this.tilemap = this.make.tilemap({ key: "roadfile" });
     createBackground(this);
     createAvatarFrame(this);
@@ -91,7 +133,11 @@ export default class MainScene extends Phaser.Scene {
     createMob(this);
 
     setInterval(() => {
+      if (this.scene.isPaused()) return;
       this.player.user.regeneration();
+      this.mobController.forEach((controller) => {
+        controller.mob.goblin.regeneration();
+      });
     }, 1000);
 
     this.cameras.main.startFollow(

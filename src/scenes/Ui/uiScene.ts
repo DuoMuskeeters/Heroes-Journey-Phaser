@@ -1,12 +1,7 @@
 import statemenu from "../menu/StateMenu";
 import heroesJourneyMap from "./Map";
 import HeroesJourneyMap from "./Map";
-import {
-  eventTypes,
-  gameEvents,
-  mcEventTypes,
-  mcEvents,
-} from "../../game/types/events";
+import { mcEventTypes, mcEvents } from "../../game/types/events";
 import PhaserGame from "../../PhaserGame";
 import MainScene from "../main/MainScene";
 
@@ -48,6 +43,8 @@ export class UiScene extends Phaser.Scene {
     //     }
     //   });
     this.input.keyboard?.on("keydown-C", () => {
+      if (mainscene.player.user.isDead()) return;
+
       if (this.statemenu.isOpen) {
         this.statemenu.hide();
       } else {
@@ -62,17 +59,15 @@ export class UiScene extends Phaser.Scene {
       }
     });
     this.input.keyboard?.on("keydown-Z", () => {
-      gameEvents.emit(eventTypes.PAUSE_TOGGLE_REQUESTED);
-    });
-    mcEvents.on(mcEventTypes.HEAVY_ATTACK_USED, () => {
-      console.log("heavy attack used");
-      mainscene.player.ultiDamage = mainscene.player.user.heavy_strike();
-      if (this.statemenu.isOpen) this.statemenu.hide();
-    });
-    gameEvents.on(eventTypes.PAUSE_TOGGLE_REQUESTED, () => {
-      // goblin vuracak kadar yakın ise izin verme
+      if (mainscene.player.user.isDead()) return;
+      for (const c of mainscene.mobController) if (c.canSeeMc()) return;
       if (mainscene.scene.isActive()) mainscene.scene.pause();
       else mainscene.scene.resume();
+    });
+
+    mcEvents.on(mcEventTypes.HEAVY_ATTACK_USED, () => {
+      console.log("heavy attack used");
+      if (this.statemenu.isOpen) this.statemenu.hide();
     });
   }
 }

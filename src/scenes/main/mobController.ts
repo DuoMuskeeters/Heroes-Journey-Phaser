@@ -1,7 +1,9 @@
 import {
+  GoblinTookHit,
   goblinEvents,
   goblinEventsTypes,
   mcEventTypes,
+  mcEvents,
 } from "../../game/types/events";
 import { goblinMob } from "./Anims";
 import { goblinHealtbar, goblinspbar } from "../Ui/Components";
@@ -17,7 +19,7 @@ export default class MobController {
   private ıdletime = 0;
 
   constructor(
-    public index: number,
+    public id: number,
     public name: string,
     scene: MainScene,
     mob: MainScene["mob"]
@@ -40,12 +42,11 @@ export default class MobController {
 
       if (
         this.mob.sprite?.anims.getName() === goblinEventsTypes.ATTACKING &&
-        scene.player.user.state.HP >= 0 &&
+        scene.player.user.state.HP > 0 &&
         attackActive_Y_line &&
         Number(this.mob.sprite.anims.getFrameName()) < 2
       ) {
-        this.scene.player.user.state.HP -=
-          (1 - this.scene.player.user.state.Armor) * this.mob.goblin.state.ATK;
+        this.hitPlayer();
         this.scene.player.hearticon.setTint(0x020000);
         this.scene.player.hptitle.setTint(0x020000);
         setTimeout(() => {
@@ -87,25 +88,43 @@ export default class MobController {
         mob.spbar.destroy();
         mob.hptitle.destroy();
         mob.attackrect.destroy();
-        goblinEvents.emit(goblinEventsTypes.DIED, this.index);
+        goblinEvents.emit(goblinEventsTypes.DIED, this.id);
       }
     });
 
-    goblinEvents.on(goblinEventsTypes.TOOK_HIT, (index: number) => {
-      if (this.index === index) {
-        mob.sprite.setVelocityX(0);
-        this.mob.sprite.anims.play(goblinEventsTypes.TOOK_HIT, true);
-        this.mob.sprite.anims.stopAfterRepeat(0);
-        this.mob.stun = true;
+    goblinEvents.on(
+      goblinEventsTypes.TOOK_HIT,
+      (index: number, details: GoblinTookHit) => {
+        if (this.id === index && details.stun) {
+          mob.sprite.setVelocityX(0);
+          this.mob.sprite.anims.play(goblinEventsTypes.TOOK_HIT, true);
+          this.mob.sprite.anims.stopAfterRepeat(0);
+          this.mob.stun = true;
+        }
       }
-    });
+    );
     goblinEvents.on(goblinEventsTypes.ULTI, (index: number) => {
-      if (this.index === index) {
+      if (this.id === index) {
         mob.sprite.setVelocityX(0);
         mob.sprite.anims.play(goblinEventsTypes.ULTI, true);
         mob.sprite.anims.stopAfterRepeat(0);
       }
     });
+  }
+
+  playerAlive() {
+    return !this.scene.player.user.isDead();
+  }
+
+  hitPlayer() {
+    const playerState = this.scene.player.user.state;
+    const goblinState = this.mob.goblin.state;
+
+    const damage = (1 - playerState.Armor) * goblinState.ATK;
+    const hp = Math.max(playerState.HP - damage, 0);
+
+    playerState.HP = hp;
+    mcEvents.emit(mcEventTypes.TOOK_HIT, damage);
   }
 
   BombListener() {
@@ -136,13 +155,9 @@ export default class MobController {
     );
   }
   OnUltimate() {
-    const ultiTime = this.mob.goblin.state.SP === this.mob.goblin.state.max_sp;
-    if (ultiTime && this.canSeeMc()) {
-      return true;
-    } else if (ultiTime && !this.canSeeMc()) {
-      this.mob.goblin.state.SP = 0;
-      return false;
-    } else return false;
+    const { state } = this.mob.goblin;
+    if (state.SP === state.max_sp && this.canSeeMc()) return true;
+    return false;
   }
   isDead() {
     return this.mob.goblin.state.HP <= 0;
@@ -155,7 +170,8 @@ export default class MobController {
       Math.abs(this.scene.player.sprite.body.x - this.mob.sprite.x) <=
         (300 / 1440) * window.innerWidth &&
       !this.OnStun() &&
-      !this.isDead()
+      !this.isDead() &&
+      this.playerAlive()
     );
   }
   canHitMc() {
@@ -177,7 +193,7 @@ export default class MobController {
       canHit = true;
     }
 
-    return canHit && !this.isDead() && !this.OnStun() && !this.OnUltimate();
+    return canHit && !this.OnStun() && !this.OnUltimate() && this.canSeeMc();
   }
 
   update(dt: number) {
@@ -185,21 +201,25 @@ export default class MobController {
       this.mob.sprite.anims.play(goblinEventsTypes.DIED, true);
       this.mob.sprite.anims.stopAfterRepeat(0);
     } else if (this.OnUltimate()) {
-      goblinEvents.emit(goblinEventsTypes.ULTI, this.index);
+      goblinEvents.emit(goblinEventsTypes.ULTI, this.id);
     } else if (this.canHitMc()) {
       this.mob.SawMc = true;
       this.mob.Attacking = true;
       this.attackOnUpdate(dt);
-      goblinEvents.emit(goblinEventsTypes.ATTACKING, this.index);
+      goblinEvents.emit(goblinEventsTypes.ATTACKING, this.id);
     } else if (this.canSeeMc()) {
       this.mob.SawMc = true;
       this.mob.Attacking = false;
       this.runOnUpdate(dt);
-      goblinEvents.emit(goblinEventsTypes.STARTED_RUNNING, this.index);
+      goblinEvents.emit(goblinEventsTypes.STARTED_RUNNING, this.id);
     } else if (!this.OnStun() && !this.isDead()) {
       this.mob.Attacking = false;
       this.mob.SawMc = false;
       this.ıdleOnUpdate(dt);
+    }
+
+    if (!this.canSeeMc()) {
+      this.mob.goblin.state.SP = 0;
     }
 
     this.mob.attackrect.setPosition(
@@ -229,9 +249,6 @@ export default class MobController {
       (2.7 / 787) * window.innerHeight
     );
     goblinMob(this);
-    setInterval(() => {
-      this.mob.goblin.mob_regeneration();
-    }, 1000);
     playerAttackListener(this);
     this.scene.physics.add.collider(
       [this.mob.sprite],
@@ -282,6 +299,7 @@ export default class MobController {
   }
 
   private attackOnUpdate(dt: number) {
+    if (this.mob.goblin.isDead()) return;
     const mcOntHeLeft = this.mob.sprite.x - this.scene.player.sprite.body.x > 0;
 
     if (mcOntHeLeft && this.mob.Attacking) {
