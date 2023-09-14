@@ -33,6 +33,14 @@ export function fight(attacker: Canlı) {
       return 0;
     }
   }
+
+  // const reg = attacker.regenerationNew();
+  // if (reg) {
+  //   console.log(`karakter canı: ${attacker.state.HP}
+  //   karakter spsi: ${attacker.state.SP}
+  //   yenileme: hp: ${reg?.HP_reg} sp: ${reg?.SP_reg}`);
+  //   reg.regenerate();
+  // }
   return attacker.state.ATK;
 }
 

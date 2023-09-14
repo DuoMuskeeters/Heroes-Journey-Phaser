@@ -183,7 +183,7 @@ Job: Samurai    MAX HP:   ${mainscene.player.user.state.max_hp}`
       button.button.setInteractive().on(Phaser.Input.Events.POINTER_UP, () => {
         if (mainscene.player.user.state.stat_point > 0) {
           // button type -> "Agility"
-          mainscene.player.user[`increase_${button.type}`]();
+          mainscene.player.user.increase(button.type);
           button.text.setText(
             `${button.type}: ${mainscene.player.user.state[button.type]}`
           );

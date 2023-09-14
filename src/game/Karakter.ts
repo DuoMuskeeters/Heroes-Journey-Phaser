@@ -91,6 +91,33 @@ export class Canlı {
       this.state.SP = Math.min(this.state.max_sp, this.state.SP + SP_reg);
     }
   }
+  regenerationNew() {
+    if (!this.isDead()) {
+      const HP_reg = (this.state.HP_reg * this.state.max_hp) / 100;
+      const SP_reg = (this.state.SP_reg * this.state.max_sp) / 50;
+      return {
+        HP_reg,
+        SP_reg,
+        regenerate: () => {
+          this.state.HP = Math.min(this.state.max_hp, this.state.HP + HP_reg);
+          this.state.SP = Math.min(this.state.max_sp, this.state.SP + SP_reg);
+        },
+      };
+    }
+  }
+  calculate_power() {
+    const s = this.state;
+    s.HP = 100 + s.Constitution * 10;
+    s.max_hp = s.HP;
+    s.HP_reg = 5 + s.Constitution * 0.1;
+    s.Armor = s.Constitution / (s.Constitution + 100);
+    s.SP = 50 + s.Intelligence * 5;
+    s.max_sp = s.SP;
+    s.SP_reg = 2.5 + s.Intelligence * 0.05;
+    s.m_resist = s.Constitution / (s.Constitution + 100);
+    s.ATK = 30 + s.Strength * 2;
+    s.ATKRATE = 1 + s.Agility * 0.008;
+  }
 }
 
 export class Character extends Canlı {
@@ -99,20 +126,6 @@ export class Character extends Canlı {
   constructor(state: State, exp: number = 0) {
     super(state);
     this.exp = exp;
-  }
-  calculate_power() {
-    this.state.HP = 100 + this.state.Constitution * 10;
-    this.state.max_hp = this.state.HP;
-    this.state.HP_reg = 5 + this.state.Constitution * 0.1;
-    this.state.Armor =
-      this.state.Constitution / (this.state.Constitution + 100);
-    this.state.SP = 50 + this.state.Intelligence * 5;
-    this.state.max_sp = this.state.SP;
-    this.state.SP_reg = 2.5 + this.state.Intelligence * 0.05;
-    this.state.m_resist =
-      this.state.Constitution / (this.state.Constitution + 100);
-    this.state.ATK = 30 + this.state.Strength * 2;
-    this.state.ATKRATE = 1 + this.state.Agility * 0.008;
   }
 
   level_up() {
@@ -123,6 +136,17 @@ export class Character extends Canlı {
       this.state.stat_point += 5;
     }
   }
+  increase(stat: "Strength" | "Agility" | "Intelligence" | "Constitution") {
+    if (this.state.stat_point > 0) {
+      this.state[stat] += 1;
+      this.state.stat_point -= 1;
+      this.calculate_power();
+    }
+  }
+  /**
+   * @deprecated
+   * @see increase
+   */
   increase_Strength() {
     if (this.state.stat_point > 0) {
       this.state.Strength += 1;
@@ -130,6 +154,10 @@ export class Character extends Canlı {
       this.calculate_power();
     }
   }
+  /**
+   * @deprecated
+   * @see increase
+   */
   increase_Agility() {
     if (this.state.stat_point > 0) {
       this.state.Agility += 1;
@@ -137,6 +165,10 @@ export class Character extends Canlı {
       this.calculate_power();
     }
   }
+  /**
+   * @deprecated
+   * @see increase
+   */
   increase_Intelligence() {
     if (this.state.stat_point > 0) {
       this.state.Intelligence += 1;
@@ -144,6 +176,10 @@ export class Character extends Canlı {
       this.calculate_power();
     }
   }
+  /**
+   * @deprecated
+   * @see increase
+   */
   increase_Constitution() {
     if (this.state.stat_point > 0) {
       this.state.Constitution += 1;
@@ -206,12 +242,30 @@ export class Warrior extends Character {
   static from_Character(character: Character) {
     return new this(character.state, character.exp);
   }
+  attack(rakip: Canlı) {
+    if (rakip instanceof Mob) {
+      // şakasına heavy strike kullanioz (gercek kod deil!)
+      const { damage, hit } = this.heavy_strike();
+      const lastHit = rakip.state.HP - damage <= 0;
+      if (hit) {
+        hit(rakip);
+      }
+    } else if (rakip instanceof Character) {
+      throw new Error("TODO: attack hesaplama henüz yazılmadı");
+    }
+    throw new Error("bilinmeyen canlı türü");
+  }
+
   heavy_strike() {
     const half = this.state.max_sp / 2;
+    const damage = this.state.ATK * 2;
     if (this.state.SP >= half)
       return {
-        damage: this.state.ATK * 2,
-        hit: () => (this.state.SP = Math.max(this.state.SP - half, 0)),
+        damage,
+        hit: (rakip?: Canlı) => {
+          this.state.SP = Math.max(this.state.SP - half, 0);
+          if (rakip) rakip.state.HP = Math.max(rakip.state.HP - damage, 0);
+        },
       };
 
     return { damage: 0 as const };
@@ -225,26 +279,19 @@ export class Warrior extends Character {
 }
 
 export class Mob extends Canlı {
-  calculate_mob_power() {
-    const s = this.state;
-    s.HP = 100 + s.Constitution * 10;
-    s.max_hp = s.HP;
-    s.HP_reg = 5 + s.Constitution * 0.1;
-    s.Armor = s.Constitution / (s.Constitution + 100);
-    s.max_sp = 150 - s.Intelligence * 0.5;
-    s.SP = 0;
-    s.SP_reg = 10 + s.Intelligence * 0.5;
-    s.m_resist = s.Constitution / (s.Constitution + 100);
-    s.ATK = 30 + s.Strength * 2;
-    s.ATKRATE = 1 + s.Agility * 0.008;
+  calculate_power() {
+    this.calculate_power();
+
+    this.state.max_sp = 150 - this.state.Intelligence * 0.5;
+    this.state.SP = 0;
+    this.state.SP_reg = 10 + this.state.Intelligence * 0.5;
   }
   OnUltimate() {
     if (this.state.SP === this.state.max_sp) {
       this.state.SP -= this.state.max_sp;
       return true;
-    } else {
-      return false;
     }
+    return false;
   }
   regeneration() {
     if (!this.isDead()) {
@@ -253,6 +300,31 @@ export class Mob extends Canlı {
       this.state.HP = Math.min(this.state.max_hp, this.state.HP + HP_reg);
       this.state.SP = Math.min(this.state.max_sp, this.state.SP + SP_reg);
     }
+  }
+  regenerationNew() {
+    const reg = super.regenerationNew();
+    if (reg) {
+      const SP_reg = reg.SP_reg / 4;
+
+      return {
+        HP_reg: reg.HP_reg,
+        SP_reg,
+        regenerate: () => {
+          this.state.HP = Math.min(
+            this.state.max_hp,
+            this.state.HP + reg.HP_reg
+          );
+          this.state.SP = Math.min(this.state.max_sp, this.state.SP + SP_reg);
+        },
+      };
+    }
+  }
+  attack(rakip: Canlı) {
+    if (!(rakip instanceof Character)) {
+      throw new Error("NOTE: şu anda mob sadece karaktere vurabilir.");
+    }
+
+    throw new Error("TODO: attack hesaplama henüz yazılmadı");
   }
 }
 
@@ -313,7 +385,7 @@ export function create_giant(Level: number): Giant {
   });
 
   const giant = new Giant(giant_state);
-  giant.calculate_mob_power();
+  giant.calculate_power();
 
   return giant;
 }
@@ -385,7 +457,7 @@ export function create_bird(Level: number): Bird {
   });
 
   const bird = new Bird(bird_state);
-  bird.calculate_mob_power();
+  bird.calculate_power();
 
   return bird;
 }
