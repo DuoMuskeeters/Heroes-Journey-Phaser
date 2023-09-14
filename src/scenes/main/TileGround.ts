@@ -1,4 +1,5 @@
 import MainScene from "./MainScene";
+import MobController from "./mobController";
 
 export function createground(scene: MainScene) {
   const tiles = scene.tilemap.addTilesetImage("road-set", "road-set");
@@ -74,4 +75,11 @@ export function createground(scene: MainScene) {
 
   scene.backroad?.setCollisionByProperty({ collides: true });
   scene.frontroad?.setCollisionByProperty({ collides: true });
+}
+export function createCollider(
+  scene: MainScene,
+  object1: Phaser.Types.Physics.Arcade.ArcadeColliderType,
+  object2: Phaser.Types.Physics.Arcade.ArcadeColliderType
+) {
+  scene.physics.add.collider(object1, object2);
 }

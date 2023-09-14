@@ -40,7 +40,7 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
       start: 0,
       end: 2,
     }),
-    frameRate: 8,
+    frameRate: 10,
     repeat: -1,
   });
 
@@ -61,7 +61,7 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
       start: 0,
       end: 2,
     }),
-    frameRate: 17,
+    frameRate: 10,
     repeat: -1,
   });
 
@@ -155,7 +155,7 @@ export function goblinMob(controller: MobController) {
     frameRate: controller.mob.goblin.state.ATKRATE * 6.5,
     repeat: -1,
   });
- 
+
   controller.scene.anims.create({
     key: goblinEventsTypes.BOMB,
     frames: controller.scene.anims.generateFrameNumbers(
@@ -168,8 +168,24 @@ export function goblinMob(controller: MobController) {
     frameRate: 10,
     repeat: -1,
   });
-
-  
+}
+export function createGoblinBomb(scene: MainScene) {
+  return scene.physics.add
+    .sprite(
+      window.innerWidth * 0.82,
+      window.innerHeight * 0.63,
+      goblinEventsTypes.BOMB
+    )
+    .setScale(
+      (2.5 / 1405) * window.innerWidth,
+      (2.5 / 569) * window.innerHeight
+    )
+    .setDepth(4)
+    .setPosition(
+      scene.player.sprite.x,
+      scene.player.sprite.y - (200 / 900) * window.innerHeight
+    )
+    .setBodySize(25, 15, true);
 }
 export function shop(scene: MainScene | MenuScene) {
   scene.shopobject = scene.add
