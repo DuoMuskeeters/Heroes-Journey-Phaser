@@ -1,5 +1,4 @@
-import { goblinEventsTypes } from "../../game/types/events";
-import { dirVelocity } from "../../game/types/types";
+import { goblinEventsTypes, mcEventTypes } from "../../game/types/events";
 import MenuScene from "../menu/MenuScene";
 import MainScene from "./MainScene";
 import MobController from "./mobController";
@@ -15,8 +14,8 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
     .setBodySize(30, 40, true);
 
   scene.anims.create({
-    key: "ıdle",
-    frames: scene.anims.generateFrameNumbers("ıdle", {
+    key: mcEventTypes.IDLE,
+    frames: scene.anims.generateFrameNumbers(mcEventTypes.IDLE, {
       start: 0,
       end: 8,
     }),
@@ -25,8 +24,8 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
   });
 
   scene.anims.create({
-    key: "run",
-    frames: scene.anims.generateFrameNumbers("run", {
+    key: mcEventTypes.RUN,
+    frames: scene.anims.generateFrameNumbers(mcEventTypes.RUN, {
       start: 0,
       end: 8,
     }),
@@ -35,8 +34,8 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
   });
 
   scene.anims.create({
-    key: "jump",
-    frames: scene.anims.generateFrameNumbers("jump", {
+    key: mcEventTypes.JUMP,
+    frames: scene.anims.generateFrameNumbers(mcEventTypes.JUMP, {
       start: 0,
       end: 2,
     }),
@@ -46,8 +45,8 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
 
   if (isMainScene)
     scene.anims.create({
-      key: "attack1",
-      frames: scene.anims.generateFrameNumbers("attack1", {
+      key: mcEventTypes.REGULAR_ATTACK,
+      frames: scene.anims.generateFrameNumbers(mcEventTypes.REGULAR_ATTACK, {
         start: 0,
         end: 6,
       }),
@@ -56,8 +55,8 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
     });
 
   scene.anims.create({
-    key: "fall",
-    frames: scene.anims.generateFrameNumbers("fall", {
+    key: mcEventTypes.FALL,
+    frames: scene.anims.generateFrameNumbers(mcEventTypes.FALL, {
       start: 0,
       end: 2,
     }),
@@ -66,8 +65,8 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
   });
 
   scene.anims.create({
-    key: "attack2",
-    frames: scene.anims.generateFrameNumbers("attack2", {
+    key: mcEventTypes.ULTI,
+    frames: scene.anims.generateFrameNumbers(mcEventTypes.ULTI, {
       start: 0,
       end: 6,
     }),
@@ -76,8 +75,8 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
   });
 
   scene.anims.create({
-    key: "death",
-    frames: scene.anims.generateFrameNumbers("death", {
+    key: mcEventTypes.DIED,
+    frames: scene.anims.generateFrameNumbers(mcEventTypes.DIED, {
       start: 0,
       end: 6,
     }),
@@ -86,8 +85,8 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
   });
 
   scene.anims.create({
-    key: "take-hit",
-    frames: scene.anims.generateFrameNumbers("take-hit", {
+    key: mcEventTypes.TOOK_HIT,
+    frames: scene.anims.generateFrameNumbers(mcEventTypes.TOOK_HIT, {
       start: 0,
       end: 4,
     }),
@@ -97,61 +96,61 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
 }
 export function goblinMob(controller: MobController) {
   controller.scene.anims.create({
-    key: "goblin-bomb",
-    frames: controller.scene.anims.generateFrameNumbers("goblin-bomb", {
-      start: 12,
-      end: 0,
-    }),
+    key: goblinEventsTypes.ULTI,
+    frames: controller.scene.anims.generateFrameNumbers(
+      goblinEventsTypes.ULTI,
+      { start: 12, end: 0 }
+    ),
     frameRate: 10,
     repeat: -1,
   });
 
   controller.scene.anims.create({
-    key: "goblin-ıdle",
-    frames: controller.scene.anims.generateFrameNumbers("goblin-ıdle", {
-      start: 4,
-      end: 0,
-    }),
+    key: goblinEventsTypes.IDLE,
+    frames: controller.scene.anims.generateFrameNumbers(
+      goblinEventsTypes.IDLE,
+      { start: 4, end: 0 }
+    ),
     frameRate: 8,
     repeat: -1,
   });
 
   controller.scene.anims.create({
-    key: "goblin-takehit",
-    frames: controller.scene.anims.generateFrameNumbers("goblin-takehit", {
-      start: 4,
-      end: 0,
-    }),
+    key: goblinEventsTypes.TOOK_HIT,
+    frames: controller.scene.anims.generateFrameNumbers(
+      goblinEventsTypes.TOOK_HIT,
+      { start: 4, end: 0 }
+    ),
     frameRate: 10,
     repeat: -1,
   });
 
   controller.scene.anims.create({
-    key: "goblin-death",
-    frames: controller.scene.anims.generateFrameNumbers("goblin-death", {
-      start: 4,
-      end: 0,
-    }),
+    key: goblinEventsTypes.DIED,
+    frames: controller.scene.anims.generateFrameNumbers(
+      goblinEventsTypes.DIED,
+      { start: 4, end: 0 }
+    ),
     frameRate: 8,
     repeat: -1,
   });
 
   controller.scene.anims.create({
-    key: "goblin-run",
-    frames: controller.scene.anims.generateFrameNumbers("goblin-run", {
-      start: 8,
-      end: 0,
-    }),
+    key: goblinEventsTypes.STARTED_RUNNING,
+    frames: controller.scene.anims.generateFrameNumbers(
+      goblinEventsTypes.STARTED_RUNNING,
+      { start: 8, end: 0 }
+    ),
     frameRate: 7,
     repeat: -1,
   });
 
   controller.scene.anims.create({
-    key: "goblin-attack",
-    frames: controller.scene.anims.generateFrameNumbers("goblin-attack", {
-      start: 8,
-      end: 0,
-    }),
+    key: goblinEventsTypes.ATTACKING,
+    frames: controller.scene.anims.generateFrameNumbers(
+      goblinEventsTypes.ATTACKING,
+      { start: 8, end: 0 }
+    ),
     frameRate: controller.mob.goblin.state.ATKRATE * 6.5,
     repeat: -1,
   });
@@ -160,10 +159,7 @@ export function goblinMob(controller: MobController) {
     key: goblinEventsTypes.BOMB,
     frames: controller.scene.anims.generateFrameNumbers(
       goblinEventsTypes.BOMB,
-      {
-        start: 19,
-        end: 0,
-      }
+      { start: 19, end: 0 }
     ),
     frameRate: 10,
     repeat: -1,

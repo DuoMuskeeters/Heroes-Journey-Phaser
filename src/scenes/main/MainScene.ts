@@ -101,12 +101,17 @@ export default class MainScene extends Phaser.Scene {
     createPlayeranims(this);
     createground(this);
 
-    this.player.attackrect = this.physics.add.sprite(500, 500, "attackrect");
-    this.player.attackrect.body.allowGravity = false;
-    this.player.attackrect.setDisplaySize(
-      (250 / 1440) * window.innerWidth,
-      (200 / 900) * window.innerHeight
-    );
+
+    this.player.attackrect = this.physics.add
+      .sprite(500, 500, "attackrect")
+      .setDisplaySize(
+        (250 / 1440) * window.innerWidth,
+        (200 / 900) * window.innerHeight
+      )
+      .setVisible(false);
+
+    (this.player.attackrect.body as Phaser.Physics.Arcade.Body).allowGravity =
+      false;
 
     // this.frontroad.setCollisionByExclusion([-1], true);
 

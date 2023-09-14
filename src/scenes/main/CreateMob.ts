@@ -26,13 +26,14 @@ export function createMob(scene: MainScene) {
       scene.mob.sprite.y,
       "mobattackrect"
     );
-    mobattackrect.body.allowGravity = false;
+    (mobattackrect.body as Phaser.Physics.Arcade.Body).allowGravity = false;
     mobattackrect
       .setDisplaySize(
         (200 / 1311) * window.innerWidth,
         (110 / 724) * window.innerHeight
       )
-      .setDepth(0).setVisible(false);
+      .setDepth(0)
+      .setVisible(false);
     scene.mobController.push(
       new MobController(id, name, scene, {
         sprite: sprite,
