@@ -1,7 +1,7 @@
 import { mcEventTypes, mcEvents } from "../../game/types/events";
 import MainScene from "./MainScene";
 import { Direction, dirVelocity } from "../../game/types/types";
-import { Scene } from "phaser";
+
 
 const runonUpdate = (scene: MainScene) => {
   scene.player?.sprite.anims.play(mcEventTypes.RUN, true);
