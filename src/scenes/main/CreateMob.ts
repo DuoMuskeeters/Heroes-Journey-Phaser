@@ -10,7 +10,11 @@ export function createMob(scene: MainScene) {
     const { healtbar, hptitle, spbar, SawMc, Attacking, stun, bomb } =
       scene.mob;
     const sprite = scene.physics.add
-      .sprite(x, y, "goblin-ıdle")
+      .sprite(
+        x * (2.04 / 1311) * window.innerWidth,
+        y * (2.04 / 724) * window.innerHeight,
+        "goblin-ıdle"
+      )
       .setBodySize(30, 46, true)
       .setCollideWorldBounds(true)
       .setBounce(0)

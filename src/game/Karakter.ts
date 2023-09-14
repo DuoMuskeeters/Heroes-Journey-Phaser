@@ -280,7 +280,7 @@ export class Warrior extends Character {
 
 export class Mob extends Canlı {
   calculate_power() {
-    this.calculate_power();
+    super.calculate_power();
 
     this.state.max_sp = 150 - this.state.Intelligence * 0.5;
     this.state.SP = 0;

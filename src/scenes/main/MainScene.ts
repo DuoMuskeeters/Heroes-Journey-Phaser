@@ -145,8 +145,8 @@ export default class MainScene extends Phaser.Scene {
       false,
       1,
       0,
-      -(220 / 1403) * window.innerWidth,
-      -(290 / 724) * window.innerHeight
+      -(420 / 1440) * window.innerWidth,
+      -(160 / 900) * window.innerHeight
     );
 
     this.player.hpbar = this.add
