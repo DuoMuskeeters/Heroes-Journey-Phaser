@@ -1,3 +1,4 @@
+import { CONFIG } from "../../PhaserGame";
 import MainScene from "../main/MainScene";
 import MenuScene from "../menu/MenuScene";
 import LoadScene from "./Load";
@@ -13,8 +14,8 @@ export function createBackground(scene: MainScene | MenuScene) {
     rationx: 0.05,
     sprite: scene.add
       .tileSprite(0, 0, 0, 0, "background1")
-      .setDisplaySize(window.innerWidth, window.innerHeight)
       .setOrigin(0, 0)
+      .setDisplaySize(CONFIG.width, CONFIG.height)
       .setDepth(-3)
       .setScrollFactor(0),
   };
@@ -25,8 +26,7 @@ export function createBackground(scene: MainScene | MenuScene) {
       .tileSprite(0, 0, 0, 0, "background2")
       .setOrigin(0, 0)
       .setDepth(-2)
-
-      .setDisplaySize(window.innerWidth, window.innerHeight)
+      .setDisplaySize(CONFIG.width, CONFIG.height)
       .setScrollFactor(0),
   };
 
@@ -36,18 +36,18 @@ export function createBackground(scene: MainScene | MenuScene) {
       .tileSprite(0, 0, 0, 0, "background3")
       .setOrigin(0, 0)
       .setDepth(-1)
-      .setDisplaySize(window.innerWidth, window.innerHeight)
+      .setDisplaySize(CONFIG.width, CONFIG.height)
       .setScrollFactor(0),
   };
-  scene.backgrounds = [bg1, bg3, bg3] ;
+  scene.backgrounds = [bg1, bg2, bg3];
 }
 export function forestRoad(scene: MenuScene) {
   const road = {
     rationx: 0.3,
     sprite: scene.add
-      .tileSprite(0, window.innerHeight * 0.628, 0, 0, "piskel")
-      .setOrigin(0)
-      .setScale(window.innerHeight * 0.0039)
+      .tileSprite(0, 900, 0, 0, "piskel")
+      .setOrigin(0, 1)
+      .setScale(3.5)
       .setScrollFactor(0),
   };
 

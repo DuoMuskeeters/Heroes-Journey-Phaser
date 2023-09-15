@@ -1,5 +1,5 @@
 import MainScene from "../main/MainScene";
-import PhaserGame from "../../PhaserGame";
+import PhaserGame, { CONFIG } from "../../PhaserGame";
 
 export default class statemenu {
   scene!: Phaser.Scene;
@@ -14,111 +14,67 @@ export default class statemenu {
     this.scene = scene;
     const mainscene = PhaserGame.scene.keys.mainscene as MainScene;
 
-    this.container = scene.add.container(window.innerWidth, 0);
+    this.container = scene.add.container(CONFIG.width, 0);
     const title = scene.add
-      .image(
-        (-265 / 1440) * window.innerWidth,
-        (-300 / 900) * window.innerHeight,
-        "title-iron"
-      )
-      .setScale(
-        (0.3 / 1440) * window.innerWidth,
-        (0.3 / 900) * window.innerHeight
-      )
+      .image(-265, -300, "title-iron")
+      .setScale(0.3, 0.3)
       .setOrigin(1, 0);
     const titletext = scene.add
-      .text(
-        (-350 / 1440) * window.innerWidth,
-        (-290 / 900) * window.innerHeight,
-        "Stats"
-      )
+      .text(-350, -290, "Stats")
       .setFontFamily("Bradley Hand, cursive")
       .setFontStyle("bold")
-      .setScale((1 / 1440) * window.innerWidth, (1 / 900) * window.innerHeight);
+      
     const panel = scene.add
-      .image(0, (-430 / 900) * window.innerHeight, "statepanel")
+      .image(0, -430, "statepanel")
       .setOrigin(1, 0)
-      .setScale(
-        (0.6 / 1440) * window.innerWidth,
-        (0.7 / 900) * window.innerHeight
-      );
+      .setScale(0.6, 0.7);
     const line = scene.add
-      .image(
-        (-12 / 1440) * window.innerWidth,
-        (-320 / 900) * window.innerHeight,
-        "line"
-      )
+      .image(-12, -320, "line")
       .setOrigin(1, 0)
-      .setScale(
-        (0.55 / 1440) * window.innerWidth,
-        (1 / 900) * window.innerHeight
-      )
+      .setScale(0.55, 1)
       .setTint(0x8b4513);
     const playeravatar = scene.add
-      .image(
-        (-320 / 1440) * window.innerWidth,
-        (-370 / 900) * window.innerHeight,
-        "jack-avatar"
-      )
-      .setScale((2 / 1440) * window.innerWidth, (2 / 900) * window.innerHeight);
+      .image(-320, -370, "jack-avatar")
+      .setScale(2, 2);
     this.jacktext = scene.add
       .text(
-        (-270 / 1440) * window.innerWidth,
-        (-390 / 900) * window.innerHeight,
+        -270,
+        -390,
         `Name:   Jack    Level:   ${mainscene.player.user.state.Level}\n
 Job: Samurai    MAX HP:   ${mainscene.player.user.state.max_hp}`
       )
       .setFontFamily("Bradley Hand, cursive")
       .setFontStyle("bold")
-      .setScale(
-        (1.1 / 1440) * window.innerWidth,
-        (1.1 / 900) * window.innerHeight
-      );
+      .setScale(1.1, 1.1);
     this.remaininpoints = scene.add
       .text(
-        (-50 / 1440) * window.innerWidth,
-        (-150 / 900) * window.innerHeight,
+        -50,
+        -150,
         `Remaining Points:  ${mainscene.player.user.state.stat_point}`
       )
       .setOrigin(1, 0);
-    const Strenght = scene.add.image(
-      (-200 / 1440) * window.innerWidth,
-      (-260 / 900) * window.innerHeight,
-      "plus"
-    );
+    const Strenght = scene.add.image(-200, -260, "plus");
     const Strenghttext = scene.add.text(
-      (-375 / 1440) * window.innerWidth,
-      (-260 / 900) * window.innerHeight,
+      -375,
+      -260,
       `Strenght:  ${mainscene.player.user.state.Strength}`
     );
-    const Agility = scene.add.image(
-      (-200 / 1440) * window.innerWidth,
-      (-235 / 900) * window.innerHeight,
-      "plus"
-    );
+    const Agility = scene.add.image(-200, -235, "plus");
     const Agilitytext = scene.add.text(
-      (-375 / 1440) * window.innerWidth,
-      (-235 / 900) * window.innerHeight,
+      -375,
+      -235,
       `Agility:  ${mainscene.player.user.state.Agility}`
     );
-    const Intelligence = scene.add.image(
-      (-200 / 1440) * window.innerWidth,
-      (-210 / 900) * window.innerHeight,
-      "plus"
-    );
+    const Intelligence = scene.add.image(-200, -210, "plus");
     const Intelligencetext = scene.add.text(
-      (-375 / 1440) * window.innerWidth,
-      (-210 / 900) * window.innerHeight,
+      -375,
+      -210,
       `Intelligence: ${mainscene.player.user.state.Intelligence}`
     );
-    const Constitution = scene.add.image(
-      (-200 / 1440) * window.innerWidth,
-      (-185 / 900) * window.innerHeight,
-      "plus"
-    );
+    const Constitution = scene.add.image(-200, -185, "plus");
     const Constitutiontext = scene.add.text(
-      (-375 / 1440) * window.innerWidth,
-      (-185 / 900) * window.innerHeight,
+      -375,
+      -185,
       `Constitution: ${mainscene.player.user.state.Constitution}`
     );
     const buttons = [
@@ -141,36 +97,25 @@ Job: Samurai    MAX HP:   ${mainscene.player.user.state.max_hp}`
           );
         }
       });
-      button.image
-        .setScale(
-          (0.3 / 1440) * window.innerWidth,
-          (0.3 / 900) * window.innerHeight
-        )
-        .setOrigin(1, 0)
-        .setTint(0x000000);
+      button.image.setScale(0.3, 0.3).setOrigin(1, 0).setTint(0x000000);
 
       button.text
         .setFontFamily("Bradley Hand, cursive")
         .setFontStyle("bold")
-        .setScale(
-          (1 / 1440) * window.innerWidth,
-          (1 / 900) * window.innerHeight
-        );
+        
     });
-
-    
 
     const preesc = scene.add
       .text(
-        (-30 / 1440) * window.innerWidth,
-        (-250 / 900) * window.innerHeight,
+        -30,
+        -250,
         ` Press+C to 
     open or close`
       )
       .setFontFamily("Bradley Hand, cursive")
       .setFontStyle("bold")
       .setOrigin(1, 0)
-      .setScale((1 / 1440) * window.innerWidth, (1 / 900) * window.innerHeight);
+      
     this.container.add(panel);
     this.container.add(playeravatar);
     this.container.add(this.jacktext);
@@ -191,8 +136,8 @@ Job: Samurai    MAX HP:   ${mainscene.player.user.state.max_hp}`
   show() {
     this.scene.tweens.add({
       targets: this.container,
-      x: window.innerWidth,
-      y: (420 / 900) * window.innerHeight,
+      x: CONFIG.width,
+      y: 420,
       ease: Phaser.Math.Easing.Sine.InOut,
     });
     this.opened = true;
@@ -200,8 +145,8 @@ Job: Samurai    MAX HP:   ${mainscene.player.user.state.max_hp}`
   hide() {
     this.scene.tweens.add({
       targets: this.container,
-      x: window.innerWidth,
-      y: (20 / 900) * window.innerHeight,
+      x: CONFIG.width,
+      y: 20,
       ease: Phaser.Math.Easing.Sine.InOut,
     });
     this.opened = false;

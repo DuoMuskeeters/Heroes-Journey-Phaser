@@ -1,10 +1,9 @@
 import Phaser from "phaser";
 import { createPlayeranims, shop } from "../main/Anims";
 import { createBackground, forestRoad } from "../preLoad/assets";
-import { Resize } from "../main/Resize";
 import { Backroundmovement } from "../main/GameMovement";
-import { Direction } from "../../game/types/types";
-import { mcEventTypes } from "../../game/types/events";
+import { Direction, mcAnimTypes } from "../../game/types/types";
+import { CONFIG } from "../../PhaserGame";
 
 export default class MenuScene extends Phaser.Scene {
   logo = {} as Phaser.GameObjects.Image;
@@ -72,13 +71,7 @@ export default class MenuScene extends Phaser.Scene {
     createBackground(this);
     forestRoad(this);
     createPlayeranims(this);
-    Resize(this);
-    this.physics.world.setBounds(
-      0,
-      0,
-      Infinity,
-      window.innerHeight - (140 / 900) * window.innerHeight
-    );
+    this.physics.world.setBounds(0, 0, Infinity, CONFIG.height - 140);
     shop(this);
 
     this.cameras.main.startFollow(
@@ -86,26 +79,23 @@ export default class MenuScene extends Phaser.Scene {
       false,
       1,
       0,
-      -1 * window.innerHeight * 0.5,
-      -1 * window.innerHeight * 0.5
+      -1 * CONFIG.height * 0.5,
+      -1 * CONFIG.height * 0.5
     );
-    this?.player.sprite.anims.play(mcEventTypes.FALL, true);
+    this?.player.sprite.anims.play(mcAnimTypes.FALL, true);
     this.player.sprite.anims.stopAfterRepeat(3);
     this.shopobject?.anims.play("shop", true);
 
-    window.addEventListener("resize", () => {
-      this.Resize();
-    });
     this.player.sprite.on(Phaser.Animations.Events.ANIMATION_STOP, () => {
       if (
-        this.player.sprite.anims.getName() === mcEventTypes.FALL &&
+        this.player.sprite.anims.getName() === mcAnimTypes.FALL &&
         this.player.sprite.body instanceof Phaser.Physics.Arcade.Body
       ) {
-        this.player.sprite.anims.play(mcEventTypes.RUN, true);
+        this.player.sprite.anims.play(mcAnimTypes.RUN, true);
         this.player.sprite.body.setVelocityX(300);
       }
     });
-    this.Resize();
+    this.createIntro();
   }
 
   update(time: number, delta: number): void {
@@ -116,20 +106,20 @@ export default class MenuScene extends Phaser.Scene {
     }
   }
 
-  Resize() {
-    const logoLeft = (window.innerWidth - this.logo.width) / 2;
-    const logoTop = (window.innerHeight - this.logo.height) / 2;
-    const brandLeft = window.innerWidth / 2;
-    const brandTop = window.innerHeight / 4;
-    const textLeft = window.innerWidth / 6;
-    const textTop = window.innerHeight / 2;
+  createIntro() {
+    const logoLeft = (CONFIG.width - this.logo.width) / 2;
+    const logoTop = (CONFIG.height - this.logo.height) / 2;
+    const brandLeft = CONFIG.width / 2;
+    const brandTop = CONFIG.height / 4;
+    const textLeft = CONFIG.width / 6;
+    const textTop = CONFIG.height / 2;
 
-    this.logo.setScale(window.innerHeight / 900).setPosition(logoLeft, logoTop);
+    this.logo.setPosition(logoLeft, logoTop);
     this.brand.setPosition(brandLeft, brandTop);
     this.gameTitle.setPosition(textLeft, textTop);
   }
+
   handleStartGame() {
-    window.removeEventListener("resize", this.Resize);
     this.cameras.main.postFX.addBlur(0, 0, 0.1);
     this.cameras.main.shake(1000, 0.002);
     this.cameras.main.fadeOut(1000, 0, 0, 0);
