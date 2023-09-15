@@ -18,7 +18,7 @@ export class UiScene extends Phaser.Scene {
     this.heroesJourneyMap = new heroesJourneyMap(this);
     const mainscene = PhaserGame.scene.keys.mainscene as MainScene;
     // this.statebutton = this.add
-    //   .image(window.innerWidth - 40, 40, "statebutton")
+    //   .image(CONFIG.width - 40, 40, "statebutton")
     //   .setScale(5)
     //   .setTint(0xd0d0d0)
     //   .setVisible(false);

@@ -1,3 +1,4 @@
+import { CONFIG } from "../../PhaserGame";
 import { create_giant } from "../../game/Karakter";
 import { Direction } from "../../game/types/types";
 import MainScene from "./MainScene";
@@ -10,8 +11,8 @@ export function createMob(scene: MainScene) {
     const { healtbar, hptitle, spbar, bomb } = scene.mob;
     const sprite = scene.physics.add
       .sprite(
-        x * (2.04 / 1311) * window.innerWidth,
-        y * (2.04 / 724) * window.innerHeight,
+        x * (2.04 / 1311) * CONFIG.width,
+        y * (2.04 / 724) * CONFIG.height,
         "goblin-ıdle"
       )
       .setBodySize(30, 46, true)
@@ -28,10 +29,7 @@ export function createMob(scene: MainScene) {
     );
     (mobattackrect.body as Phaser.Physics.Arcade.Body).allowGravity = false;
     mobattackrect
-      .setDisplaySize(
-        (200 / 1311) * window.innerWidth,
-        (110 / 724) * window.innerHeight
-      )
+      .setDisplaySize((200 / 1311) * CONFIG.width, (110 / 724) * CONFIG.height)
       .setDepth(0)
       .setVisible(false);
     scene.mobController.push(

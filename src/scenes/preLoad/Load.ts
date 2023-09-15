@@ -1,3 +1,4 @@
+import { CONFIG } from "../../PhaserGame";
 import { eventTypes, gameEvents } from "../../game/types/events";
 import { preloadAssets } from "./assets";
 
@@ -20,7 +21,7 @@ export default class LoadScene extends Phaser.Scene {
   }
   create() {
     this.loadspin = this.add
-      .sprite(window.innerWidth / 2, window.innerHeight / 2, "loadspin")
+      .sprite(CONFIG.width / 2, CONFIG.height / 2, "loadspin")
       .setScale(1.5);
     this.anims.create({
       key: "loadspin",
@@ -35,8 +36,8 @@ export default class LoadScene extends Phaser.Scene {
     this.loadspin.anims.play("loadspin", true);
     this.loadspin.anims.stopAfterRepeat(0);
     this.loadingtext = this.add.text(
-      window.innerWidth / 2 - 75,
-      window.innerHeight / 2 + 50,
+      CONFIG.width / 2 - 75,
+      CONFIG.height / 2 + 50,
       "Packages Loading..."
     );
 

@@ -1,12 +1,12 @@
 import { mcEventTypes, mcEvents } from "../../game/types/events";
 import MainScene from "./MainScene";
 import { Direction, dirVelocity } from "../../game/types/types";
-
+import { CONFIG } from "../../PhaserGame";
 
 const runonUpdate = (scene: MainScene) => {
   scene.player?.sprite.anims.play(mcEventTypes.RUN, true);
   scene.player.sprite.body.setVelocityX(
-    dirVelocity[scene.player.lastdirection] * ((250 / 1328) * window.innerWidth)
+    dirVelocity[scene.player.lastdirection] * ((250 / 1328) * CONFIG.width)
   );
 };
 
@@ -17,7 +17,7 @@ const ıdleonUpdate = (scene: MainScene) => {
 const jumpandFallonupdate = (scene: MainScene) => {
   scene.player.sprite.anims.play(mcEventTypes.JUMP, true);
   scene.player.sprite.anims.stopAfterRepeat(1);
-  scene.player.sprite.body.setVelocityY(-(900 / 744) * window.innerHeight);
+  scene.player.sprite.body.setVelocityY(-(900 / 744) * CONFIG.height);
 };
 const heavyStrikeonUpdate = (scene: MainScene) => {
   const { damage: heavyStrikeDamage, hit: heavyStrikeHit } =
@@ -90,8 +90,7 @@ export function JackOnUpdate(scene: MainScene) {
   if (!scene.player.sprite.body.onFloor()) {
     if (keyD?.isDown || keyA?.isDown) {
       scene.player.sprite.body.setVelocityX(
-        dirVelocity[scene.player.lastdirection] *
-          ((250 / 1328) * window.innerWidth)
+        dirVelocity[scene.player.lastdirection] * ((250 / 1328) * CONFIG.width)
       );
     } else {
       scene.player.sprite.body.setVelocityX(0);
@@ -150,7 +149,9 @@ export function JackOnUpdate(scene: MainScene) {
 
   scene.player.attackrect.setPosition(
     scene.player.sprite.x +
-      dirVelocity[scene.player.lastdirection] * (85 / 1440) * window.innerWidth,
-    scene.player.sprite.y - (40 / 900) * window.innerHeight
+      dirVelocity[scene.player.lastdirection] *
+        (85 / CONFIG.width) *
+        CONFIG.width,
+    scene.player.sprite.y - 40
   );
 }

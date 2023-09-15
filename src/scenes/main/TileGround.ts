@@ -1,5 +1,5 @@
+import { CONFIG } from "../../PhaserGame";
 import MainScene from "./MainScene";
-import MobController from "./mobController";
 
 export function createground(scene: MainScene) {
   const tiles = scene.tilemap.addTilesetImage("road-set", "road-set");
@@ -15,63 +15,34 @@ export function createground(scene: MainScene) {
 
   scene.frontroad = scene.tilemap
     .createLayer("backroad", tiles!)
-    ?.setScale(
-      (2.04 / 1311) * window.innerWidth,
-      (2.04 / 724) * window.innerHeight
-    )!;
+    ?.setScale((2.04 / 1311) * CONFIG.width, (2.04 / 724) * CONFIG.height)!;
   scene.backroad = scene.tilemap
     .createLayer("frontroad", tiles!)
-    ?.setScale(
-      (2.04 / 1311) * window.innerWidth,
-      (2.04 / 724) * window.innerHeight
-    )!;
+    ?.setScale((2.04 / 1311) * CONFIG.width, (2.04 / 724) * CONFIG.height)!;
   scene.tilemap
-    .createLayer("lamp", lamp!, 0, -(68 / 724) * window.innerHeight)
-    ?.setScale(
-      (2.04 / 1311) * window.innerWidth,
-      (2.04 / 724) * window.innerHeight
-    );
+    .createLayer("lamp", lamp!, 0, -(68 / 724) * CONFIG.height)
+    ?.setScale((2.04 / 1311) * CONFIG.width, (2.04 / 724) * CONFIG.height);
   scene.tilemap
-    .createLayer(
-      "fence",
-      [fence_1!, fence_2!],
-      0,
-      (10 / 724) * window.innerHeight
-    )
-    ?.setScale(
-      (2.04 / 1311) * window.innerWidth,
-      (2.04 / 724) * window.innerHeight
-    );
+    .createLayer("fence", [fence_1!, fence_2!], 0, (10 / 724) * CONFIG.height)
+    ?.setScale((2.04 / 1311) * CONFIG.width, (2.04 / 724) * CONFIG.height);
   scene.tilemap
-    .createLayer("rock_3", rock3!, 0, (13 / 724) * window.innerHeight)
-    ?.setScale(
-      (2.04 / 1311) * window.innerWidth,
-      (2.04 / 724) * window.innerHeight
-    );
+    .createLayer("rock_3", rock3!, 0, (13 / 724) * CONFIG.height)
+    ?.setScale((2.04 / 1311) * CONFIG.width, (2.04 / 724) * CONFIG.height);
   scene.tilemap
-    .createLayer("rock_2", rock2!, 0, (25 / 724) * window.innerHeight)
-    ?.setScale(
-      (2.04 / 1311) * window.innerWidth,
-      (2.04 / 724) * window.innerHeight
-    );
+    .createLayer("rock_2", rock2!, 0, (25 / 724) * CONFIG.height)
+    ?.setScale((2.04 / 1311) * CONFIG.width, (2.04 / 724) * CONFIG.height);
 
   scene.tilemap
-    .createLayer("sign", sign!, 0, (-18 / 900) * window.innerHeight)
-    ?.setScale(
-      (2.04 / 1311) * window.innerWidth,
-      (2.04 / 724) * window.innerHeight
-    );
+    .createLayer("sign", sign!, 0, -18)
+    ?.setScale((2.04 / 1311) * CONFIG.width, (2.04 / 724) * CONFIG.height);
   scene.tilemap
     .createLayer(
       "grass",
       [grass1!, grass2!, grass3!],
       0,
-      (43 / 724) * window.innerHeight
+      (43 / 724) * CONFIG.height
     )
-    ?.setScale(
-      (2.04 / 1311) * window.innerWidth,
-      (2.04 / 724) * window.innerHeight
-    );
+    ?.setScale((2.04 / 1311) * CONFIG.width, (2.04 / 724) * CONFIG.height);
 
   scene.backroad?.setCollisionByProperty({ collides: true });
   scene.frontroad?.setCollisionByProperty({ collides: true });

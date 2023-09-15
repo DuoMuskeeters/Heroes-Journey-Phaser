@@ -2,10 +2,9 @@ import Phaser from "phaser";
 import { Direction } from "../../game/types/types";
 import { Giant, Warrior, create_character } from "../../game/Karakter";
 import { createBackground } from "../preLoad/assets";
-import PhaserGame from "../../PhaserGame";
+import PhaserGame, { CONFIG } from "../../PhaserGame";
 import { createPlayeranims } from "./Anims";
 import { JackDied, JackOnUpdate } from "./PlayerController";
-import { Resize } from "./Resize";
 import { playerhealtbar, playerspbar } from "../Ui/Components";
 import { Backroundmovement } from "./GameMovement";
 import { UiScene } from "../Ui/uiScene";
@@ -101,13 +100,9 @@ export default class MainScene extends Phaser.Scene {
     createPlayeranims(this);
     createground(this);
 
-
     this.player.attackrect = this.physics.add
       .sprite(500, 500, "attackrect")
-      .setDisplaySize(
-        (250 / 1440) * window.innerWidth,
-        (200 / 900) * window.innerHeight
-      )
+      .setDisplaySize(250, 200)
       .setVisible(false);
 
     (this.player.attackrect.body as Phaser.Physics.Arcade.Body).allowGravity =
@@ -129,54 +124,30 @@ export default class MainScene extends Phaser.Scene {
       });
     }, 1000);
 
-    this.cameras.main.startFollow(
-      this.player.sprite,
-      false,
-      1,
-      0,
-      -(420 / 1440) * window.innerWidth,
-      -(160 / 900) * window.innerHeight
-    );
+    this.cameras.main.startFollow(this.player.sprite, false, 1, 0, -420, -160);
 
     this.player.hpbar = this.add
-      .sprite(
-        (238 / 1440) * window.innerWidth,
-        (76 / 900) * window.innerHeight,
-        "hp-bar"
-      )
-      .setScale(
-        (5 / 1440) * window.innerWidth,
-        (2.7 / 900) * window.innerHeight
-      )
+      .sprite(238, 76, "hp-bar")
+      .setScale(5, 2.7)
       .setDepth(5)
       .setScrollFactor(0);
     this.player.manabar = this.add
-      .sprite(
-        (214 / 1440) * window.innerWidth,
-        (112 / 900) * window.innerHeight,
-        "mana-bar"
-      )
-      .setScale(
-        (3.8 / 1440) * window.innerWidth,
-        (2.7 / 900) * window.innerHeight
-      )
+      .sprite(214, 112, "mana-bar")
+      .setScale(3.8, 2.7)
       .setDepth(5)
       .setScrollFactor(0);
 
     this.player.sprite.anims.play(mcEventTypes.FALL, true);
     this.player.sprite.anims.stopAfterRepeat(2);
 
-    window.addEventListener("resize", () => {
-      this.physics.world.gravity.y = (2000 / 724) * window.innerHeight;
-      Resize(this);
+    this.backgrounds.forEach((bg) => {
+      bg.sprite.setDisplaySize(CONFIG.width, CONFIG.height);
     });
-    Resize(this);
+
+    this.physics.world.setBounds(0, 0, Infinity, CONFIG.height - 300);
+
     this.player.hptitle = this.add
-      .text(
-        (370 / 1440) * window.innerWidth,
-        (65 / 900) * window.innerHeight,
-        `${this.player.user.state.HP}`
-      )
+      .text(370, 65, `${this.player.user.state.HP}`)
       .setStyle({
         fontSize: "22px Arial",
         color: "red",
@@ -185,13 +156,9 @@ export default class MainScene extends Phaser.Scene {
       .setFontFamily("URW Chancery L, cursive")
       .setFontStyle("bold")
       .setScrollFactor(0)
-      .setScale((1 / 1440) * window.innerWidth, (1 / 900) * window.innerHeight);
+      .setScale(1, 1);
     this.player.sptitle = this.add
-      .text(
-        (340 / 1440) * window.innerWidth,
-        (103 / 900) * window.innerHeight,
-        `${this.player.user.state.SP}`
-      )
+      .text(340, 103, `${this.player.user.state.SP}`)
       .setStyle({
         fontSize: "22px Arial",
         align: "center",
@@ -200,7 +167,7 @@ export default class MainScene extends Phaser.Scene {
       .setFontStyle("bold")
       .setScrollFactor(0)
 
-      .setScale((1 / 1440) * window.innerWidth, (1 / 900) * window.innerHeight);
+      .setScale(1, 1);
 
     this.scene.launch("ui");
   }

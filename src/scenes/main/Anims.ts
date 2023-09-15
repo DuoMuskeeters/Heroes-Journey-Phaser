@@ -1,3 +1,4 @@
+import { CONFIG } from "../../PhaserGame";
 import { goblinEventsTypes, mcEventTypes } from "../../game/types/events";
 import MenuScene from "../menu/MenuScene";
 import MainScene from "./MainScene";
@@ -9,7 +10,7 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
     .sprite(300, 0, "ıdle")
     .setCollideWorldBounds(true)
     .setBounce(0.1)
-    .setScale(window.innerHeight / 300)
+    .setScale(CONFIG.height / 300)
     .setDepth(300)
     .setBodySize(30, 40, true);
 
@@ -167,26 +168,17 @@ export function goblinMob(controller: MobController) {
 }
 export function createGoblinBomb(scene: MainScene) {
   return scene.physics.add
-    .sprite(
-      window.innerWidth * 0.82,
-      window.innerHeight * 0.63,
-      goblinEventsTypes.BOMB
-    )
-    .setScale(
-      (2.5 / 1405) * window.innerWidth,
-      (2.5 / 569) * window.innerHeight
-    )
+    .sprite(CONFIG.width * 0.82, CONFIG.height * 0.63, goblinEventsTypes.BOMB)
+    .setScale((2.2 / 1328) * CONFIG.width, (2.6 / 787) * CONFIG.height)
     .setDepth(4)
-    .setPosition(
-      scene.player.sprite.x,
-      scene.player.sprite.y - (200 / 900) * window.innerHeight
-    )
-    .setBodySize(25, 15, true);
+    .setPosition(scene.player.sprite.x, scene.player.sprite.y - 200)
+    .setBodySize(25, 15, true)
+    .setOrigin(1, 1);
 }
 export function shop(scene: MainScene | MenuScene) {
   scene.shopobject = scene.add
-    .sprite(window.innerWidth * 0.82, window.innerHeight * 0.62, "shopanim")
-    .setScale(window.innerHeight / 290)
+    .sprite(CONFIG.width * 0.82, CONFIG.height * 0.62, "shopanim")
+    .setScale(CONFIG.height / 290)
     .setDepth(0);
 
   scene.anims.create({

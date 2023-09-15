@@ -11,6 +11,7 @@ import MainScene from "./MainScene";
 import { playerAttackListener } from "./Playerattack";
 import { Direction, dirVelocity } from "../../game/types/types";
 import { createCollider } from "./TileGround";
+import { CONFIG } from "../../PhaserGame";
 
 export default class MobController {
   private goblinmod = 0;
@@ -173,8 +174,7 @@ export default class MobController {
   }
   canSeeMc() {
     return (
-      Math.abs(this.scene.player.sprite.body.x - this.mob.sprite.x) <=
-        (300 / 1440) * window.innerWidth &&
+      Math.abs(this.scene.player.sprite.body.x - this.mob.sprite.x) <= 300 &&
       !this.OnStun() &&
       !this.isDead() &&
       this.playerAlive()
@@ -223,8 +223,7 @@ export default class MobController {
     }
 
     this.mob.attackrect.setPosition(
-      this.mob.sprite.x +
-        dirVelocity[this.mob.lastdirection] * (5 / 1440) * window.innerWidth,
+      this.mob.sprite.x + dirVelocity[this.mob.lastdirection] * 5,
       this.mob.sprite.y
     );
     goblinspbar(this);
@@ -244,8 +243,8 @@ export default class MobController {
       .setFontFamily('Georgia, "Goudy Bookletter 1911", Times, serif')
       .setFontStyle("bold");
     this.mob.sprite = this.mob.sprite.setScale(
-      (2.3 / 1328) * window.innerWidth,
-      (2.7 / 787) * window.innerHeight
+      (2.3 / 1328) * CONFIG.width,
+      (2.7 / 787) * CONFIG.height
     );
     goblinMob(this);
     playerAttackListener(this);
@@ -283,13 +282,13 @@ export default class MobController {
       this.mob.sprite.setVelocityY(-300);
     }
     if (mcOntHeLeft) {
-      this.mob.sprite.setVelocityX((-150 / 1440) * window.innerWidth);
+      this.mob.sprite.setVelocityX(-150);
       this.mob.sprite.setFlipX(false);
       this.mob.lastdirection = Direction.left;
       this.mob.sprite.anims.play(goblinEventsTypes.STARTED_RUNNING, true);
       this.mob.sprite.anims.stopAfterRepeat(0);
     } else {
-      this.mob.sprite.setVelocityX((+150 / 1440) * window.innerWidth);
+      this.mob.sprite.setVelocityX(+150);
       this.mob.sprite.setFlipX(true);
       this.mob.lastdirection = Direction.right;
       this.mob.sprite.anims.play(goblinEventsTypes.STARTED_RUNNING, true);

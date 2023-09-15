@@ -1,3 +1,5 @@
+import { CONFIG } from "../../PhaserGame";
+
 export default class HeroesJourneyMap {
   mapcontainer!: Phaser.GameObjects.Container;
   scene!: Phaser.Scene;
@@ -18,7 +20,7 @@ export default class HeroesJourneyMap {
   show() {
     this.scene.tweens.add({
       targets: this.mapcontainer,
-      x: window.innerWidth,
+      x: CONFIG.width,
       y: 0,
       ease: Phaser.Math.Easing.Sine.InOut,
     });
@@ -27,7 +29,7 @@ export default class HeroesJourneyMap {
   hide() {
     this.scene.tweens.add({
       targets: this.mapcontainer,
-      x: 0 ,
+      x: 0,
       y: 0,
       ease: Phaser.Math.Easing.Sine.InOut,
     });
