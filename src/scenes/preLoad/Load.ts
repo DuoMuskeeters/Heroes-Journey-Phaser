@@ -45,9 +45,7 @@ export default class LoadScene extends Phaser.Scene {
       this.array.push("Packages Loading" + ".".repeat(i));
     }
 
-    // this.loadspin.on(Phaser.Animations.Events.ANIMATION_STOP, () => {
-    //   this.scene.start("menu");
-    // });
+   
   }
   update(time: number, delta: number): void {
     this.modnumber += 1;

@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { createPlayeranims, shop } from "../main/Anims";
 import { createBackground, forestRoad } from "../preLoad/assets";
 import { Backroundmovement } from "../main/GameMovement";
-import { Direction } from "../../game/types/types";
+import { Direction, mcAnimTypes } from "../../game/types/types";
 import { mcEventTypes } from "../../game/types/events";
 import { CONFIG } from "../../PhaserGame";
 
@@ -83,16 +83,16 @@ export default class MenuScene extends Phaser.Scene {
       -1 * CONFIG.height * 0.5,
       -1 * CONFIG.height * 0.5
     );
-    this?.player.sprite.anims.play(mcEventTypes.FALL, true);
+    this?.player.sprite.anims.play(mcAnimTypes.FALL, true);
     this.player.sprite.anims.stopAfterRepeat(3);
     this.shopobject?.anims.play("shop", true);
 
     this.player.sprite.on(Phaser.Animations.Events.ANIMATION_STOP, () => {
       if (
-        this.player.sprite.anims.getName() === mcEventTypes.FALL &&
+        this.player.sprite.anims.getName() === mcAnimTypes.FALL &&
         this.player.sprite.body instanceof Phaser.Physics.Arcade.Body
       ) {
-        this.player.sprite.anims.play(mcEventTypes.RUN, true);
+        this.player.sprite.anims.play(mcAnimTypes.RUN, true);
         this.player.sprite.body.setVelocityX(300);
       }
     });

@@ -11,9 +11,9 @@
         }
       },
       {
-        "url": "goblin-bomb.png",
+        "url": "goblin-ulti.png",
         "type": "spritesheet",
-        "key": "goblin-bomb",
+        "key": "goblin-ulti",
         "frameConfig": {
           "frameWidth": 150,
           "frameHeight": 150
@@ -56,9 +56,9 @@
         }
       },
       {
-        "url": "goblin-attack-bomb.png",
+        "url": "goblin-bomb.png",
         "type": "spritesheet",
-        "key": "goblin-attack-bomb",
+        "key": "goblin-bomb",
         "frameConfig": {
           "frameWidth": 100,
           "frameHeight": 100

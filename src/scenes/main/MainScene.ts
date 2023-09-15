@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { Direction } from "../../game/types/types";
+import { Direction, mcAnimTypes } from "../../game/types/types";
 import { Giant, Warrior, create_character } from "../../game/Karakter";
 import { createBackground } from "../preLoad/assets";
 import PhaserGame, { CONFIG } from "../../PhaserGame";
@@ -9,7 +9,7 @@ import { playerhealtbar, playerspbar } from "../Ui/Components";
 import { Backroundmovement } from "./GameMovement";
 import { UiScene } from "../Ui/uiScene";
 import MobController from "./mobController";
-import { createground } from "./TileGround";
+import { createCollider, createground } from "./TileGround";
 import { createMob } from "./CreateMob";
 import { createAvatarFrame } from "../Ui/AvatarUi";
 import {
@@ -102,7 +102,7 @@ export default class MainScene extends Phaser.Scene {
 
     this.player.attackrect = this.physics.add
       .sprite(500, 500, "attackrect")
-      .setDisplaySize(250, 200)
+      .setDisplaySize(280, 170)
       .setVisible(false);
 
     (this.player.attackrect.body as Phaser.Physics.Arcade.Body).allowGravity =
@@ -110,10 +110,7 @@ export default class MainScene extends Phaser.Scene {
 
     // this.frontroad.setCollisionByExclusion([-1], true);
 
-    this.physics.add.collider(
-      [this.player.sprite],
-      [this.backroad, this.frontroad]
-    );
+    createCollider(this, [this.player.sprite], [this.backroad, this.frontroad]);
     createMob(this);
 
     setInterval(() => {
@@ -137,12 +134,8 @@ export default class MainScene extends Phaser.Scene {
       .setDepth(5)
       .setScrollFactor(0);
 
-    this.player.sprite.anims.play(mcEventTypes.FALL, true);
+    this.player.sprite.anims.play(mcAnimTypes.FALL, true);
     this.player.sprite.anims.stopAfterRepeat(2);
-
-    this.backgrounds.forEach((bg) => {
-      bg.sprite.setDisplaySize(CONFIG.width, CONFIG.height);
-    });
 
     this.physics.world.setBounds(0, 0, Infinity, CONFIG.height - 300);
 
@@ -166,7 +159,6 @@ export default class MainScene extends Phaser.Scene {
       .setFontFamily("URW Chancery L, cursive")
       .setFontStyle("bold")
       .setScrollFactor(0)
-
       .setScale(1, 1);
 
     this.scene.launch("ui");

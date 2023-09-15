@@ -1,29 +1,29 @@
 import { mcEventTypes, mcEvents } from "../../game/types/events";
 import MainScene from "./MainScene";
-import { Direction, dirVelocity } from "../../game/types/types";
+import { Direction, dirVelocity, mcAnimTypes } from "../../game/types/types";
 import { CONFIG } from "../../PhaserGame";
 
 const runonUpdate = (scene: MainScene) => {
-  scene.player?.sprite.anims.play(mcEventTypes.RUN, true);
+  scene.player?.sprite.anims.play(mcAnimTypes.RUN, true);
   scene.player.sprite.body.setVelocityX(
-    dirVelocity[scene.player.lastdirection] * ((250 / 1328) * CONFIG.width)
+    dirVelocity[scene.player.lastdirection] * 250
   );
 };
 
 const ıdleonUpdate = (scene: MainScene) => {
   scene.player.sprite.body.setVelocityX(0);
-  scene.player.sprite.anims.play(mcEventTypes.IDLE, true);
+  scene.player.sprite.anims.play(mcAnimTypes.IDLE, true);
 };
 const jumpandFallonupdate = (scene: MainScene) => {
-  scene.player.sprite.anims.play(mcEventTypes.JUMP, true);
+  scene.player.sprite.anims.play(mcAnimTypes.JUMP, true);
   scene.player.sprite.anims.stopAfterRepeat(1);
-  scene.player.sprite.body.setVelocityY(-(900 / 744) * CONFIG.height);
+  scene.player.sprite.body.setVelocityY(-900);
 };
 const heavyStrikeonUpdate = (scene: MainScene) => {
   const { damage: heavyStrikeDamage, hit: heavyStrikeHit } =
     scene.player.user.heavy_strike();
   if (heavyStrikeHit) {
-    scene.player.sprite.anims.play(mcEventTypes.ULTI, true);
+    scene.player.sprite.anims.play(mcAnimTypes.ATTACK_2, true);
     scene.player.sprite.anims.stopAfterRepeat(0);
     scene.player.sprite.body.setVelocityX(0);
     scene.player.ultimate = false;
@@ -36,12 +36,12 @@ const heavyStrikeonUpdate = (scene: MainScene) => {
   }
 };
 const attackonUpdate = (scene: MainScene) => {
-  scene.player?.sprite.anims.play(mcEventTypes.REGULAR_ATTACK, true);
+  scene.player?.sprite.anims.play(mcAnimTypes.ATTACK_1, true);
   scene.player.sprite.anims.stopAfterRepeat(0);
   scene.player.sprite.body.setVelocityX(0);
 };
 export function JackDied(scene: MainScene) {
-  scene.player.sprite.anims.play(mcEventTypes.DIED, true);
+  scene.player.sprite.anims.play(mcAnimTypes.DEATH, true);
   scene.player.sprite.anims.stopAfterRepeat(0);
   scene.player.sprite.body.setVelocityX(0);
 }
@@ -57,11 +57,11 @@ export function JackOnUpdate(scene: MainScene) {
 
   const isanimplaying = scene.player.sprite.anims.isPlaying;
   const attckQActive =
-    scene.player.sprite.anims.getName() === mcEventTypes.ULTI;
+    scene.player.sprite.anims.getName() === mcAnimTypes.ATTACK_2;
   const attack1Active =
-    scene.player.sprite.anims.getName() === mcEventTypes.REGULAR_ATTACK;
+    scene.player.sprite.anims.getName() === mcAnimTypes.ATTACK_1;
 
-  const OnStun = scene.player.sprite.anims.getName() === mcEventTypes.TOOK_HIT;
+  const OnStun = scene.player.sprite.anims.getName() === mcAnimTypes.TAKE_HIT;
 
   const playerDeath = scene.player.user.isDead();
   if (playerDeath) return;
@@ -90,13 +90,13 @@ export function JackOnUpdate(scene: MainScene) {
   if (!scene.player.sprite.body.onFloor()) {
     if (keyD?.isDown || keyA?.isDown) {
       scene.player.sprite.body.setVelocityX(
-        dirVelocity[scene.player.lastdirection] * ((250 / 1328) * CONFIG.width)
+        dirVelocity[scene.player.lastdirection] * 250
       );
     } else {
       scene.player.sprite.body.setVelocityX(0);
     }
     if (!isanimplaying) {
-      scene.player.sprite.anims.play(mcEventTypes.FALL, true);
+      scene.player.sprite.anims.play(mcAnimTypes.FALL, true);
       scene.player.sprite.anims.stopAfterRepeat(0);
     }
   }
@@ -148,10 +148,7 @@ export function JackOnUpdate(scene: MainScene) {
   }
 
   scene.player.attackrect.setPosition(
-    scene.player.sprite.x +
-      dirVelocity[scene.player.lastdirection] *
-        (85 / CONFIG.width) *
-        CONFIG.width,
+    scene.player.sprite.x + dirVelocity[scene.player.lastdirection] * 90,
     scene.player.sprite.y - 40
   );
 }

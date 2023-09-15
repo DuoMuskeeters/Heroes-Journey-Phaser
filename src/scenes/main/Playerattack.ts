@@ -4,6 +4,7 @@ import {
   goblinEventsTypes,
   mcEventTypes,
 } from "../../game/types/events";
+import { mcAnimTypes } from "../../game/types/types";
 import MobController from "./mobController";
 
 export function playerAttackListener(mobController: MobController) {
@@ -12,7 +13,7 @@ export function playerAttackListener(mobController: MobController) {
     (animation: Phaser.Animations.Animation) => {
       if (!mobController.isMcHitting()) return;
 
-      if (animation.key === mcEventTypes.REGULAR_ATTACK) {
+      if (animation.key === mcAnimTypes.ATTACK_1) {
         const damage =
           (1 - mobController.mob.goblin.state.Armor) *
           mobController.scene.player.user.state.ATK;
@@ -29,7 +30,7 @@ export function playerAttackListener(mobController: MobController) {
           mobController.id,
           details
         );
-      } else if (animation.key === mcEventTypes.ULTI) {
+      } else if (animation.key === mcAnimTypes.ATTACK_2) {
         const damage =
           (1 - mobController.mob.goblin.state.Armor) *
           mobController.scene.player.ultiDamage;

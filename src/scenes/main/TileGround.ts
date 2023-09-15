@@ -11,38 +11,27 @@ export function createground(scene: MainScene) {
   const grass1 = scene.tilemap.addTilesetImage("grass_1", "grass_1");
   const rock3 = scene.tilemap.addTilesetImage("rock_3", "rock_3");
   const rock2 = scene.tilemap.addTilesetImage("rock_2", "rock_2");
+  const rock1 = scene.tilemap.addTilesetImage("rock_1", "rock_1");
   const sign = scene.tilemap.addTilesetImage("sign", "sign");
 
   scene.frontroad = scene.tilemap
     .createLayer("backroad", tiles!)
-    ?.setScale((2.04 / 1311) * CONFIG.width, (2.04 / 724) * CONFIG.height)!;
+    ?.setScale(2.55, 2.55)!;
   scene.backroad = scene.tilemap
     .createLayer("frontroad", tiles!)
-    ?.setScale((2.04 / 1311) * CONFIG.width, (2.04 / 724) * CONFIG.height)!;
+    ?.setScale(2.55, 2.55)!;
+  scene.tilemap.createLayer("lamp", lamp!, 0, -85)?.setScale(2.55, 2.55);
   scene.tilemap
-    .createLayer("lamp", lamp!, 0, -(68 / 724) * CONFIG.height)
-    ?.setScale((2.04 / 1311) * CONFIG.width, (2.04 / 724) * CONFIG.height);
-  scene.tilemap
-    .createLayer("fence", [fence_1!, fence_2!], 0, (10 / 724) * CONFIG.height)
-    ?.setScale((2.04 / 1311) * CONFIG.width, (2.04 / 724) * CONFIG.height);
-  scene.tilemap
-    .createLayer("rock_3", rock3!, 0, (13 / 724) * CONFIG.height)
-    ?.setScale((2.04 / 1311) * CONFIG.width, (2.04 / 724) * CONFIG.height);
-  scene.tilemap
-    .createLayer("rock_2", rock2!, 0, (25 / 724) * CONFIG.height)
-    ?.setScale((2.04 / 1311) * CONFIG.width, (2.04 / 724) * CONFIG.height);
+    .createLayer("fence", [fence_1!, fence_2!], 0, 15)
+    ?.setScale(2.55, 2.55);
+  scene.tilemap.createLayer("rock_3", rock3!,0,15)?.setScale(2.55, 2.55);
+  scene.tilemap.createLayer("rock_2", rock2!,0,30)?.setScale(2.55, 2.55);
+  scene.tilemap.createLayer("rock_1", rock1!,0,33)?.setScale(2.55, 2.55);
 
+  scene.tilemap.createLayer("sign", sign!, 0, -20)?.setScale(2.55, 2.55);
   scene.tilemap
-    .createLayer("sign", sign!, 0, -18)
-    ?.setScale((2.04 / 1311) * CONFIG.width, (2.04 / 724) * CONFIG.height);
-  scene.tilemap
-    .createLayer(
-      "grass",
-      [grass1!, grass2!, grass3!],
-      0,
-      (43 / 724) * CONFIG.height
-    )
-    ?.setScale((2.04 / 1311) * CONFIG.width, (2.04 / 724) * CONFIG.height);
+    .createLayer("grass", [grass1!, grass2!, grass3!], 0, 55)
+    ?.setScale(2.55, 2.55);
 
   scene.backroad?.setCollisionByProperty({ collides: true });
   scene.frontroad?.setCollisionByProperty({ collides: true });

@@ -14,6 +14,7 @@ export function createBackground(scene: MainScene | MenuScene) {
     rationx: 0.05,
     sprite: scene.add
       .tileSprite(0, 0, 0, 0, "background1")
+      .setOrigin(0, 0)
       .setDisplaySize(CONFIG.width, CONFIG.height)
       .setDepth(-3)
       .setScrollFactor(0),
@@ -25,7 +26,6 @@ export function createBackground(scene: MainScene | MenuScene) {
       .tileSprite(0, 0, 0, 0, "background2")
       .setOrigin(0, 0)
       .setDepth(-2)
-
       .setDisplaySize(CONFIG.width, CONFIG.height)
       .setScrollFactor(0),
   };
@@ -39,7 +39,7 @@ export function createBackground(scene: MainScene | MenuScene) {
       .setDisplaySize(CONFIG.width, CONFIG.height)
       .setScrollFactor(0),
   };
-  scene.backgrounds = [bg1, bg3, bg3];
+  scene.backgrounds = [bg1, bg2, bg3];
 }
 export function forestRoad(scene: MenuScene) {
   const road = {
