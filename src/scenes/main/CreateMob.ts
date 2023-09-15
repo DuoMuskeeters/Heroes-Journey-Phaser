@@ -7,8 +7,7 @@ export function createMob(scene: MainScene) {
   scene.tilemap.getObjectLayer("goblin")?.objects.forEach((objData) => {
     const { x = 0, y = 0, name, id } = objData;
 
-    const { healtbar, hptitle, spbar, SawMc, Attacking, stun, bomb } =
-      scene.mob;
+    const { healtbar, hptitle, spbar, bomb } = scene.mob;
     const sprite = scene.physics.add
       .sprite(
         x * (2.04 / 1311) * window.innerWidth,
@@ -22,19 +21,19 @@ export function createMob(scene: MainScene) {
 
     const mob = create_giant(scene.player.user.state.Level);
 
-    const mobattackrect = scene.add
-      .rectangle(
-        scene.mob.sprite.x,
-        scene.mob.sprite.y,
-        undefined,
-        undefined,
-        0xff2400
-      )
+    const mobattackrect = scene.physics.add.sprite(
+      scene.mob.sprite.x,
+      scene.mob.sprite.y,
+      "mobattackrect"
+    );
+    (mobattackrect.body as Phaser.Physics.Arcade.Body).allowGravity = false;
+    mobattackrect
       .setDisplaySize(
         (200 / 1311) * window.innerWidth,
         (110 / 724) * window.innerHeight
       )
-      .setDepth(0);
+      .setDepth(0)
+      .setVisible(false);
     scene.mobController.push(
       new MobController(id, name, scene, {
         sprite: sprite,
@@ -43,9 +42,6 @@ export function createMob(scene: MainScene) {
         healtbar,
         hptitle,
         spbar,
-        SawMc,
-        Attacking,
-        stun,
         attackrect: mobattackrect,
         bomb,
       })

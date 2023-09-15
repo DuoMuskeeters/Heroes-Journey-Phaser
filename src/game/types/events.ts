@@ -13,6 +13,9 @@ export const mcEventTypes = {
   JUMP: "jump",
   FALL: "fall",
 };
+
+export type McEventTypes = (typeof mcEventTypes)[keyof typeof mcEventTypes];
+
 export const goblinEventsTypes = {
   TOOK_HIT: "goblin-takehit",
   DIED: "goblin-death",
@@ -21,7 +24,7 @@ export const goblinEventsTypes = {
   ATTACKING: "goblin-attack",
   IDLE: "goblin-ıdle",
   BOMB: "goblin-attack-bomb",
-};
+} as const;
 
 // Details
 export type GoblinTookHit = {

@@ -143,51 +143,7 @@ export class Character extends Canlı {
       this.calculate_power();
     }
   }
-  /**
-   * @deprecated
-   * @see increase
-   */
-  increase_Strength() {
-    if (this.state.stat_point > 0) {
-      this.state.Strength += 1;
-      this.state.stat_point -= 1;
-      this.calculate_power();
-    }
-  }
-  /**
-   * @deprecated
-   * @see increase
-   */
-  increase_Agility() {
-    if (this.state.stat_point > 0) {
-      this.state.Agility += 1;
-      this.state.stat_point -= 1;
-      this.calculate_power();
-    }
-  }
-  /**
-   * @deprecated
-   * @see increase
-   */
-  increase_Intelligence() {
-    if (this.state.stat_point > 0) {
-      this.state.Intelligence += 1;
-      this.state.stat_point -= 1;
-      this.calculate_power();
-    }
-  }
-  /**
-   * @deprecated
-   * @see increase
-   */
-  increase_Constitution() {
-    if (this.state.stat_point > 0) {
-      this.state.Constitution += 1;
-      this.state.stat_point -= 1;
-      this.calculate_power();
-    }
-  }
-
+ 
   attack(rakip: Canlı) {
     throw new Error("TODO: attack hesaplama henüz yazılmadı");
   }
@@ -281,7 +237,6 @@ export class Warrior extends Character {
 export class Mob extends Canlı {
   calculate_power() {
     super.calculate_power();
-
     this.state.max_sp = 150 - this.state.Intelligence * 0.5;
     this.state.SP = 0;
     this.state.SP_reg = 10 + this.state.Intelligence * 0.5;

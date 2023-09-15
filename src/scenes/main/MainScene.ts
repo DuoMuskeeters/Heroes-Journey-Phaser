@@ -4,7 +4,7 @@ import { Giant, Warrior, create_character } from "../../game/Karakter";
 import { createBackground } from "../preLoad/assets";
 import PhaserGame from "../../PhaserGame";
 import { createPlayeranims } from "./Anims";
-import { JackDied, JackMovement } from "./PlayerMovemet";
+import { JackDied, JackOnUpdate } from "./PlayerController";
 import { Resize } from "./Resize";
 import { playerhealtbar, playerspbar } from "../Ui/Components";
 import { Backroundmovement } from "./GameMovement";
@@ -29,7 +29,7 @@ export default class MainScene extends Phaser.Scene {
 
   player = {
     sprite: {} as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody,
-    attackrect: {} as Phaser.GameObjects.Rectangle,
+    attackrect: {} as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody,
     lastdirection: Direction.right as Direction,
     standbytime: 5000,
     ultimate: true,
@@ -41,29 +41,17 @@ export default class MainScene extends Phaser.Scene {
     frame: {} as Phaser.Tilemaps.Tilemap,
     hearticon: {} as Phaser.Tilemaps.TilemapLayer,
     manaicon: {} as Phaser.Tilemaps.TilemapLayer,
-    tookhit: {} as boolean,
     ultiDamage: {} as number,
   };
   mobController: MobController[] = [];
   mob = {
     sprite: {} as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody,
-    attackrect: {} as Phaser.GameObjects.Rectangle,
+    attackrect: {} as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody,
     lastdirection: Direction.left as Direction,
     goblin: {} as Giant,
     healtbar: {} as Phaser.GameObjects.Graphics,
     hptitle: {} as Phaser.GameObjects.Text,
     spbar: {} as Phaser.GameObjects.Graphics,
-    /**
-     * @deprecated
-     * @see {@link MobController.canSeeMc} instead.
-     */
-    SawMc: {} as boolean,
-    Attacking: {} as boolean,
-    /**
-     * @deprecated
-     * @see {@link goblinEventsTypes.TOOK_HIT} instead.
-     */
-    stun: {} as boolean,
     bomb: {} as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody,
   };
   backgrounds!: {
@@ -107,22 +95,23 @@ export default class MainScene extends Phaser.Scene {
     );
 
     this.tilemap = this.make.tilemap({ key: "roadfile" });
+
     createBackground(this);
     createAvatarFrame(this);
     createPlayeranims(this);
     createground(this);
-    this.player.attackrect = this.add.rectangle(
-      500,
-      500,
-      undefined,
-      undefined,
-      0xff2400
-    );
 
-    this.player.attackrect.setDisplaySize(
-      (250 / 1440) * window.innerWidth,
-      (200 / 900) * window.innerHeight
-    );
+
+    this.player.attackrect = this.physics.add
+      .sprite(500, 500, "attackrect")
+      .setDisplaySize(
+        (250 / 1440) * window.innerWidth,
+        (200 / 900) * window.innerHeight
+      )
+      .setVisible(false);
+
+    (this.player.attackrect.body as Phaser.Physics.Arcade.Body).allowGravity =
+      false;
 
     // this.frontroad.setCollisionByExclusion([-1], true);
 
@@ -174,8 +163,8 @@ export default class MainScene extends Phaser.Scene {
       .setDepth(5)
       .setScrollFactor(0);
 
-    this.player.sprite.anims.play("fall", true);
-    this.player.sprite.anims.stopAfterRepeat(0);
+    this.player.sprite.anims.play(mcEventTypes.FALL, true);
+    this.player.sprite.anims.stopAfterRepeat(2);
 
     window.addEventListener("resize", () => {
       this.physics.world.gravity.y = (2000 / 724) * window.innerHeight;
@@ -218,7 +207,7 @@ export default class MainScene extends Phaser.Scene {
 
   update(time: number, delta: number): void {
     const uiscene = PhaserGame.scene.keys.ui as UiScene;
-    JackMovement(this);
+    JackOnUpdate(this);
     Backroundmovement(this);
     playerhealtbar(this);
     playerspbar(this);
@@ -234,6 +223,5 @@ Job: Samurai  MAX HP: ${this.player.user.state.max_hp}`
     this.mobController.forEach((mobCcontroller) => {
       if (mobCcontroller.mob.sprite.body) mobCcontroller.update(delta);
     });
-    this.player.attackrect.setVisible(false);
   }
 }

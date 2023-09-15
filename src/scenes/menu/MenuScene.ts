@@ -4,6 +4,7 @@ import { createBackground, forestRoad } from "../preLoad/assets";
 import { Resize } from "../main/Resize";
 import { Backroundmovement } from "../main/GameMovement";
 import { Direction } from "../../game/types/types";
+import { mcEventTypes } from "../../game/types/events";
 
 export default class MenuScene extends Phaser.Scene {
   logo = {} as Phaser.GameObjects.Image;
@@ -88,8 +89,8 @@ export default class MenuScene extends Phaser.Scene {
       -1 * window.innerHeight * 0.5,
       -1 * window.innerHeight * 0.5
     );
-    this?.player.sprite.anims.play("fall", true);
-    this.player.sprite.anims.stopAfterRepeat(4);
+    this?.player.sprite.anims.play(mcEventTypes.FALL, true);
+    this.player.sprite.anims.stopAfterRepeat(3);
     this.shopobject?.anims.play("shop", true);
 
     window.addEventListener("resize", () => {
@@ -97,10 +98,10 @@ export default class MenuScene extends Phaser.Scene {
     });
     this.player.sprite.on(Phaser.Animations.Events.ANIMATION_STOP, () => {
       if (
-        this.player.sprite.anims.getName() === "fall" &&
+        this.player.sprite.anims.getName() === mcEventTypes.FALL &&
         this.player.sprite.body instanceof Phaser.Physics.Arcade.Body
       ) {
-        this.player.sprite.anims.play("run", true);
+        this.player.sprite.anims.play(mcEventTypes.RUN, true);
         this.player.sprite.body.setVelocityX(300);
       }
     });
