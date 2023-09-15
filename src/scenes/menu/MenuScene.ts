@@ -3,7 +3,6 @@ import { createPlayeranims, shop } from "../main/Anims";
 import { createBackground, forestRoad } from "../preLoad/assets";
 import { Backroundmovement } from "../main/GameMovement";
 import { Direction, mcAnimTypes } from "../../game/types/types";
-import { mcEventTypes } from "../../game/types/events";
 import { CONFIG } from "../../PhaserGame";
 
 export default class MenuScene extends Phaser.Scene {
@@ -115,7 +114,7 @@ export default class MenuScene extends Phaser.Scene {
     const textLeft = CONFIG.width / 6;
     const textTop = CONFIG.height / 2;
 
-    this.logo.setScale().setPosition(logoLeft, logoTop);
+    this.logo.setPosition(logoLeft, logoTop);
     this.brand.setPosition(brandLeft, brandTop);
     this.gameTitle.setPosition(textLeft, textTop);
   }

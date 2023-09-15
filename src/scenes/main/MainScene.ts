@@ -149,7 +149,7 @@ export default class MainScene extends Phaser.Scene {
       .setFontFamily("URW Chancery L, cursive")
       .setFontStyle("bold")
       .setScrollFactor(0)
-      .setScale(1, 1);
+      
     this.player.sptitle = this.add
       .text(340, 103, `${this.player.user.state.SP}`)
       .setStyle({
@@ -159,7 +159,7 @@ export default class MainScene extends Phaser.Scene {
       .setFontFamily("URW Chancery L, cursive")
       .setFontStyle("bold")
       .setScrollFactor(0)
-      .setScale(1, 1);
+      
 
     this.scene.launch("ui");
   }

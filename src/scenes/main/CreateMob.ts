@@ -1,6 +1,6 @@
 import { CONFIG } from "../../PhaserGame";
 import { create_giant } from "../../game/Karakter";
-import { Direction } from "../../game/types/types";
+import { Direction, goblinAnimTypes } from "../../game/types/types";
 import MainScene from "./MainScene";
 import { createCollider } from "./TileGround";
 import MobController from "./mobController";
@@ -11,7 +11,7 @@ export function createMob(scene: MainScene) {
 
     const { healtbar, hptitle, spbar, bomb } = scene.mob;
     const sprite = scene.physics.add
-      .sprite(x * 2.55, y * 2.55, "goblin-ıdle")
+      .sprite(x * 2.55, y * 2.55, goblinAnimTypes.IDLE)
       .setBodySize(30, 46, true)
       .setCollideWorldBounds(true)
       .setBounce(0)

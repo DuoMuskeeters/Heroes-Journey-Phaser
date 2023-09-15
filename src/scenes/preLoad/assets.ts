@@ -45,9 +45,9 @@ export function forestRoad(scene: MenuScene) {
   const road = {
     rationx: 0.3,
     sprite: scene.add
-      .tileSprite(0, CONFIG.height, 0, 0, "piskel")
+      .tileSprite(0, 900, 0, 0, "piskel")
       .setOrigin(0, 1)
-      .setScale(CONFIG.height * 0.0039)
+      .setScale(3.5)
       .setScrollFactor(0),
   };
 

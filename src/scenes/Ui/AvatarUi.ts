@@ -14,22 +14,19 @@ export function createAvatarFrame(scene: MainScene) {
     scene.player.frame
       .createLayer("frame", avatarframe)
       ?.setScrollFactor(0)
-      .setDepth(200)
-      .setScale(1, 1);
+      .setDepth(200);
+
     scene.player.frame
       .createLayer("parchment", avatarframe)
-      ?.setScrollFactor(0)
-      .setScale(1, 1);
-    //@ts-ignore
+      ?.setScrollFactor(0);
+
     scene.player.hearticon = scene.player.frame
       .createLayer("hearticon", avatarframe, 10, 0)
-      ?.setScrollFactor(0)
-      .setScale(1, 1);
-    //@ts-ignore
+      ?.setScrollFactor(0)!;
+
     scene.player.manaicon = scene.player.frame
       .createLayer("manaicon", avatarframe, 10, 3)
-      ?.setScrollFactor(0)
-      .setScale(1, 1);
+      ?.setScrollFactor(0)!;
 
     scene.player.frame
       .createLayer("bar", avatarframe, -37, -10)

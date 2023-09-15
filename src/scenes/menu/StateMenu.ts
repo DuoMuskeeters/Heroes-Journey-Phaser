@@ -23,7 +23,7 @@ export default class statemenu {
       .text(-350, -290, "Stats")
       .setFontFamily("Bradley Hand, cursive")
       .setFontStyle("bold")
-      .setScale(1, 1);
+      
     const panel = scene.add
       .image(0, -430, "statepanel")
       .setOrigin(1, 0)
@@ -102,7 +102,7 @@ Job: Samurai    MAX HP:   ${mainscene.player.user.state.max_hp}`
       button.text
         .setFontFamily("Bradley Hand, cursive")
         .setFontStyle("bold")
-        .setScale(1, 1);
+        
     });
 
     const preesc = scene.add
@@ -115,7 +115,7 @@ Job: Samurai    MAX HP:   ${mainscene.player.user.state.max_hp}`
       .setFontFamily("Bradley Hand, cursive")
       .setFontStyle("bold")
       .setOrigin(1, 0)
-      .setScale(1, 1);
+      
     this.container.add(panel);
     this.container.add(playeravatar);
     this.container.add(this.jacktext);

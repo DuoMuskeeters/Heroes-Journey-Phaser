@@ -4,7 +4,7 @@
       {
         "url": "Idle.png",
         "type": "spritesheet",
-        "key": "ıdle",
+        "key": "idle",
         "frameConfig": {
           "frameWidth": 200,
           "frameHeight": 200

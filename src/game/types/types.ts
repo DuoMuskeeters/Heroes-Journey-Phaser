@@ -17,7 +17,7 @@ export const mcAnimTypes = {
   DEATH: "death",
   ATTACK_1: "attack1",
   ATTACK_2: "attack2",
-  IDLE: "ıdle",
+  IDLE: "idle",
   RUN: "run",
   TAKE_HIT: "take-hit",
   JUMP: "jump",
@@ -31,7 +31,7 @@ export const goblinAnimTypes = {
   RUN: "goblin-run",
   ULTI: "goblin-ulti",
   ATTACK: "goblin-attack",
-  IDLE: "goblin-ıdle",
+  IDLE: "goblin-idle",
   BOMB: "goblin-bomb",
 } as const;
 export type GoblinAnimTypes =

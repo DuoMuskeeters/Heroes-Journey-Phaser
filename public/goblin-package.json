@@ -2,9 +2,9 @@
   "section1": {
     "files": [
       {
-        "url": "goblin-ıdle.png",
+        "url": "goblin-idle.png",
         "type": "spritesheet",
-        "key": "goblin-ıdle",
+        "key": "goblin-idle",
         "frameConfig": {
           "frameWidth": 150,
           "frameHeight": 150

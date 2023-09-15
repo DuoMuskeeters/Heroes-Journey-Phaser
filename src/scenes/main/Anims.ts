@@ -8,7 +8,7 @@ import MobController from "./mobController";
 export function createPlayeranims(scene: MainScene | MenuScene) {
   const isMainScene = scene instanceof MainScene;
   scene.player.sprite = scene.physics.add
-    .sprite(300, 0, "ıdle")
+    .sprite(300, 0, mcAnimTypes.IDLE)
     .setCollideWorldBounds(true)
     .setBounce(0.1)
     .setScale(2.55)
@@ -176,12 +176,12 @@ export function createGoblinBomb(scene: MainScene) {
     )
     .setScale(2.5, 2.5)
     .setDepth(4)
-    .setBodySize(25, 15, true);
+    .setBodySize(25, 15, true)
 }
 export function shop(scene: MainScene | MenuScene) {
   scene.shopobject = scene.add
-    .sprite(CONFIG.width * 0.82, CONFIG.height * 0.62, "shopanim")
-    .setScale(CONFIG.height / 290)
+    .sprite(1400, 560, "shopanim")
+    .setScale(3)
     .setDepth(0);
 
   scene.anims.create({
