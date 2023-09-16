@@ -19,6 +19,7 @@ import {
   mcEventTypes,
   mcEvents,
 } from "../../game/types/events";
+import { playerAttackListener } from "./Playerattack";
 
 const jack = Warrior.from_Character(create_character("Ali"));
 
@@ -97,6 +98,7 @@ export default class MainScene extends Phaser.Scene {
     createBackground(this);
     createAvatarFrame(this);
     createPlayeranims(this);
+    playerAttackListener(this);
     createground(this);
 
     this.player.attackrect = this.physics.add
@@ -147,8 +149,8 @@ export default class MainScene extends Phaser.Scene {
       })
       .setFontFamily("URW Chancery L, cursive")
       .setFontStyle("bold")
-      .setScrollFactor(0)
-      
+      .setScrollFactor(0);
+
     this.player.sptitle = this.add
       .text(340, 103, `${this.player.user.state.SP}`)
       .setStyle({
@@ -157,8 +159,7 @@ export default class MainScene extends Phaser.Scene {
       })
       .setFontFamily("URW Chancery L, cursive")
       .setFontStyle("bold")
-      .setScrollFactor(0)
-      
+      .setScrollFactor(0);
 
     this.scene.launch("ui");
   }

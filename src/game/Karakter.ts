@@ -211,17 +211,17 @@ export class Warrior extends Character {
   static from_Character(character: Character) {
     return new this(character.state, character.exp);
   }
-  attack = this.basicAttack;
-
   heavy_strike() {
     const half = this.state.max_sp / 2;
     const damage = this.state.ATK * 2;
     if (this.state.SP >= half)
       return {
         damage,
-        hit: (rakip?: Canlı) => {
+        hit: (rakipler: Canlı[]) => {
           this.state.SP = Math.max(this.state.SP - half, 0);
-          if (rakip) rakip.state.HP = Math.max(rakip.state.HP - damage, 0);
+          return rakipler.map(
+            (rakip) => (rakip.state.HP = Math.max(rakip.state.HP - damage, 0))
+          );
         },
       };
 
@@ -275,12 +275,12 @@ export class Mob extends Canlı {
       };
     }
   }
-  attack(rakip: Canlı) {
+  basicAttack(rakip: Canlı) {
     if (!(rakip instanceof Character)) {
       throw new Error("NOTE: şu anda mob sadece karaktere vurabilir.");
     }
 
-    throw new Error("TODO: attack hesaplama henüz yazılmadı");
+    return super.basicAttack(rakip);
   }
 }
 

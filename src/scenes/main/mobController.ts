@@ -8,7 +8,6 @@ import {
 import { createGoblinBomb, createGoblinAnims } from "./Anims";
 import { goblinHealtbar, goblinspbar } from "../Ui/Components";
 import MainScene from "./MainScene";
-import { playerAttackListener } from "./Playerattack";
 import {
   Direction,
   goblinAnimTypes,
@@ -263,7 +262,6 @@ export default class MobController {
       .setFontStyle("bold");
 
     createGoblinAnims(this);
-    playerAttackListener(this);
   }
 
   private ıdleOnUpdate(dt: number) {

@@ -17,7 +17,7 @@ export function fight(attacker: Canlı) {
       if (!hit) {
         console.log("Yetersiz SP");
       } else {
-        hit();
+        hit([]);
       }
       return damage;
     }
