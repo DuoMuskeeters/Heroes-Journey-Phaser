@@ -40,7 +40,6 @@ export default class MainScene extends Phaser.Scene {
     frame: {} as Phaser.Tilemaps.Tilemap,
     hearticon: {} as Phaser.Tilemaps.TilemapLayer,
     manaicon: {} as Phaser.Tilemaps.TilemapLayer,
-    ultiDamage: {} as number,
   };
   mobController: MobController[] = [];
   mob = {

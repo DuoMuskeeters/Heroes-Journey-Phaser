@@ -1,7 +1,6 @@
 import { mcEventTypes, mcEvents } from "../../game/types/events";
 import MainScene from "./MainScene";
 import { Direction, dirVelocity, mcAnimTypes } from "../../game/types/types";
-import { CONFIG } from "../../PhaserGame";
 
 const runonUpdate = (scene: MainScene) => {
   scene.player?.sprite.anims.play(mcAnimTypes.RUN, true);
@@ -20,15 +19,15 @@ const jumpandFallonupdate = (scene: MainScene) => {
   scene.player.sprite.body.setVelocityY(-900);
 };
 const heavyStrikeonUpdate = (scene: MainScene) => {
-  const { damage: heavyStrikeDamage, hit: heavyStrikeHit } =
-    scene.player.user.heavy_strike();
+  const { hit: heavyStrikeHit } = scene.player.user.heavy_strike();
   if (heavyStrikeHit) {
     scene.player.sprite.anims.play(mcAnimTypes.ATTACK_2, true);
     scene.player.sprite.anims.stopAfterRepeat(0);
     scene.player.sprite.body.setVelocityX(0);
     scene.player.ultimate = false;
-    heavyStrikeHit();
-    scene.player.ultiDamage = heavyStrikeDamage;
+    // NOTE: moved to Playerattack.ts (FUTURE NOTE: WRONG MOVE)
+    // heavyStrikeHit();
+    // scene.player.ultiDamage = heavyStrikeDamage;
     mcEvents.emit(mcEventTypes.HEAVY_ATTACK_USED);
     setTimeout(() => {
       scene.player.ultimate = true;

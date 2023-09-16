@@ -83,6 +83,23 @@ export class Canlı {
   isDead() {
     return this.state.HP === 0;
   }
+
+  /**
+   * known as ATTACK_1 for all Canlı
+   * @note should be overwritten for each exotic Canlı if needed
+   *
+   * @example const { damage, hit } = this.basicAttak(rakip);
+   * console.log(damage);
+   * const lastHp = hit(rakip);
+   *
+   */
+  basicAttack(rakip: Canlı) {
+    const damage = (1 - rakip.state.Armor) * this.state.ATK;
+    return {
+      damage,
+      hit: () => (rakip.state.HP = Math.max(0, rakip.state.HP - damage)),
+    };
+  }
   regeneration() {
     if (!this.isDead()) {
       const HP_reg = (this.state.HP_reg * this.state.max_hp) / 100;
@@ -143,10 +160,6 @@ export class Character extends Canlı {
       this.calculate_power();
     }
   }
- 
-  attack(rakip: Canlı) {
-    throw new Error("TODO: attack hesaplama henüz yazılmadı");
-  }
 }
 
 export function create_character(
@@ -198,19 +211,7 @@ export class Warrior extends Character {
   static from_Character(character: Character) {
     return new this(character.state, character.exp);
   }
-  attack(rakip: Canlı) {
-    if (rakip instanceof Mob) {
-      // şakasına heavy strike kullanioz (gercek kod deil!)
-      const { damage, hit } = this.heavy_strike();
-      const lastHit = rakip.state.HP - damage <= 0;
-      if (hit) {
-        hit(rakip);
-      }
-    } else if (rakip instanceof Character) {
-      throw new Error("TODO: attack hesaplama henüz yazılmadı");
-    }
-    throw new Error("bilinmeyen canlı türü");
-  }
+  attack = this.basicAttack;
 
   heavy_strike() {
     const half = this.state.max_sp / 2;
@@ -285,7 +286,13 @@ export class Mob extends Canlı {
 
 export class Giant extends Mob {
   giant_skill() {
-    return this.state.ATK * 3;
+    const damage = this.state.ATK * 3;
+    return {
+      damage,
+      hit: (rakip?: Canlı) => {
+        if (rakip) rakip.state.HP = Math.max(rakip.state.HP - damage, 0);
+      },
+    };
   }
 }
 export function create_giant(Level: number): Giant {
