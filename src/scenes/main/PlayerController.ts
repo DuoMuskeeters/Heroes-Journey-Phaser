@@ -24,20 +24,14 @@ const heavyStrikeonUpdate = (scene: MainScene) => {
     scene.player.sprite.anims.play(mcAnimTypes.ATTACK_2, true);
     scene.player.sprite.anims.stopAfterRepeat(0);
     scene.player.sprite.body.setVelocityX(0);
-    scene.player.ultimate = false;
-    // NOTE: moved to Playerattack.ts (FUTURE NOTE: WRONG MOVE)
-    // heavyStrikeHit();
-    // scene.player.ultiDamage = heavyStrikeDamage;
     mcEvents.emit(mcEventTypes.HEAVY_ATTACK_USED);
-    setTimeout(() => {
-      scene.player.ultimate = true;
-    }, scene.player.standbytime);
   }
 };
 const attackonUpdate = (scene: MainScene) => {
   scene.player?.sprite.anims.play(mcAnimTypes.ATTACK_1, true);
   scene.player.sprite.anims.stopAfterRepeat(0);
   scene.player.sprite.body.setVelocityX(0);
+  mcEvents.emit(mcEventTypes.BASIC_ATTACK_USED);
 };
 export function JackDied(scene: MainScene) {
   scene.player.sprite.anims.play(mcAnimTypes.DEATH, true);
@@ -107,7 +101,6 @@ export function JackOnUpdate(scene: MainScene) {
       keyQ?.isDown &&
       !keyD?.isDown &&
       !keyA?.isDown &&
-      scene.player.ultimate &&
       !playerDeath &&
       !OnStun
     ) {

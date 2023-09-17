@@ -208,24 +208,39 @@ export function create_character(
 }
 
 export class Warrior extends Character {
+  private lastHeavyStrike: Date | null = null;
   static from_Character(character: Character) {
     return new this(character.state, character.exp);
   }
   heavy_strike() {
-    const half = this.state.max_sp / 2;
+    const halfSP = this.state.max_sp / 2;
     const damage = this.state.ATK * 2;
-    if (this.state.SP >= half)
+    const standByTime = 5 * 1000;
+
+    const hasUlti =
+      (this.lastHeavyStrike?.getTime() ?? 0) + standByTime < Date.now();
+
+    if (this.state.SP >= halfSP && hasUlti)
       return {
         damage,
+        standByTime,
+        lastHeavyStrike: this.lastHeavyStrike,
         hit: (rakipler: Canlı[]) => {
-          this.state.SP = Math.max(this.state.SP - half, 0);
+          // NOTE: should not be called more than once
+          // NOTE: Race conditions are not handled
+          this.lastHeavyStrike = new Date();
+          this.state.SP = Math.max(this.state.SP - halfSP, 0);
           return rakipler.map(
             (rakip) => (rakip.state.HP = Math.max(rakip.state.HP - damage, 0))
           );
         },
       };
 
-    return { damage: 0 as const };
+    return {
+      damage,
+      standByTime,
+      lastHeavyStrike: this.lastHeavyStrike,
+    };
   }
   vitality_boost() {
     this.state.HP = this.state.max_hp * 0.35 + this.state.HP;

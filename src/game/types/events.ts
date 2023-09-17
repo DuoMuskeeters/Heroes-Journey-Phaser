@@ -3,6 +3,7 @@ export const eventTypes = {
 } as const;
 
 export const mcEventTypes = {
+  BASIC_ATTACK_USED: "BASIC_ATTACK_USED",
   HEAVY_ATTACK_USED: "HEAVY_ATTACK_USED",
   TOOK_HIT: "TOOK_HIT",
   DIED: "DIED",
@@ -11,7 +12,7 @@ export const mcEventTypes = {
 export type McEventTypes = (typeof mcEventTypes)[keyof typeof mcEventTypes];
 
 export const goblinEventsTypes = {
-  TOOK_HIT: "TOOK_HİT",
+  TOOK_HIT: "TOOK_HIT",
   DIED: "DIED",
   STARTED_RUNNING: "STARTED_RUNNING",
   ULTI: "ULTI",
