@@ -10,6 +10,7 @@ import { goblinHealtbar, goblinspbar } from "../Ui/Components";
 import MainScene from "./MainScene";
 import {
   Direction,
+  GoblinAnimTypes,
   goblinAnimTypes,
   mcAnimTypes,
 } from "../../game/types/types";
@@ -62,7 +63,8 @@ export default class MobController {
 
     return isOverlapping && atFrame;
   }
-  private mobPlay = (animation: string) => {
+  private mobPlay = (animation: GoblinAnimTypes) => {
+    if (animation !== goblinAnimTypes.DEATH && this.isDead()) return;
     this.mob.sprite.anims.play(animation, true);
     this.mob.sprite.anims.stopAfterRepeat(0);
   };

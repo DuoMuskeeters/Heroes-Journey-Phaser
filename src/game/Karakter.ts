@@ -1,3 +1,5 @@
+import { CONFIG } from "../PhaserGame";
+
 export class State {
   name: string;
   Level: number;
@@ -213,9 +215,9 @@ export class Warrior extends Character {
     return new this(character.state, character.exp);
   }
   heavy_strike() {
-    const halfSP = this.state.max_sp / 2;
+    const halfSP = CONFIG.physics.arcade.debug ? 5 : this.state.max_sp / 2;
     const damage = this.state.ATK * 2;
-    const standByTime = 5 * 1000;
+    const standByTime = CONFIG.physics.arcade.debug ? 100 : 5 * 1000;
 
     const hasUlti = () =>
       (this.lastHeavyStrike?.getTime() ?? 0) + standByTime < Date.now();
