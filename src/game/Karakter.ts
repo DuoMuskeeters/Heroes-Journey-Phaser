@@ -217,17 +217,17 @@ export class Warrior extends Character {
     const damage = this.state.ATK * 2;
     const standByTime = 5 * 1000;
 
-    const hasUlti =
+    const hasUlti = () =>
       (this.lastHeavyStrike?.getTime() ?? 0) + standByTime < Date.now();
 
-    if (this.state.SP >= halfSP && hasUlti)
+    if (this.state.SP >= halfSP && hasUlti())
       return {
         damage,
         standByTime,
         lastHeavyStrike: this.lastHeavyStrike,
         hit: (rakipler: Canlı[]) => {
-          // NOTE: should not be called more than once
-          // NOTE: Race conditions are not handled
+          if (this.state.SP < halfSP || !hasUlti())
+            throw new Error("Ulti için gerekli koşullar sağlanmadı.");
           this.lastHeavyStrike = new Date();
           this.state.SP = Math.max(this.state.SP - halfSP, 0);
           return rakipler.map(
