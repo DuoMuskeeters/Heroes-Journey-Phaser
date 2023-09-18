@@ -2,50 +2,43 @@ import {
   GoblinTookHit,
   goblinEvents,
   goblinEventsTypes,
-  mcEventTypes,
 } from "../../game/types/events";
 import { mcAnimTypes } from "../../game/types/types";
-import MobController from "./mobController";
+import MainScene from "./MainScene";
 
-export function playerAttackListener(mobController: MobController) {
-  mobController.scene.player.sprite.on(
+export function playerAttackListener(scene: MainScene) {
+  scene.player.sprite.on(
     Phaser.Animations.Events.ANIMATION_STOP,
     (animation: Phaser.Animations.Animation) => {
-      if (!mobController.isMcHitting()) return;
+      const player = scene.player;
+      const mobControllers = scene.mobController;
+
+      const affectedMobs = mobControllers.filter((mob) => mob.isMcHitting());
 
       if (animation.key === mcAnimTypes.ATTACK_1) {
-        const damage =
-          (1 - mobController.mob.goblin.state.Armor) *
-          mobController.scene.player.user.state.ATK;
-        mobController.mob.goblin.state.HP -= damage;
+        affectedMobs.forEach((mobController) => {
+          const goblin = mobController.mob.goblin;
+          const { damage, hit } = player.user.basicAttack(goblin);
+          hit();
 
-        const details: GoblinTookHit = {
-          damage,
-          stun: false,
-          fromJack: true,
-        };
-
-        goblinEvents.emit(
-          goblinEventsTypes.TOOK_HIT,
-          mobController.id,
-          details
-        );
+          goblinEvents.emit(goblinEventsTypes.TOOK_HIT, mobController.id, {
+            damage,
+            stun: false,
+            fromJack: true,
+          } satisfies GoblinTookHit);
+        });
       } else if (animation.key === mcAnimTypes.ATTACK_2) {
-        const damage =
-          (1 - mobController.mob.goblin.state.Armor) *
-          mobController.scene.player.ultiDamage;
-        mobController.mob.goblin.state.HP -= damage;
+        const { damage, hit } = player.user.heavy_strike();
+        if (!hit) throw new Error("player heavy strike not ready but used");
+        hit(affectedMobs.map((ctrl) => ctrl.mob.goblin));
 
-        const details: GoblinTookHit = {
-          damage,
-          stun: true,
-          fromJack: true,
-        };
-        goblinEvents.emit(
-          goblinEventsTypes.TOOK_HIT,
-          mobController.id,
-          details
-        );
+        affectedMobs.forEach((mobController) => {
+          goblinEvents.emit(goblinEventsTypes.TOOK_HIT, mobController.id, {
+            damage,
+            stun: true,
+            fromJack: true,
+          } satisfies GoblinTookHit);
+        });
       }
     }
   );

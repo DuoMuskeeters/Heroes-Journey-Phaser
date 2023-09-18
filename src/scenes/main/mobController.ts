@@ -8,18 +8,15 @@ import {
 import { createGoblinBomb, createGoblinAnims } from "./Anims";
 import { goblinHealtbar, goblinspbar } from "../Ui/Components";
 import MainScene from "./MainScene";
-import { playerAttackListener } from "./Playerattack";
 import {
   Direction,
-  dirVelocity,
+  GoblinAnimTypes,
   goblinAnimTypes,
   mcAnimTypes,
 } from "../../game/types/types";
 import { createCollider } from "./TileGround";
-import { CONFIG } from "../../PhaserGame";
 
 export default class MobController {
-  private goblinmod = 0;
   private ıdletime = 0;
 
   /**
@@ -66,7 +63,8 @@ export default class MobController {
 
     return isOverlapping && atFrame;
   }
-  private mobPlay = (animation: string) => {
+  private mobPlay = (animation: GoblinAnimTypes) => {
+    if (animation !== goblinAnimTypes.DEATH && this.isDead()) return;
     this.mob.sprite.anims.play(animation, true);
     this.mob.sprite.anims.stopAfterRepeat(0);
   };
@@ -154,13 +152,11 @@ export default class MobController {
   }
 
   hitPlayer() {
-    const playerState = this.scene.player.user.state;
-    const goblinState = this.mob.goblin.state;
+    const player = this.scene.player.user;
+    const goblin = this.mob.goblin;
 
-    const damage = (1 - playerState.Armor) * goblinState.ATK;
-    const hp = Math.max(playerState.HP - damage, 0);
-
-    playerState.HP = hp;
+    const { damage, hit } = goblin.basicAttack(player);
+    hit();
 
     this.scene.player.hearticon.setTint(0x020000);
     this.scene.player.hptitle.setTint(0x020000);
@@ -184,7 +180,7 @@ export default class MobController {
         this.scene.player.sprite.setVelocityX(0);
         this.scene.player.sprite.anims.play(mcAnimTypes.TAKE_HIT, true);
         this.scene.player.sprite.anims.stopAfterRepeat(0);
-        this.scene.player.user.state.HP -= this.mob.goblin.giant_skill();
+        this.mob.goblin.giant_skill().hit(this.scene.player.user);
       }
     });
   }
@@ -268,7 +264,6 @@ export default class MobController {
       .setFontStyle("bold");
 
     createGoblinAnims(this);
-    playerAttackListener(this);
   }
 
   private ıdleOnUpdate(dt: number) {
@@ -289,7 +284,6 @@ export default class MobController {
   }
 
   private runOnUpdate(dt: number) {
-    this.goblinmod += 1;
     if (this.mob.sprite.body.onWall()) {
       this.mob.sprite.setVelocityY(-300);
     }
