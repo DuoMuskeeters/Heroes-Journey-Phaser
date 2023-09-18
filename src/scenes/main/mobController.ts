@@ -5,7 +5,7 @@ import {
   mcEventTypes,
   mcEvents,
 } from "../../game/types/events";
-import { createGoblinBomb, createGoblinAnims } from "./Anims";
+import { createGoblinBomb } from "./Anims";
 import { goblinHealtbar, goblinspbar } from "../Ui/Components";
 import MainScene from "./MainScene";
 import {
@@ -148,21 +148,21 @@ export default class MobController {
   }
 
   playerAlive() {
-    return !this.scene.player.user.isDead();
+    return !this.scene.player.isDead();
   }
 
   hitPlayer() {
-    const player = this.scene.player.user;
+    const player = this.scene.player;
     const goblin = this.mob.goblin;
 
     const { damage, hit } = goblin.basicAttack(player);
     hit();
 
-    this.scene.player.hearticon.setTint(0x020000);
-    this.scene.player.hptitle.setTint(0x020000);
+    this.scene.playerUI.hearticon.setTint(0x020000);
+    this.scene.playerUI.hptitle.setTint(0x020000);
     setTimeout(() => {
-      this.scene.player.hearticon.setTint(0xffffff);
-      this.scene.player.hptitle.clearTint();
+      this.scene.playerUI.hearticon.setTint(0xffffff);
+      this.scene.playerUI.hptitle.clearTint();
     }, 400);
 
     mcEvents.emit(mcEventTypes.TOOK_HIT, damage);
@@ -180,7 +180,7 @@ export default class MobController {
         this.scene.player.sprite.setVelocityX(0);
         this.scene.player.sprite.anims.play(mcAnimTypes.TAKE_HIT, true);
         this.scene.player.sprite.anims.stopAfterRepeat(0);
-        this.mob.goblin.giant_skill().hit(this.scene.player.user);
+        this.mob.goblin.giant_skill().hit(this.scene.player);
       }
     });
   }
@@ -262,8 +262,6 @@ export default class MobController {
       })
       .setFontFamily('Georgia, "Goudy Bookletter 1911", Times, serif')
       .setFontStyle("bold");
-
-    createGoblinAnims(this);
   }
 
   private ıdleOnUpdate(dt: number) {

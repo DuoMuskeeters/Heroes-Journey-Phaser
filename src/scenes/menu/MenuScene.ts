@@ -1,18 +1,16 @@
 import Phaser from "phaser";
-import { createPlayeranims, shop } from "../main/Anims";
+import { loadAnimations, shop } from "../main/Anims";
 import { createBackground, forestRoad } from "../preLoad/assets";
 import { Backroundmovement } from "../main/GameMovement";
 import { Direction, mcAnimTypes } from "../../game/types/types";
 import { CONFIG } from "../../PhaserGame";
+import { GameCharacter } from "../../objects/player";
 
 export default class MenuScene extends Phaser.Scene {
   logo = {} as Phaser.GameObjects.Image;
   brand = {} as Phaser.GameObjects.Text;
   gameTitle = {} as Phaser.GameObjects.Text;
-  player = {
-    sprite: {} as Phaser.GameObjects.Sprite,
-    lastdirection: Direction.right,
-  };
+  player: GameCharacter;
   goblin = {
     sprite: {} as Phaser.GameObjects.Sprite,
     lastdirection: Direction["left"],
@@ -30,9 +28,11 @@ export default class MenuScene extends Phaser.Scene {
 
   constructor() {
     super("menu");
+    this.player = new GameCharacter("auto");
   }
 
   create() {
+    this.player.create(this, 300, 0);
     this.cameras.main.fadeIn(1000, 0, 0, 0);
     this.cameras.main.postFX.addBloom(
       undefined,
@@ -70,7 +70,7 @@ export default class MenuScene extends Phaser.Scene {
 
     createBackground(this);
     forestRoad(this);
-    createPlayeranims(this);
+    loadAnimations(this);
     this.physics.world.setBounds(0, 0, Infinity, CONFIG.height - 140);
     shop(this);
 

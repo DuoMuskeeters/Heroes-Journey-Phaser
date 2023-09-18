@@ -43,7 +43,7 @@ export class UiScene extends Phaser.Scene {
     //     }
     //   });
     this.input.keyboard?.on("keydown-C", () => {
-      if (mainscene.player.user.isDead()) return;
+      if (mainscene.player.isDead()) return;
 
       if (this.statemenu.isOpen) {
         this.statemenu.hide();
@@ -59,7 +59,7 @@ export class UiScene extends Phaser.Scene {
       }
     });
     this.input.keyboard?.on("keydown-Z", () => {
-      if (mainscene.player.user.isDead()) return;
+      if (mainscene.player.isDead()) return;
       for (const c of mainscene.mobController) if (c.canSeeMc()) return;
       if (mainscene.scene.isActive()) mainscene.scene.pause();
       else mainscene.scene.resume();

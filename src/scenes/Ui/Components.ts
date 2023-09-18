@@ -2,9 +2,8 @@ import MainScene from "../main/MainScene";
 import MobController from "../main/mobController";
 
 export function playerhealtbar(scene: MainScene) {
-  const getMaxHp = () =>
-    scene.player.user.state.max_hp - scene.player.user.state.HP;
-  const maxframepercent = Math.floor(scene.player.user.state.max_hp / 5);
+  const getMaxHp = () => scene.player.state.max_hp - scene.player.state.HP;
+  const maxframepercent = Math.floor(scene.player.state.max_hp / 5);
 
   const rawFramePercent = getMaxHp() / maxframepercent;
 
@@ -26,16 +25,15 @@ export function playerhealtbar(scene: MainScene) {
       frameRate: 10,
       repeat: 0,
     });
-    scene.player.hpbar.anims.play("hp-bar", true);
+    scene.playerUI.hpbar.anims.play("hp-bar", true);
   }
-  scene.player.hptitle.setText(
-    `${Math.round(Math.max(0, scene.player.user.state.HP))}`
+  scene.playerUI.hptitle.setText(
+    `${Math.round(Math.max(0, scene.player.state.HP))}`
   );
 }
 export function playerspbar(scene: MainScene) {
-  const getMaxSp = () =>
-    scene.player.user.state.max_sp - scene.player.user.state.SP;
-  const maxframepercent = Math.floor(scene.player.user.state.max_sp / 5);
+  const getMaxSp = () => scene.player.state.max_sp - scene.player.state.SP;
+  const maxframepercent = Math.floor(scene.player.state.max_sp / 5);
 
   const rawFramePercent = getMaxSp() / maxframepercent;
 
@@ -55,17 +53,17 @@ export function playerspbar(scene: MainScene) {
       frameRate: 10,
       repeat: 0,
     });
-    scene.player.manabar.anims.play("mana-bar", true);
+    scene.playerUI.manabar.anims.play("mana-bar", true);
   }
-  if (scene.player.user.state.SP >= 50) {
-    scene.player.sptitle.setTint(0x71e5f2);
-    scene.player.manaicon.setTint(0xffffff);
+  if (scene.player.state.SP >= 50) {
+    scene.playerUI.sptitle.setTint(0x71e5f2);
+    scene.playerUI.manaicon.setTint(0xffffff);
   } else {
-    scene.player.sptitle.setTint(0x4396d6);
-    scene.player.manaicon.setTint(0x4396d6);
+    scene.playerUI.sptitle.setTint(0x4396d6);
+    scene.playerUI.manaicon.setTint(0x4396d6);
   }
-  scene.player.sptitle.setText(
-    `${Math.round(Math.max(0, scene.player.user.state.SP))}`
+  scene.playerUI.sptitle.setText(
+    `${Math.round(Math.max(0, scene.player.state.SP))}`
   );
 }
 

@@ -1,4 +1,3 @@
-import { CONFIG } from "../../PhaserGame";
 import { create_giant } from "../../game/Karakter";
 import { Direction, goblinAnimTypes } from "../../game/types/types";
 import MainScene from "./MainScene";
@@ -20,7 +19,7 @@ export function createMob(scene: MainScene) {
 
     createCollider(scene, sprite, [scene.backroad, scene.frontroad]);
 
-    const mob = create_giant(scene.player.user.state.Level);
+    const mob = create_giant(scene.player.state.Level);
 
     const mobattackrect = scene.physics.add.sprite(
       sprite.x,

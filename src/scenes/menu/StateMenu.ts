@@ -22,8 +22,8 @@ export default class statemenu {
     const titletext = scene.add
       .text(-350, -290, "Stats")
       .setFontFamily("Bradley Hand, cursive")
-      .setFontStyle("bold")
-      
+      .setFontStyle("bold");
+
     const panel = scene.add
       .image(0, -430, "statepanel")
       .setOrigin(1, 0)
@@ -40,8 +40,8 @@ export default class statemenu {
       .text(
         -270,
         -390,
-        `Name:   Jack    Level:   ${mainscene.player.user.state.Level}\n
-Job: Samurai    MAX HP:   ${mainscene.player.user.state.max_hp}`
+        `Name:   Jack    Level:   ${mainscene.player.state.Level}\n
+Job: Samurai    MAX HP:   ${mainscene.player.state.max_hp}`
       )
       .setFontFamily("Bradley Hand, cursive")
       .setFontStyle("bold")
@@ -50,32 +50,32 @@ Job: Samurai    MAX HP:   ${mainscene.player.user.state.max_hp}`
       .text(
         -50,
         -150,
-        `Remaining Points:  ${mainscene.player.user.state.stat_point}`
+        `Remaining Points:  ${mainscene.player.state.stat_point}`
       )
       .setOrigin(1, 0);
     const Strenght = scene.add.image(-200, -260, "plus");
     const Strenghttext = scene.add.text(
       -375,
       -260,
-      `Strenght:  ${mainscene.player.user.state.Strength}`
+      `Strenght:  ${mainscene.player.state.Strength}`
     );
     const Agility = scene.add.image(-200, -235, "plus");
     const Agilitytext = scene.add.text(
       -375,
       -235,
-      `Agility:  ${mainscene.player.user.state.Agility}`
+      `Agility:  ${mainscene.player.state.Agility}`
     );
     const Intelligence = scene.add.image(-200, -210, "plus");
     const Intelligencetext = scene.add.text(
       -375,
       -210,
-      `Intelligence: ${mainscene.player.user.state.Intelligence}`
+      `Intelligence: ${mainscene.player.state.Intelligence}`
     );
     const Constitution = scene.add.image(-200, -185, "plus");
     const Constitutiontext = scene.add.text(
       -375,
       -185,
-      `Constitution: ${mainscene.player.user.state.Constitution}`
+      `Constitution: ${mainscene.player.state.Constitution}`
     );
     const buttons = [
       { type: "Strength", image: Strenght, text: Strenghttext },
@@ -86,23 +86,20 @@ Job: Samurai    MAX HP:   ${mainscene.player.user.state.max_hp}`
 
     buttons.forEach((button) => {
       button.image.setInteractive().on(Phaser.Input.Events.POINTER_UP, () => {
-        if (mainscene.player.user.state.stat_point > 0) {
+        if (mainscene.player.state.stat_point > 0) {
           // button type -> "Agility"
-          mainscene.player.user.increase(button.type);
+          mainscene.player.increase(button.type);
           button.text.setText(
-            `${button.type}: ${mainscene.player.user.state[button.type]}`
+            `${button.type}: ${mainscene.player.state[button.type]}`
           );
           this.remaininpoints.setText(
-            `Remaining Points :  ${mainscene.player.user.state.stat_point}`
+            `Remaining Points :  ${mainscene.player.state.stat_point}`
           );
         }
       });
       button.image.setScale(0.3, 0.3).setOrigin(1, 0).setTint(0x000000);
 
-      button.text
-        .setFontFamily("Bradley Hand, cursive")
-        .setFontStyle("bold")
-        
+      button.text.setFontFamily("Bradley Hand, cursive").setFontStyle("bold");
     });
 
     const preesc = scene.add
@@ -114,8 +111,8 @@ Job: Samurai    MAX HP:   ${mainscene.player.user.state.max_hp}`
       )
       .setFontFamily("Bradley Hand, cursive")
       .setFontStyle("bold")
-      .setOrigin(1, 0)
-      
+      .setOrigin(1, 0);
+
     this.container.add(panel);
     this.container.add(playeravatar);
     this.container.add(this.jacktext);

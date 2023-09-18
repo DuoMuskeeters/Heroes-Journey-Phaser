@@ -4,21 +4,23 @@ import {
   goblinEventsTypes,
 } from "../../game/types/events";
 import { mcAnimTypes } from "../../game/types/types";
+import { GameCharacter } from "../../objects/player";
 import MainScene from "./MainScene";
 
-export function playerAttackListener(scene: MainScene) {
-  scene.player.sprite.on(
+export function playerAttackListener(player: GameCharacter) {
+  const scene = player.scene;
+  const isMain = scene instanceof MainScene;
+  const controllers = isMain ? scene.mobController : [];
+
+  player.sprite.on(
     Phaser.Animations.Events.ANIMATION_STOP,
     (animation: Phaser.Animations.Animation) => {
-      const player = scene.player;
-      const mobControllers = scene.mobController;
-
-      const affectedMobs = mobControllers.filter((mob) => mob.isMcHitting());
+      const affectedMobs = controllers.filter((mob) => mob.isMcHitting());
 
       if (animation.key === mcAnimTypes.ATTACK_1) {
         affectedMobs.forEach((mobController) => {
           const goblin = mobController.mob.goblin;
-          const { damage, hit } = player.user.basicAttack(goblin);
+          const { damage, hit } = player.basicAttack(goblin);
           hit();
 
           goblinEvents.emit(goblinEventsTypes.TOOK_HIT, mobController.id, {
@@ -28,7 +30,7 @@ export function playerAttackListener(scene: MainScene) {
           } satisfies GoblinTookHit);
         });
       } else if (animation.key === mcAnimTypes.ATTACK_2) {
-        const { damage, hit } = player.user.heavy_strike();
+        const { damage, hit } = player.heavy_strike();
         if (!hit) throw new Error("player heavy strike not ready but used");
         hit(affectedMobs.map((ctrl) => ctrl.mob.goblin));
 

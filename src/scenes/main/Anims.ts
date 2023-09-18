@@ -1,19 +1,13 @@
-import { CONFIG } from "../../PhaserGame";
-import { goblinEventsTypes, mcEventTypes } from "../../game/types/events";
 import { goblinAnimTypes, mcAnimTypes } from "../../game/types/types";
 import MenuScene from "../menu/MenuScene";
 import MainScene from "./MainScene";
-import MobController from "./mobController";
+export function loadAnimations(scene: Phaser.Scene) {
+  createPlayeranims(scene);
+  createGoblinAnims(scene);
+}
 
-export function createPlayeranims(scene: MainScene | MenuScene) {
+export function createPlayeranims(scene: Phaser.Scene) {
   const isMainScene = scene instanceof MainScene;
-  scene.player.sprite = scene.physics.add
-    .sprite(300, 0, mcAnimTypes.IDLE)
-    .setCollideWorldBounds(true)
-    .setBounce(0.1)
-    .setScale(2.55)
-    .setBodySize(30, 40, true)
-    .setDepth(300);
 
   scene.anims.create({
     key: mcAnimTypes.IDLE,
@@ -52,7 +46,7 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
         start: 0,
         end: 6,
       }),
-      frameRate: scene.player.user.state.ATKRATE * 10,
+      frameRate: scene.player.state.ATKRATE * 10,
       repeat: -1,
     });
 
@@ -96,73 +90,73 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
     repeat: -1,
   });
 }
-export function createGoblinAnims(controller: MobController) {
-  controller.scene.anims.create({
+export function createGoblinAnims(scene: Phaser.Scene) {
+  scene.anims.create({
     key: goblinAnimTypes.ULTI,
-    frames: controller.scene.anims.generateFrameNumbers(
-      goblinAnimTypes.ULTI,
-      { start: 12, end: 0 }
-    ),
+    frames: scene.anims.generateFrameNumbers(goblinAnimTypes.ULTI, {
+      start: 12,
+      end: 0,
+    }),
     frameRate: 10,
     repeat: -1,
   });
 
-  controller.scene.anims.create({
+  scene.anims.create({
     key: goblinAnimTypes.IDLE,
-    frames: controller.scene.anims.generateFrameNumbers(
-      goblinAnimTypes.IDLE,
-      { start: 4, end: 0 }
-    ),
+    frames: scene.anims.generateFrameNumbers(goblinAnimTypes.IDLE, {
+      start: 4,
+      end: 0,
+    }),
     frameRate: 8,
     repeat: -1,
   });
 
-  controller.scene.anims.create({
+  scene.anims.create({
     key: goblinAnimTypes.TAKE_HIT,
-    frames: controller.scene.anims.generateFrameNumbers(
-      goblinAnimTypes.TAKE_HIT,
-      { start: 4, end: 0 }
-    ),
+    frames: scene.anims.generateFrameNumbers(goblinAnimTypes.TAKE_HIT, {
+      start: 4,
+      end: 0,
+    }),
     frameRate: 10,
     repeat: -1,
   });
 
-  controller.scene.anims.create({
+  scene.anims.create({
     key: goblinAnimTypes.DEATH,
-    frames: controller.scene.anims.generateFrameNumbers(
-      goblinAnimTypes.DEATH,
-      { start: 4, end: 0 }
-    ),
+    frames: scene.anims.generateFrameNumbers(goblinAnimTypes.DEATH, {
+      start: 4,
+      end: 0,
+    }),
     frameRate: 8,
     repeat: -1,
   });
 
-  controller.scene.anims.create({
+  scene.anims.create({
     key: goblinAnimTypes.RUN,
-    frames: controller.scene.anims.generateFrameNumbers(
-      goblinAnimTypes.RUN,
-      { start: 8, end: 0 }
-    ),
+    frames: scene.anims.generateFrameNumbers(goblinAnimTypes.RUN, {
+      start: 8,
+      end: 0,
+    }),
     frameRate: 7,
     repeat: -1,
   });
 
-  controller.scene.anims.create({
+  scene.anims.create({
     key: goblinAnimTypes.ATTACK,
-    frames: controller.scene.anims.generateFrameNumbers(
-      goblinAnimTypes.ATTACK,
-      { start: 8, end: 0 }
-    ),
-    frameRate: controller.mob.goblin.state.ATKRATE * 6.5,
+    frames: scene.anims.generateFrameNumbers(goblinAnimTypes.ATTACK, {
+      start: 8,
+      end: 0,
+    }),
+    frameRate: 6.6,
     repeat: -1,
   });
 
-  controller.scene.anims.create({
+  scene.anims.create({
     key: goblinAnimTypes.BOMB,
-    frames: controller.scene.anims.generateFrameNumbers(
-      goblinAnimTypes.BOMB,
-      { start: 19, end: 0 }
-    ),
+    frames: scene.anims.generateFrameNumbers(goblinAnimTypes.BOMB, {
+      start: 19,
+      end: 0,
+    }),
     frameRate: 10,
     repeat: -1,
   });
@@ -176,7 +170,7 @@ export function createGoblinBomb(scene: MainScene) {
     )
     .setScale(2.5, 2.5)
     .setDepth(4)
-    .setBodySize(25, 15, true)
+    .setBodySize(25, 15, true);
 }
 export function shop(scene: MainScene | MenuScene) {
   scene.shopobject = scene.add

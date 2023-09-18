@@ -140,6 +140,7 @@ export class Canlı {
 }
 
 export class Character extends Canlı {
+  private lastHeavyStrike: Date | null = null;
   exp: number;
 
   constructor(state: State, exp: number = 0) {
@@ -161,6 +162,36 @@ export class Character extends Canlı {
       this.state.stat_point -= 1;
       this.calculate_power();
     }
+  }
+  heavy_strike() {
+    const halfSP = CONFIG.physics.arcade.debug ? 5 : this.state.max_sp / 2;
+    const damage = this.state.ATK * 2;
+    const standByTime = CONFIG.physics.arcade.debug ? 100 : 5 * 1000;
+
+    const hasUlti = () =>
+      (this.lastHeavyStrike?.getTime() ?? 0) + standByTime < Date.now();
+
+    if (this.state.SP >= halfSP && hasUlti())
+      return {
+        damage,
+        standByTime,
+        lastHeavyStrike: this.lastHeavyStrike,
+        hit: (rakipler: Canlı[]) => {
+          if (this.state.SP < halfSP || !hasUlti())
+            throw new Error("Ulti için gerekli koşullar sağlanmadı.");
+          this.lastHeavyStrike = new Date();
+          this.state.SP = Math.max(this.state.SP - halfSP, 0);
+          return rakipler.map(
+            (rakip) => (rakip.state.HP = Math.max(rakip.state.HP - damage, 0))
+          );
+        },
+      };
+
+    return {
+      damage,
+      standByTime,
+      lastHeavyStrike: this.lastHeavyStrike,
+    };
   }
 }
 
@@ -210,39 +241,8 @@ export function create_character(
 }
 
 export class Warrior extends Character {
-  private lastHeavyStrike: Date | null = null;
   static from_Character(character: Character) {
     return new this(character.state, character.exp);
-  }
-  heavy_strike() {
-    const halfSP = CONFIG.physics.arcade.debug ? 5 : this.state.max_sp / 2;
-    const damage = this.state.ATK * 2;
-    const standByTime = CONFIG.physics.arcade.debug ? 100 : 5 * 1000;
-
-    const hasUlti = () =>
-      (this.lastHeavyStrike?.getTime() ?? 0) + standByTime < Date.now();
-
-    if (this.state.SP >= halfSP && hasUlti())
-      return {
-        damage,
-        standByTime,
-        lastHeavyStrike: this.lastHeavyStrike,
-        hit: (rakipler: Canlı[]) => {
-          if (this.state.SP < halfSP || !hasUlti())
-            throw new Error("Ulti için gerekli koşullar sağlanmadı.");
-          this.lastHeavyStrike = new Date();
-          this.state.SP = Math.max(this.state.SP - halfSP, 0);
-          return rakipler.map(
-            (rakip) => (rakip.state.HP = Math.max(rakip.state.HP - damage, 0))
-          );
-        },
-      };
-
-    return {
-      damage,
-      standByTime,
-      lastHeavyStrike: this.lastHeavyStrike,
-    };
   }
   vitality_boost() {
     this.state.HP = this.state.max_hp * 0.35 + this.state.HP;
