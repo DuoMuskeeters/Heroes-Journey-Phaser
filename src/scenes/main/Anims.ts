@@ -92,7 +92,7 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
       start: 0,
       end: 4,
     }),
-    frameRate: 10,
+    frameRate: 4,
     repeat: -1,
   });
 }
