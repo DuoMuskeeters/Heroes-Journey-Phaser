@@ -46,7 +46,7 @@ export function createPlayeranims(scene: Phaser.Scene) {
         start: 0,
         end: 6,
       }),
-      frameRate: scene.player.state.ATKRATE * 10,
+      frameRate: scene.player.character.state.ATKRATE * 10,
       repeat: -1,
     });
 

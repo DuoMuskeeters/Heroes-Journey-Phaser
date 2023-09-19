@@ -5,24 +5,25 @@ import {
   mcEventTypes,
   mcEvents,
 } from "../../game/types";
-import { GameCharacter } from ".";
+import { Player } from ".";
+import { Character, Warrior } from "../../game/Karakter";
 
-const runonUpdate = (player: GameCharacter) => {
+const runonUpdate = (player: Player<Character>) => {
   player.sprite.anims.play(mcAnimTypes.RUN, true);
   player.sprite.body.setVelocityX(dirVelocity[player.lastdirection] * 250);
 };
 
-const ıdleonUpdate = (player: GameCharacter) => {
+const ıdleonUpdate = (player: Player<Character>) => {
   player.sprite.anims.play(mcAnimTypes.IDLE, true);
   player.sprite.body.setVelocityX(0);
 };
-const jumpandFallonupdate = (player: GameCharacter) => {
+const jumpandFallonupdate = (player: Player<Character>) => {
   player.sprite.anims.play(mcAnimTypes.JUMP, true);
   player.sprite.anims.stopAfterRepeat(1);
   player.sprite.body.setVelocityY(-900);
 };
-const heavyStrikeonUpdate = (player: GameCharacter) => {
-  const { hit: heavyStrikeHit } = player.heavy_strike();
+const heavyStrikeonUpdate = (player: Player<Warrior>) => {
+  const { hit: heavyStrikeHit } = player.character.heavy_strike();
   if (heavyStrikeHit) {
     player.sprite.anims.play(mcAnimTypes.ATTACK_2, true);
     player.sprite.anims.stopAfterRepeat(0);
@@ -30,26 +31,26 @@ const heavyStrikeonUpdate = (player: GameCharacter) => {
     mcEvents.emit(mcEventTypes.HEAVY_ATTACK_USED);
   }
 };
-const attackonUpdate = (player: GameCharacter) => {
+const attackonUpdate = (player: Player<Character>) => {
   player.sprite.anims.play(mcAnimTypes.ATTACK_1, true);
   player.sprite.anims.stopAfterRepeat(0);
   player.sprite.body.setVelocityX(0);
   mcEvents.emit(mcEventTypes.BASIC_ATTACK_USED);
 };
 
-const setAttackrect = (player: GameCharacter) => {
+const setAttackrect = (player: Player<Character>) => {
   player.attackrect.setPosition(
     player.sprite.x + dirVelocity[player.lastdirection] * 90,
     player.sprite.y - 40
   );
 };
-export function killCharacter(player: GameCharacter) {
+export function killCharacter(player: Player<Character>) {
   player.sprite.anims.play(mcAnimTypes.DEATH, true);
   player.sprite.anims.stopAfterRepeat(0);
   player.sprite.body.setVelocityX(0);
 }
 
-export function playerMovementUpdate(player: GameCharacter) {
+export function playerMovementUpdate(player: Player<Character>) {
   const scene = player.scene;
   const keySpace = scene.input.keyboard?.addKey("SPACE");
   const keyW = scene.input.keyboard?.addKey("W");
@@ -76,7 +77,7 @@ export function playerMovementUpdate(player: GameCharacter) {
 
   setAttackrect(player);
 
-  if (player.isDead()) return;
+  if (player.character.isDead()) return;
 
   if (keyA?.isDown && canMoVE) {
     player.lastdirection = Direction.left;
@@ -103,5 +104,10 @@ export function playerMovementUpdate(player: GameCharacter) {
   if (keyW?.isDown && !attckQActive) jumpandFallonupdate(player);
   if (RunisDown && !keyW?.isDown && canMoVE) runonUpdate(player);
   if ((mouse || keySpace?.isDown) && !attckQActive) attackonUpdate(player);
-  if (keyQ?.isDown) heavyStrikeonUpdate(player);
+
+  if (keyQ?.isDown) {
+    if (player.character instanceof Warrior)
+      heavyStrikeonUpdate(player as Player<Warrior>);
+    else throw new Error("unknown character type for Q attack");
+  }
 }

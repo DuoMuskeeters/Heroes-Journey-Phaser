@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { Direction, mcAnimTypes } from "../../game/types/types";
-import { Giant, Warrior, create_character } from "../../game/Karakter";
+import { Giant, Warrior } from "../../game/Karakter";
 import { createBackground } from "../preLoad/assets";
 import PhaserGame, { CONFIG } from "../../PhaserGame";
 import { loadAnimations } from "./Anims";
@@ -18,15 +18,13 @@ import {
   mcEventTypes,
   mcEvents,
 } from "../../game/types/events";
-import { GameCharacter } from "../../objects/player";
-
-const jack = Warrior.from_Character(create_character("Ali"));
+import { Player } from "../../objects/player";
 
 export default class MainScene extends Phaser.Scene {
   frontroad!: Phaser.Tilemaps.TilemapLayer;
   backroad!: Phaser.Tilemaps.TilemapLayer;
 
-  player: GameCharacter;
+  player;
   playerUI = {
     hpbar: {} as Phaser.GameObjects.Sprite,
     manabar: {} as Phaser.GameObjects.Sprite,
@@ -58,14 +56,16 @@ export default class MainScene extends Phaser.Scene {
 
   constructor() {
     super("mainscene");
-    this.player = new GameCharacter("auto");
+    this.player = new Player(new Warrior());
   }
 
   create() {
     this.player.create(this, 300, 0);
 
     mcEvents.on(mcEventTypes.TOOK_HIT, (damage: number) => {
-      console.log(`mc took hit damage: ${damage} after hp: ${jack.state.HP}`);
+      console.log(
+        `mc took hit damage: ${damage} after hp: ${this.player.character.state.HP}`
+      );
     });
     mcEvents.on(mcEventTypes.DIED, () => {
       console.log(`mc died`);
@@ -81,7 +81,9 @@ export default class MainScene extends Phaser.Scene {
         console.log(
           `goblin ${controller.name} took hit ${
             details.stun ? "(STUN)" : "(NORMAL)"
-          } damage: ${details.damage} after hp: ${jack.state.HP}`
+          } damage: ${details.damage} after hp: ${
+            this.player.character.state.HP
+          }`
         );
         if (controller.mob.goblin.isDead()) {
           goblinEvents.emit(goblinEventsTypes.DIED);
@@ -103,7 +105,7 @@ export default class MainScene extends Phaser.Scene {
 
     setInterval(() => {
       if (this.scene.isPaused()) return;
-      this.player.regeneration();
+      this.player.character.regeneration();
       this.mobController.forEach((controller) => {
         controller.mob.goblin.regeneration();
       });
@@ -128,7 +130,7 @@ export default class MainScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, Infinity, CONFIG.height - 300);
 
     this.playerUI.hptitle = this.add
-      .text(370, 65, `${this.player.state.HP}`)
+      .text(370, 65, `${this.player.character.state.HP}`)
       .setStyle({
         fontSize: "22px Arial",
         color: "red",
@@ -139,7 +141,7 @@ export default class MainScene extends Phaser.Scene {
       .setScrollFactor(0);
 
     this.playerUI.sptitle = this.add
-      .text(340, 103, `${this.player.state.SP}`)
+      .text(340, 103, `${this.player.character.state.SP}`)
       .setStyle({
         fontSize: "22px Arial",
         align: "center",
@@ -158,12 +160,12 @@ export default class MainScene extends Phaser.Scene {
     playerhealtbar(this);
     playerspbar(this);
     uiscene.statemenu.remaininpoints.setText(
-      `Remaining Points :  ${this.player.state.stat_point}`
+      `Remaining Points :  ${this.player.character.state.stat_point}`
     );
     uiscene.statemenu.jacktext.setText(
-      `Name: Jack    Level: ${this.player.state.Level}
+      `Name: Jack    Level: ${this.player.character.state.Level}
 
-Job: Samurai  MAX HP: ${this.player.state.max_hp}`
+Job: Samurai  MAX HP: ${this.player.character.state.max_hp}`
     );
 
     this.mobController.forEach((mobCcontroller) => {

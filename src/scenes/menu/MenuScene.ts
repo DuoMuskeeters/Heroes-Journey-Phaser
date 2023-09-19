@@ -4,13 +4,14 @@ import { createBackground, forestRoad } from "../preLoad/assets";
 import { Backroundmovement } from "../main/GameMovement";
 import { Direction, mcAnimTypes } from "../../game/types/types";
 import { CONFIG } from "../../PhaserGame";
-import { GameCharacter } from "../../objects/player";
+import { Player } from "../../objects/player";
+import { Warrior } from "../../game/Karakter";
 
 export default class MenuScene extends Phaser.Scene {
   logo = {} as Phaser.GameObjects.Image;
   brand = {} as Phaser.GameObjects.Text;
   gameTitle = {} as Phaser.GameObjects.Text;
-  player: GameCharacter;
+  player;
   goblin = {
     sprite: {} as Phaser.GameObjects.Sprite,
     lastdirection: Direction["left"],
@@ -28,7 +29,7 @@ export default class MenuScene extends Phaser.Scene {
 
   constructor() {
     super("menu");
-    this.player = new GameCharacter("auto");
+    this.player = new Player(new Warrior());
   }
 
   create() {

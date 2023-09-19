@@ -19,7 +19,7 @@ export function createMob(scene: MainScene) {
 
     createCollider(scene, sprite, [scene.backroad, scene.frontroad]);
 
-    const mob = create_giant(scene.player.state.Level);
+    const mob = create_giant(scene.player.character.state.Level);
 
     const mobattackrect = scene.physics.add.sprite(
       sprite.x,

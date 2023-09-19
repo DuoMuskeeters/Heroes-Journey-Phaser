@@ -148,14 +148,14 @@ export default class MobController {
   }
 
   playerAlive() {
-    return !this.scene.player.isDead();
+    return !this.scene.player.character.isDead();
   }
 
   hitPlayer() {
     const player = this.scene.player;
     const goblin = this.mob.goblin;
 
-    const { damage, hit } = goblin.basicAttack(player);
+    const { damage, hit } = goblin.basicAttack(player.character);
     hit();
 
     this.scene.playerUI.hearticon.setTint(0x020000);
@@ -180,7 +180,7 @@ export default class MobController {
         this.scene.player.sprite.setVelocityX(0);
         this.scene.player.sprite.anims.play(mcAnimTypes.TAKE_HIT, true);
         this.scene.player.sprite.anims.stopAfterRepeat(0);
-        this.mob.goblin.giant_skill().hit(this.scene.player);
+        this.mob.goblin.giant_skill().hit(this.scene.player.character);
       }
     });
   }
