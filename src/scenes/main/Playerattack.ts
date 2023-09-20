@@ -3,6 +3,8 @@ import {
   GoblinTookHit,
   goblinEvents,
   goblinEventsTypes,
+  mcEventTypes,
+  mcEvents,
 } from "../../game/types/events";
 import { mcAnimTypes } from "../../game/types/types";
 import { Player } from "../../objects/player";
@@ -19,6 +21,7 @@ export function playerAttackListener(player: Player<Character>) {
       const affectedMobs = controllers.filter((mob) => mob.isMcHitting());
 
       if (animation.key === mcAnimTypes.ATTACK_1) {
+        mcEvents.emit(mcEventTypes.BASIC_ATTACK_USED);
         affectedMobs.forEach((mobController) => {
           const goblin = mobController.mob.goblin;
           const { damage, hit } = player.character.basicAttack(goblin);
@@ -42,6 +45,7 @@ export function playerAttackListener(player: Player<Character>) {
           damages = affectedMobs.map(() => archerDamage);
         } else throw new Error("unknown character type for ATTACK_2");
 
+        mcEvents.emit(mcEventTypes.HEAVY_ATTACK_USED);
         affectedMobs.forEach((mobController, idx) => {
           goblinEvents.emit(goblinEventsTypes.TOOK_HIT, mobController.id, {
             damage: damages[idx],

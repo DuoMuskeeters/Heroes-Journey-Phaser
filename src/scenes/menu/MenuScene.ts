@@ -43,7 +43,7 @@ export default class MenuScene extends Phaser.Scene {
       0.1
     );
 
-    this.input.keyboard?.on("keydown-SPACE", () => this.handleStartGame());
+    this.input.keyboard?.once("keydown-SPACE", () => this.handleStartGame());
     this.logo = this.add.image(0, 0, "logo");
     this.brand = this.add
       .text(0, 0, "Created By\nDuoMuskeeters")
@@ -87,7 +87,7 @@ export default class MenuScene extends Phaser.Scene {
     this.player.sprite.anims.stopAfterRepeat(3);
     this.shopobject?.anims.play("shop", true);
 
-    this.player.sprite.on(Phaser.Animations.Events.ANIMATION_STOP, () => {
+    this.player.sprite.once(Phaser.Animations.Events.ANIMATION_STOP, () => {
       if (
         this.player.sprite.anims.getName() === mcAnimTypes.FALL &&
         this.player.sprite.body instanceof Phaser.Physics.Arcade.Body
@@ -128,6 +128,7 @@ export default class MenuScene extends Phaser.Scene {
       Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
       () => {
         console.log("Starting game");
+        this.player.destroy();
         this.scene.start("mainscene");
       }
     );

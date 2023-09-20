@@ -70,10 +70,10 @@ export default class MainScene extends Phaser.Scene {
     mcEvents.on(mcEventTypes.DIED, () => {
       console.log(`mc died`);
     });
+
     goblinEvents.on(goblinEventsTypes.DIED, () => {
       console.log(`goblin died`);
     });
-
     goblinEvents.on(
       goblinEventsTypes.TOOK_HIT,
       (id: number, details: GoblinTookHit) => {
@@ -82,12 +82,9 @@ export default class MainScene extends Phaser.Scene {
           `goblin ${controller.name} took hit ${
             details.stun ? "(STUN)" : "(NORMAL)"
           } damage: ${details.damage} after hp: ${
-            this.player.character.state.HP
+            controller.mob.goblin.state.HP
           }`
         );
-        if (controller.mob.goblin.isDead()) {
-          goblinEvents.emit(goblinEventsTypes.DIED);
-        }
       }
     );
 

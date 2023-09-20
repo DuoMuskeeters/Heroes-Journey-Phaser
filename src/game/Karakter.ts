@@ -74,6 +74,16 @@ export class State {
     this.Intelligence = Intelligence;
     this.Constitution = Constitution;
   }
+  calculate_power() {
+    this.max_hp = 100 + this.Constitution * 10;
+    this.HP_reg = 5 + this.Constitution * 0.1;
+    this.Armor = this.Constitution / (this.Constitution + 100);
+    this.max_sp = 50 + this.Intelligence * 5;
+    this.SP_reg = 2.5 + this.Intelligence * 0.05;
+    this.m_resist = this.Constitution / (this.Constitution + 100);
+    this.ATK = 30 + this.Strength * 2;
+    this.ATKRATE = 1 + this.Agility * 0.008;
+  }
 }
 
 export class Canlı {
@@ -84,7 +94,7 @@ export class Canlı {
     this.calculate_power();
   }
   isDead() {
-    return this.state.HP === 0;
+    return Math.floor(this.state.HP) === 0;
   }
 
   /**
@@ -126,17 +136,7 @@ export class Canlı {
     }
   }
   calculate_power() {
-    const s = this.state;
-    s.HP = 100 + s.Constitution * 10;
-    s.max_hp = s.HP;
-    s.HP_reg = 5 + s.Constitution * 0.1;
-    s.Armor = s.Constitution / (s.Constitution + 100);
-    s.SP = 50 + s.Intelligence * 5;
-    s.max_sp = s.SP;
-    s.SP_reg = 2.5 + s.Intelligence * 0.05;
-    s.m_resist = s.Constitution / (s.Constitution + 100);
-    s.ATK = 30 + s.Strength * 2;
-    s.ATKRATE = 1 + s.Agility * 0.008;
+    this.state.calculate_power();
   }
 }
 

@@ -1,10 +1,4 @@
-import {
-  Direction,
-  dirVelocity,
-  mcAnimTypes,
-  mcEventTypes,
-  mcEvents,
-} from "../../game/types";
+import { Direction, dirVelocity, mcAnimTypes } from "../../game/types";
 import { Player } from ".";
 import { Character, Warrior } from "../../game/Karakter";
 
@@ -28,14 +22,12 @@ const heavyStrikeonUpdate = (player: Player<Warrior>) => {
     player.sprite.anims.play(mcAnimTypes.ATTACK_2, true);
     player.sprite.anims.stopAfterRepeat(0);
     player.sprite.body.setVelocityX(0);
-    mcEvents.emit(mcEventTypes.HEAVY_ATTACK_USED);
   }
 };
 const attackonUpdate = (player: Player<Character>) => {
   player.sprite.anims.play(mcAnimTypes.ATTACK_1, true);
   player.sprite.anims.stopAfterRepeat(0);
   player.sprite.body.setVelocityX(0);
-  mcEvents.emit(mcEventTypes.BASIC_ATTACK_USED);
 };
 
 const setAttackrect = (player: Player<Character>) => {

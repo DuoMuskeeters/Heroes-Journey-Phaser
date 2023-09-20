@@ -65,6 +65,10 @@ export class UiScene extends Phaser.Scene {
       else mainscene.scene.resume();
     });
 
+    mcEvents.on(mcEventTypes.BASIC_ATTACK_USED, () => {
+      console.log("basic attack used");
+    });
+
     mcEvents.on(mcEventTypes.HEAVY_ATTACK_USED, () => {
       console.log("heavy attack used");
       if (this.statemenu.isOpen) this.statemenu.hide();

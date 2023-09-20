@@ -29,20 +29,27 @@ export class Player<T extends Character> {
 
     (this._attackrect.body as Phaser.Physics.Arcade.Body).allowGravity = false;
 
-    mcEvents.on(mcEventTypes.TOOK_HIT, () => {
-      if (this.character.isDead()) mcEvents.emit(mcEventTypes.DIED);
-    });
-
-    mcEvents.on(mcEventTypes.DIED, () => {
-      killCharacter(this);
-    });
-
     playerAttackListener(this);
-    return this;
+    this.listeners();
   }
 
   update(time: number, delta: number) {
     playerMovementUpdate(this);
+  }
+
+  destroy() {}
+  listeners() {
+    mcEvents.on(mcEventTypes.TOOK_HIT, () => {
+      if (this.character.isDead()) mcEvents.emit(mcEventTypes.DIED);
+    });
+    mcEvents.on(mcEventTypes.DIED, () => {
+      killCharacter(this);
+    });
+
+    this.destroy = () => {
+      mcEvents.off(mcEventTypes.TOOK_HIT);
+      mcEvents.off(mcEventTypes.DIED);
+    };
   }
 
   get scene() {
