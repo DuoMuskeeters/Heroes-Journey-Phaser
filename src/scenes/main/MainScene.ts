@@ -151,19 +151,10 @@ export default class MainScene extends Phaser.Scene {
   }
 
   update(time: number, delta: number): void {
-    const uiscene = PhaserGame.scene.keys.ui as UiScene;
     this.player.update(time, delta);
     Backroundmovement(this);
     playerhealtbar(this);
     playerspbar(this);
-    uiscene.statemenu.remaininpoints.setText(
-      `Remaining Points :  ${this.player.character.state.stat_point}`
-    );
-    uiscene.statemenu.jacktext.setText(
-      `Name: Jack    Level: ${this.player.character.state.Level}
-
-Job: Samurai  MAX HP: ${this.player.character.state.max_hp}`
-    );
 
     this.mobController.forEach((mobCcontroller) => {
       if (mobCcontroller.mob.sprite.body) mobCcontroller.update(delta);

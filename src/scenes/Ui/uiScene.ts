@@ -74,4 +74,7 @@ export class UiScene extends Phaser.Scene {
       if (this.statemenu.isOpen) this.statemenu.hide();
     });
   }
+  update(time: number, delta: number): void {
+    this.statemenu.update();
+  }
 }

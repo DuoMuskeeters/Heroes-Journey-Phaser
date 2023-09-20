@@ -6,6 +6,7 @@ export default class statemenu {
   container!: Phaser.GameObjects.Container;
   remaininpoints!: Phaser.GameObjects.Text;
   jacktext!: Phaser.GameObjects.Text;
+  character;
   private opened = false;
   get isOpen() {
     return this.opened;
@@ -15,7 +16,7 @@ export default class statemenu {
     const mainscene = PhaserGame.scene.keys.mainscene as MainScene;
 
     this.container = scene.add.container(CONFIG.width, 0);
-    const character = mainscene.player.character;
+    this.character = mainscene.player.character;
     const title = scene.add
       .image(-265, -300, "title-iron")
       .setScale(0.3, 0.3)
@@ -41,38 +42,38 @@ export default class statemenu {
       .text(
         -270,
         -390,
-        `Name:   Jack    Level:   ${character.state.Level}\n
-Job: Samurai    MAX HP:   ${character.state.max_hp}`
+        `Name:   Jack    Level:   ${this.character.state.Level}\n
+Job: Samurai    MAX HP:   ${this.character.state.max_hp}`
       )
       .setFontFamily("Bradley Hand, cursive")
       .setFontStyle("bold")
       .setScale(1.1, 1.1);
     this.remaininpoints = scene.add
-      .text(-50, -150, `Remaining Points:  ${character.state.stat_point}`)
+      .text(-50, -150, `Remaining Points:  ${this.character.state.stat_point}`)
       .setOrigin(1, 0);
     const Strenght = scene.add.image(-200, -260, "plus");
     const Strenghttext = scene.add.text(
       -375,
       -260,
-      `Strenght:  ${character.state.Strength}`
+      `Strenght:  ${this.character.state.Strength}`
     );
     const Agility = scene.add.image(-200, -235, "plus");
     const Agilitytext = scene.add.text(
       -375,
       -235,
-      `Agility:  ${character.state.Agility}`
+      `Agility:  ${this.character.state.Agility}`
     );
     const Intelligence = scene.add.image(-200, -210, "plus");
     const Intelligencetext = scene.add.text(
       -375,
       -210,
-      `Intelligence: ${character.state.Intelligence}`
+      `Intelligence: ${this.character.state.Intelligence}`
     );
     const Constitution = scene.add.image(-200, -185, "plus");
     const Constitutiontext = scene.add.text(
       -375,
       -185,
-      `Constitution: ${character.state.Constitution}`
+      `Constitution: ${this.character.state.Constitution}`
     );
     const buttons = [
       { type: "Strength", image: Strenght, text: Strenghttext },
@@ -83,14 +84,14 @@ Job: Samurai    MAX HP:   ${character.state.max_hp}`
 
     buttons.forEach((button) => {
       button.image.setInteractive().on(Phaser.Input.Events.POINTER_UP, () => {
-        if (character.state.stat_point > 0) {
+        if (this.character.state.stat_point > 0) {
           // button type -> "Agility"
-          character.increase(button.type);
+          this.character.increase(button.type);
           button.text.setText(
-            `${button.type}: ${character.state[button.type]}`
+            `${button.type}: ${this.character.state[button.type]}`
           );
           this.remaininpoints.setText(
-            `Remaining Points :  ${character.state.stat_point}`
+            `Remaining Points :  ${this.character.state.stat_point}`
           );
         }
       });
@@ -144,5 +145,15 @@ Job: Samurai    MAX HP:   ${character.state.max_hp}`
       ease: Phaser.Math.Easing.Sine.InOut,
     });
     this.opened = false;
+  }
+  update() {
+    this.remaininpoints.setText(
+      `Remaining Points :  ${this.character.state.stat_point}`
+    );
+    this.jacktext.setText(
+      `Name: Jack    Level: ${this.character.state.Level}
+
+Job: Samurai  MAX HP: ${this.character.state.max_hp}`
+    );
   }
 }
