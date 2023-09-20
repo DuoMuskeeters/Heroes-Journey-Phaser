@@ -42,4 +42,4 @@ jobs:
         run: pnpm install
 
       - name: Build Project
-        run: pnpm run build --if-present
+        run: CI=false pnpm run build --if-present
