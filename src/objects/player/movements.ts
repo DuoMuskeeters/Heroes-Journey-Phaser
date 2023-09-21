@@ -1,6 +1,7 @@
 import { Direction, dirVelocity, mcAnimTypes } from "../../game/types";
 import { Player } from ".";
 import { Character, Warrior } from "../../game/Karakter";
+import MainScene from "../../scenes/main/MainScene";
 
 const runonUpdate = (player: Player<Character>) => {
   player.sprite.anims.play(mcAnimTypes.RUN, true);
@@ -44,23 +45,18 @@ export function killCharacter(player: Player<Character>) {
 
 export function playerMovementUpdate(player: Player<Character>) {
   const scene = player.scene;
-  const keySpace = scene.input.keyboard?.addKey("SPACE");
-  const keyW = scene.input.keyboard?.addKey("W");
-  const keyA = scene.input.keyboard?.addKey("A");
-  const keyD = scene.input.keyboard?.addKey("D");
-  const keyQ = scene.input.keyboard?.addKey("Q");
-  const keyB = scene.input.keyboard?.addKey("B");
+  if (!(scene instanceof MainScene)) return;
+  const Space_isD = scene.keySpace.isDown;
+  const W_isDOWN = scene.keyW.isDown;
+  const A_isDOWN = scene.keyA.isDown;
+  const D_isDOWN = scene.keyD.isDown;
+  const justQ = Phaser.Input.Keyboard.JustDown(scene.keyQ);
   const mouse = scene.input.activePointer.leftButtonDown();
-  const isNotDown =
-    !keyD?.isDown &&
-    !keyW?.isDown &&
-    !keyA?.isDown &&
-    !keyB?.isDown &&
-    !keySpace?.isDown &&
-    !mouse &&
-    !keyQ?.isDown;
 
-  const RunisDown = keyD?.isDown || keyA?.isDown;
+  const isNotDown =
+    !D_isDOWN && !W_isDOWN && !A_isDOWN && !Space_isD && !mouse && !justQ;
+
+  const RunisDown = D_isDOWN || A_isDOWN;
   const isanimplaying = player.sprite.anims.isPlaying;
   const attckQActive = player.sprite.anims.getName() === mcAnimTypes.ATTACK_2;
   const attack1Active = player.sprite.anims.getName() === mcAnimTypes.ATTACK_1;
@@ -71,11 +67,11 @@ export function playerMovementUpdate(player: Player<Character>) {
 
   if (player.character.isDead()) return;
 
-  if (keyA?.isDown && canMoVE) {
+  if (A_isDOWN && canMoVE) {
     player.lastdirection = Direction.left;
     player.sprite.setFlipX(true);
   }
-  if (keyD?.isDown && canMoVE) {
+  if (D_isDOWN && canMoVE) {
     player.lastdirection = Direction.right;
     player.sprite.setFlipX(false);
   }
@@ -93,11 +89,11 @@ export function playerMovementUpdate(player: Player<Character>) {
   }
   if ((canMoVE && isNotDown) || !isanimplaying) ıdleonUpdate(player);
   if (OnStun) return;
-  if (keyW?.isDown && !attckQActive) jumpandFallonupdate(player);
-  if (RunisDown && !keyW?.isDown && canMoVE) runonUpdate(player);
-  if ((mouse || keySpace?.isDown) && !attckQActive) attackonUpdate(player);
+  if (W_isDOWN && !attckQActive) jumpandFallonupdate(player);
+  if (RunisDown && !W_isDOWN && canMoVE) runonUpdate(player);
+  if ((mouse || Space_isD) && !attckQActive) attackonUpdate(player);
 
-  if (keyQ?.isDown) {
+  if (justQ) {
     if (player.character instanceof Warrior)
       heavyStrikeonUpdate(player as Player<Warrior>);
     else throw new Error("unknown character type for Q attack");

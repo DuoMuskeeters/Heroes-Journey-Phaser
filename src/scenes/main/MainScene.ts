@@ -1,29 +1,26 @@
 import Phaser from "phaser";
-import { Direction, mcAnimTypes } from "../../game/types/types";
-import { Giant, Warrior } from "../../game/Karakter";
 import { createBackground } from "../preLoad/assets";
-import PhaserGame, { CONFIG } from "../../PhaserGame";
 import { loadAnimations } from "./Anims";
 import { playerhealtbar, playerspbar } from "../Ui/Components";
 import { Backroundmovement } from "./GameMovement";
-import { UiScene } from "../Ui/uiScene";
-import MobController from "./mobController";
 import { createCollider, createground } from "./TileGround";
 import { createMob } from "./CreateMob";
 import { createAvatarFrame } from "../Ui/AvatarUi";
-import {
-  GoblinTookHit,
-  goblinEvents,
-  goblinEventsTypes,
-  mcEventTypes,
-  mcEvents,
-} from "../../game/types/events";
+
 import { Player } from "../../objects/player";
+import { Warrior } from "../../game/Karakter";
+import { mcAnimTypes, mcEventTypes, mcEvents } from "../../game/types";
+import { CONFIG } from "../../PhaserGame";
+import goblinController from "../../objects/Mob/goblinController";
 
 export default class MainScene extends Phaser.Scene {
   frontroad!: Phaser.Tilemaps.TilemapLayer;
   backroad!: Phaser.Tilemaps.TilemapLayer;
-
+  keySpace!: Phaser.Input.Keyboard.Key;
+  keyW!: Phaser.Input.Keyboard.Key;
+  keyA!: Phaser.Input.Keyboard.Key;
+  keyD!: Phaser.Input.Keyboard.Key;
+  keyQ!: Phaser.Input.Keyboard.Key;
   player;
   playerUI = {
     hpbar: {} as Phaser.GameObjects.Sprite,
@@ -35,16 +32,11 @@ export default class MainScene extends Phaser.Scene {
     manaicon: {} as Phaser.Tilemaps.TilemapLayer,
   };
 
-  mobController: MobController[] = [];
-  mob = {
-    sprite: {} as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody,
-    attackrect: {} as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody,
-    lastdirection: Direction.left as Direction,
-    goblin: {} as Giant,
+  mobController: goblinController[] = [];
+  mobUI = {
     healtbar: {} as Phaser.GameObjects.Graphics,
     hptitle: {} as Phaser.GameObjects.Text,
     spbar: {} as Phaser.GameObjects.Graphics,
-    bomb: {} as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody,
   };
   backgrounds!: {
     rationx: number;
@@ -66,30 +58,26 @@ export default class MainScene extends Phaser.Scene {
       console.log(
         `mc took hit damage: ${damage} after hp: ${this.player.character.state.HP}`
       );
+
+      this.playerUI.hearticon.setTint(0x020000);
+      this.playerUI.hptitle.setTint(0x020000);
+
+      this.time.addEvent({
+        delay: 400,
+        callback: () => {
+          this.playerUI.hearticon.setTint(0xffffff);
+          this.playerUI.hptitle.clearTint();
+        },
+      });
     });
+
     mcEvents.on(mcEventTypes.DIED, () => {
       console.log(`mc died`);
     });
 
-    goblinEvents.on(goblinEventsTypes.DIED, () => {
-      console.log(`goblin died`);
-    });
-    goblinEvents.on(
-      goblinEventsTypes.TOOK_HIT,
-      (id: number, details: GoblinTookHit) => {
-        const controller = this.mobController[id - 1]!;
-        console.log(
-          `goblin ${controller.name} took hit ${
-            details.stun ? "(STUN)" : "(NORMAL)"
-          } damage: ${details.damage} after hp: ${
-            controller.mob.goblin.state.HP
-          }`
-        );
-      }
-    );
-
     this.tilemap = this.make.tilemap({ key: "roadfile" });
 
+    this.Addkey();
     createBackground(this);
     createAvatarFrame(this);
     loadAnimations(this);
@@ -97,14 +85,14 @@ export default class MainScene extends Phaser.Scene {
 
     // this.frontroad.setCollisionByExclusion([-1], true);
 
-    createCollider(this, [this.player.sprite], [this.backroad, this.frontroad]);
+    createCollider(this.player.sprite);
     createMob(this);
 
     setInterval(() => {
       if (this.scene.isPaused()) return;
       this.player.character.regeneration();
       this.mobController.forEach((controller) => {
-        controller.mob.goblin.regeneration();
+        controller.goblin.mob.regeneration();
       });
     }, 1000);
 
@@ -155,9 +143,15 @@ export default class MainScene extends Phaser.Scene {
     Backroundmovement(this);
     playerhealtbar(this);
     playerspbar(this);
-
     this.mobController.forEach((mobCcontroller) => {
-      if (mobCcontroller.mob.sprite.body) mobCcontroller.update(delta);
+      if (mobCcontroller.goblin.sprite.body) mobCcontroller.update(delta);
     });
+  }
+  Addkey() {
+    this.keySpace = this.input.keyboard?.addKey("SPACE")!;
+    this.keyW = this.input.keyboard?.addKey("W")!;
+    this.keyA = this.input.keyboard?.addKey("A")!;
+    this.keyD = this.input.keyboard?.addKey("D")!;
+    this.keyQ = this.input.keyboard?.addKey("Q")!;
   }
 }

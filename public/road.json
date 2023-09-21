@@ -197,37 +197,55 @@
          "name":"goblin",
          "objects":[
                 {
-                 "height":48.1588501148403,
+                 "height":48.1589,
                  "id":1,
                  "name":"goblin ferhat 1",
+                 "properties":[
+                        {
+                         "name":"level",
+                         "type":"int",
+                         "value":1
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":25.1907831369934,
-                 "x":456.361083998373,
-                 "y":116.167903541238
+                 "width":25.1908,
+                 "x":456.361,
+                 "y":116.168
                 }, 
                 {
-                 "height":47.4179447284582,
+                 "height":47.4179,
                  "id":2,
                  "name":"goblin ferhat 2",
+                 "properties":[
+                        {
+                         "name":"level",
+                         "type":"int",
+                         "value":2
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":26.6725939097577,
-                 "x":1205.22877722671,
-                 "y":107.607931452935
+                 "width":26.6726,
+                 "x":1205.23,
+                 "y":107.608
                 }, 
                 {
-                 "height":46.677039342076,
+                 "height":46.677,
                  "id":3,
                  "name":"goblin ferhat 3",
+                 "properties":[
+                        {
+                         "name":"level",
+                         "type":"int",
+                         "value":3
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":24.4498777506114,
-                 "x":2221.36183920214,
-                 "y":144.064366013635
+                 "width":24.4499,
+                 "x":2221.36,
+                 "y":144.064
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -236,7 +254,7 @@
          "y":0
         }],
  "nextlayerid":12,
- "nextobjectid":4,
+ "nextobjectid":5,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.2",

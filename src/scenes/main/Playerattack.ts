@@ -1,8 +1,8 @@
 import { Archer, Character, Warrior } from "../../game/Karakter";
 import {
   GoblinTookHit,
-  goblinEvents,
-  goblinEventsTypes,
+  mobEvents,
+  mobEventsTypes,
   mcEventTypes,
   mcEvents,
 } from "../../game/types/events";
@@ -23,11 +23,11 @@ export function playerAttackListener(player: Player<Character>) {
       if (animation.key === mcAnimTypes.ATTACK_1) {
         mcEvents.emit(mcEventTypes.BASIC_ATTACK_USED);
         affectedMobs.forEach((mobController) => {
-          const goblin = mobController.mob.goblin;
+          const goblin = mobController.goblin.mob;
           const { damage, hit } = player.character.basicAttack(goblin);
           hit();
 
-          goblinEvents.emit(goblinEventsTypes.TOOK_HIT, mobController.id, {
+          mobEvents.emit(mobEventsTypes.TOOK_HIT, mobController.goblin.id, {
             damage,
             stun: false,
             fromJack: true,
@@ -39,7 +39,7 @@ export function playerAttackListener(player: Player<Character>) {
         if (player.character instanceof Warrior) {
           const { hit } = player.character.heavy_strike();
           if (!hit) throw new Error("player heavy strike not ready but used");
-          damages = hit(affectedMobs.map((ctrl) => ctrl.mob.goblin));
+          damages = hit(affectedMobs.map((ctrl) => ctrl.goblin.mob));
         } else if (player.character instanceof Archer) {
           const archerDamage = 0;
           damages = affectedMobs.map(() => archerDamage);
@@ -47,7 +47,7 @@ export function playerAttackListener(player: Player<Character>) {
 
         mcEvents.emit(mcEventTypes.HEAVY_ATTACK_USED);
         affectedMobs.forEach((mobController, idx) => {
-          goblinEvents.emit(goblinEventsTypes.TOOK_HIT, mobController.id, {
+          mobEvents.emit(mobEventsTypes.TOOK_HIT, mobController.goblin.id, {
             damage: damages[idx],
             stun: true,
             fromJack: true,

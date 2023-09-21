@@ -1,4 +1,6 @@
+import { Character } from "../../game/Karakter";
 import { goblinAnimTypes, mcAnimTypes } from "../../game/types/types";
+import { Player } from "../../objects/player";
 import MenuScene from "../menu/MenuScene";
 import MainScene from "./MainScene";
 export function loadAnimations(scene: Phaser.Scene) {
@@ -161,11 +163,14 @@ export function createGoblinAnims(scene: Phaser.Scene) {
     repeat: -1,
   });
 }
-export function createGoblinBomb(scene: MainScene) {
+export function createGoblinBomb(
+  scene: Phaser.Scene,
+  player: Player<Character>
+) {
   return scene.physics.add
     .sprite(
-      scene.player.sprite.body.center.x,
-      scene.player.sprite.y - 200,
+      player.sprite.body.center.x,
+      player.sprite.y - 200,
       goblinAnimTypes.BOMB
     )
     .setScale(2.5, 2.5)

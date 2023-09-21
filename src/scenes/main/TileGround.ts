@@ -1,3 +1,4 @@
+import PhaserGame from "../../PhaserGame";
 import MainScene from "./MainScene";
 
 export function createground(scene: MainScene) {
@@ -36,9 +37,11 @@ export function createground(scene: MainScene) {
   scene.frontroad?.setCollisionByProperty({ collides: true });
 }
 export function createCollider(
-  scene: MainScene,
-  object1: Phaser.Types.Physics.Arcade.ArcadeColliderType,
-  object2: Phaser.Types.Physics.Arcade.ArcadeColliderType
+  object: Phaser.Types.Physics.Arcade.ArcadeColliderType
 ) {
-  scene.physics.add.collider(object1, object2);
+  const mainscene = PhaserGame.scene.keys.mainscene as MainScene;
+  mainscene.physics.add.collider(object, [
+    mainscene.frontroad,
+    mainscene.backroad,
+  ]);
 }

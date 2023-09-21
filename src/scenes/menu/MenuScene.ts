@@ -12,10 +12,6 @@ export default class MenuScene extends Phaser.Scene {
   brand = {} as Phaser.GameObjects.Text;
   gameTitle = {} as Phaser.GameObjects.Text;
   player;
-  goblin = {
-    sprite: {} as Phaser.GameObjects.Sprite,
-    lastdirection: Direction["left"],
-  };
 
   backgrounds!: {
     rationx: number;

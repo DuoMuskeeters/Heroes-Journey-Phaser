@@ -1,43 +1,48 @@
-import { create_giant } from "../../game/Karakter";
-import { Direction, goblinAnimTypes } from "../../game/types/types";
+import { Giant, create_giant } from "../../game/Karakter";
+import { goblinAnimTypes } from "../../game/types/types";
+import { MOB } from "../../objects/Mob/goblinobj";
 import MainScene from "./MainScene";
 import { createCollider } from "./TileGround";
-import MobController from "./mobController";
+import goblinController from "../../objects/Mob/goblinController";
 
 export function createMob(scene: MainScene) {
   scene.tilemap.getObjectLayer("goblin")?.objects.forEach((objData) => {
     const { x = 0, y = 0, name, id } = objData;
+    const { value } = objData.properties[0];
 
-    const { healtbar, hptitle, spbar, bomb } = scene.mob;
-    const sprite = scene.physics.add
-      .sprite(x * 2.55, y * 2.55, goblinAnimTypes.IDLE)
-      .setBodySize(30, 46, true)
-      .setCollideWorldBounds(true)
-      .setBounce(0)
-      .setDepth(100)
-      .setScale(2.55);
-
-    createCollider(scene, sprite, [scene.backroad, scene.frontroad]);
-
-    const mob = create_giant(scene.player.character.state.Level);
-
-    const mobattackrect = scene.physics.add.sprite(
-      sprite.x,
-      sprite.y,
-      "mobattackrect"
+    const newGoblin = new MOB(new Giant(create_giant(value).state));
+    newGoblin.create(
+      scene,
+      x,
+      y,
+      id,
+      name,
+      goblinAnimTypes.IDLE,
+      220,
+      110,
+      2.55,
+      30,
+      46
     );
-    (mobattackrect.body as Phaser.Physics.Arcade.Body).allowGravity = false;
-    mobattackrect.setDisplaySize(220, 110).setDepth(0).setVisible(false);
+    const healtbar = scene.add.graphics();
+    const spbar = scene.add.graphics();
+    const hptitle = scene.add
+      .text(0, 0, `${newGoblin.mob.state.HP}`)
+      .setStyle({
+        fontSize: "22px Arial",
+        color: "red",
+        align: "center",
+      })
+      .setFontFamily('Georgia, "Goudy Bookletter 1911", Times, serif')
+      .setFontStyle("bold");
+
+    createCollider(newGoblin.sprite);
+
     scene.mobController.push(
-      new MobController(id, name, scene, {
-        sprite: sprite,
-        lastdirection: Direction.left as Direction,
-        goblin: mob,
-        healtbar,
-        hptitle,
-        spbar,
-        attackrect: mobattackrect,
-        bomb,
+      new goblinController(newGoblin, scene.player, {
+        healtbar: healtbar,
+        spbar: spbar,
+        hptitle: hptitle,
       })
     );
   });

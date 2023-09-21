@@ -1,5 +1,5 @@
 import { Player } from ".";
-import { Character, Warrior } from "../../game/Karakter";
+import { Character } from "../../game/Karakter";
 
 export type PlayerUI = {
   hpbar: Phaser.GameObjects.Sprite;
@@ -24,8 +24,8 @@ export class PlayerManager extends Array<{
   }
 }
 
-const players = new PlayerManager();
-const player = new Player(new Warrior());
-players.push({ player, UI: {} as PlayerUI });
+// const players = new PlayerManager();
+// const player = new Player(new Warrior());
+// players.push({ player, UI: {} as PlayerUI });
 
-players.mainPlayer();
+// players.mainPlayer();

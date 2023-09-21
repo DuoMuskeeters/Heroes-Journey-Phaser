@@ -1,5 +1,5 @@
 import MainScene from "../main/MainScene";
-import MobController from "../main/mobController";
+import goblinController from "../../objects/Mob/goblinController";
 
 export function playerhealtbar(scene: MainScene) {
   const state = scene.player.character.state;
@@ -68,51 +68,66 @@ export function playerspbar(scene: MainScene) {
   scene.playerUI.sptitle.setText(`${Math.round(Math.max(0, state.SP))}`);
 }
 
-export function goblinHealtbar(controller: MobController) {
+export function goblinHealtbar(controller: goblinController) {
   const width = 100;
   const percent =
-    Math.max(0, controller.mob.goblin.state.HP) /
-    controller.mob.goblin.state.max_hp;
-  controller.mob.hptitle
+    Math.max(0, controller.goblin.mob.state.HP) /
+    controller.goblin.mob.state.max_hp;
+  controller.mobUI.hptitle
     .setText(
-      `${controller.name}: (${
-        controller.mob.goblin.state.Level
+      `${controller.goblin.name}: (${
+        controller.goblin.mob.state.Level
       })\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t${Math.round(
-        Math.max(0, controller.mob.goblin.state.HP)
+        Math.max(0, controller.goblin.mob.state.HP)
       )}`
     )
-    .setPosition(controller.mob.sprite.x - 70, controller.mob.sprite.y - 72)
+    .setPosition(
+      controller.goblin.sprite.x - 70,
+      controller.goblin.sprite.y - 72
+    )
     .setDepth(5);
 
-  controller.mob.healtbar.clear();
-  controller.mob.healtbar.fillStyle(0x808080);
-  controller.mob.healtbar
+  controller.mobUI.healtbar.clear();
+  controller.mobUI.healtbar.fillStyle(0x808080);
+  controller.mobUI.healtbar
     .fillRoundedRect(0, 0, width, 10, 5)
-    .setPosition(controller.mob.sprite.x - 50, controller.mob.sprite.y - 40);
+    .setPosition(
+      controller.goblin.sprite.x - 50,
+      controller.goblin.sprite.y - 40
+    );
   if (percent >= 0) {
-    controller.mob.healtbar.fillStyle(0x00ff00);
-    controller.mob.healtbar
+    controller.mobUI.healtbar.fillStyle(0x00ff00);
+    controller.mobUI.healtbar
       .fillRoundedRect(0, 0, width * percent, 10, 5)
-      .setPosition(controller.mob.sprite.x - 50, controller.mob.sprite.y - 40)
+      .setPosition(
+        controller.goblin.sprite.x - 50,
+        controller.goblin.sprite.y - 40
+      )
       .setDepth(5);
   }
 }
-export function goblinspbar(controller: MobController) {
+export function goblinspbar(controller: goblinController) {
   const width = 90;
   const percent =
-    Math.max(0, controller.mob.goblin.state.SP) /
-    controller.mob.goblin.state.max_sp;
+    Math.max(0, controller.goblin.mob.state.SP) /
+    controller.goblin.mob.state.max_sp;
 
-  controller.mob.spbar.clear();
-  controller.mob.spbar.fillStyle(0x808080);
-  controller.mob.spbar
+  controller.mobUI.spbar.clear();
+  controller.mobUI.spbar.fillStyle(0x808080);
+  controller.mobUI.spbar
     .fillRoundedRect(0, 0, width, 3, 0)
-    .setPosition(controller.mob.sprite.x - 45, controller.mob.sprite.y - 30);
+    .setPosition(
+      controller.goblin.sprite.x - 45,
+      controller.goblin.sprite.y - 30
+    );
   if (percent > 0) {
-    controller.mob.spbar.fillStyle(0xffff00);
-    controller.mob.spbar
+    controller.mobUI.spbar.fillStyle(0xffff00);
+    controller.mobUI.spbar
       .fillRoundedRect(0, 0, width * percent, 3, 0)
-      .setPosition(controller.mob.sprite.x - 45, controller.mob.sprite.y - 30)
+      .setPosition(
+        controller.goblin.sprite.x - 45,
+        controller.goblin.sprite.y - 30
+      )
       .setDepth(5);
   }
 }
