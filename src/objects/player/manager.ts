@@ -1,5 +1,6 @@
 import { Player } from ".";
 import { Character } from "../../game/Karakter";
+import { UI_createPlayers } from "../../scenes/Ui/Components";
 
 export type PlayerUI = {
   hpbar: Phaser.GameObjects.Sprite;
@@ -16,16 +17,17 @@ export class PlayerManager extends Array<{
   UI: PlayerUI;
 }> {
   mainPlayer() {
-    if (this.length === 0) throw new Error("No player is created yet");
+    if (this.length === 0)
+      throw new Error("PlayerManager: No player is added yet");
     return this[0];
   }
+  create(scene: Phaser.Scene, x: number, y: number) {
+    this.forEach(({ player }, i) => player.create(scene, x, y, i));
+  }
   update(time: number, delta: number) {
-    this.forEach(({ player, UI }) => player.update(time, delta));
+    this.forEach(({ player }) => player.update(time, delta));
+  }
+  destroy() {
+    this.forEach(({ player }) => player.destroy());
   }
 }
-
-// const players = new PlayerManager();
-// const player = new Player(new Warrior());
-// players.push({ player, UI: {} as PlayerUI });
-
-// players.mainPlayer();

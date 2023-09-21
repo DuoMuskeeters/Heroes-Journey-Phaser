@@ -1,4 +1,4 @@
-import { Mob } from "../../game/Karakter";
+import { MobCanlı } from "../../game/Karakter";
 import {
   Direction,
   GoblinAnimTypes,
@@ -7,7 +7,7 @@ import {
   mobEventsTypes,
 } from "../../game/types";
 
-export class MOB<T extends Mob> {
+export class Mob<T extends MobCanlı> {
   private _scene?: Phaser.Scene;
   private _sprite?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   private _attackrect?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;

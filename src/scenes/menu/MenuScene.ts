@@ -2,16 +2,17 @@ import Phaser from "phaser";
 import { loadAnimations, shop } from "../main/Anims";
 import { createBackground, forestRoad } from "../preLoad/assets";
 import { Backroundmovement } from "../main/GameMovement";
-import { Direction, mcAnimTypes } from "../../game/types/types";
+import { mcAnimTypes } from "../../game/types/types";
 import { CONFIG } from "../../PhaserGame";
 import { Player } from "../../objects/player";
 import { Warrior } from "../../game/Karakter";
+import { PlayerManager } from "../../objects/player/manager";
 
 export default class MenuScene extends Phaser.Scene {
   logo = {} as Phaser.GameObjects.Image;
   brand = {} as Phaser.GameObjects.Text;
   gameTitle = {} as Phaser.GameObjects.Text;
-  player;
+  playerManager;
 
   backgrounds!: {
     rationx: number;
@@ -25,11 +26,17 @@ export default class MenuScene extends Phaser.Scene {
 
   constructor() {
     super("menu");
-    this.player = new Player(new Warrior());
+    const player = new Player(new Warrior());
+    this.playerManager = new PlayerManager();
+    this.playerManager.push({ player, UI: {} as any });
+  }
+
+  get player() {
+    return this.playerManager.mainPlayer().player;
   }
 
   create() {
-    this.player.create(this, 300, 0);
+    this.playerManager.create(this, 300, 0);
     this.cameras.main.fadeIn(1000, 0, 0, 0);
     this.cameras.main.postFX.addBloom(
       undefined,
@@ -124,7 +131,7 @@ export default class MenuScene extends Phaser.Scene {
       Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
       () => {
         console.log("Starting game");
-        this.player.destroy();
+        this.playerManager.destroy();
         this.scene.start("mainscene");
       }
     );

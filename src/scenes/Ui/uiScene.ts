@@ -60,18 +60,19 @@ export class UiScene extends Phaser.Scene {
     });
     this.input.keyboard?.on("keydown-Z", () => {
       if (mainscene.player.character.isDead()) return;
-      for (const c of mainscene.mobController) if (c.canSeeMc()) return;
+      for (const c of mainscene.mobController) if (c.canSeePlayer()) return;
       if (mainscene.scene.isActive()) mainscene.scene.pause();
       else mainscene.scene.resume();
     });
 
-    mcEvents.on(mcEventTypes.BASIC_ATTACK_USED, () => {
-      console.log("basic attack used");
+    mcEvents.on(mcEventTypes.BASIC_ATTACK_USED, (i: number) => {
+      console.log(`player ${i} basic attack used`);
     });
 
-    mcEvents.on(mcEventTypes.HEAVY_ATTACK_USED, () => {
-      console.log("heavy attack used");
-      if (this.statemenu.isOpen) this.statemenu.hide();
+    mcEvents.on(mcEventTypes.HEAVY_ATTACK_USED, (i: number) => {
+      const isMc = i === 0;
+      console.log(`player ${i} heavy attack used`);
+      if (this.statemenu.isOpen && isMc) this.statemenu.hide();
     });
   }
   update(time: number, delta: number): void {

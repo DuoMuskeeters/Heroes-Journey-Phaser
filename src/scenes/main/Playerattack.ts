@@ -18,10 +18,12 @@ export function playerAttackListener(player: Player<Character>) {
   player.sprite.on(
     Phaser.Animations.Events.ANIMATION_STOP,
     (animation: Phaser.Animations.Animation) => {
-      const affectedMobs = controllers.filter((mob) => mob.isMcHitting());
+      const affectedMobs = controllers.filter(
+        (mob) => mob.isMcHitting()[player.index]
+      );
 
       if (animation.key === mcAnimTypes.ATTACK_1) {
-        mcEvents.emit(mcEventTypes.BASIC_ATTACK_USED);
+        mcEvents.emit(mcEventTypes.BASIC_ATTACK_USED, player.index);
         affectedMobs.forEach((mobController) => {
           const goblin = mobController.goblin.mob;
           const { damage, hit } = player.character.basicAttack(goblin);
@@ -45,7 +47,7 @@ export function playerAttackListener(player: Player<Character>) {
           damages = affectedMobs.map(() => archerDamage);
         } else throw new Error("unknown character type for ATTACK_2");
 
-        mcEvents.emit(mcEventTypes.HEAVY_ATTACK_USED);
+        mcEvents.emit(mcEventTypes.HEAVY_ATTACK_USED, player.index);
         affectedMobs.forEach((mobController, idx) => {
           mobEvents.emit(mobEventsTypes.TOOK_HIT, mobController.goblin.id, {
             damage: damages[idx],

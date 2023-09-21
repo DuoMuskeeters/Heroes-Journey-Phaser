@@ -2,9 +2,11 @@ import { Character } from "../../game/Karakter";
 import { mcEventTypes, mcEvents } from "../../game/types/events";
 import { Direction, mcAnimTypes } from "../../game/types/types";
 import { playerAttackListener } from "../../scenes/main/Playerattack";
+import { getOrThrow } from "../utils";
 import { killCharacter, playerMovementUpdate } from "./movements";
 
 export class Player<T extends Character> {
+  private _index?: number;
   private _scene?: Phaser.Scene;
   private _sprite?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   private _attackrect?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
@@ -12,7 +14,8 @@ export class Player<T extends Character> {
 
   constructor(public character: T) {}
 
-  create(scene: Phaser.Scene, x: number, y: number) {
+  create(scene: Phaser.Scene, x: number, y: number, i: number) {
+    this._index = i;
     this._scene = scene;
     this._sprite = scene.physics.add
       .sprite(x, y, mcAnimTypes.IDLE)
@@ -31,6 +34,7 @@ export class Player<T extends Character> {
 
     playerAttackListener(this);
     this.listeners();
+    console.log(`player ${this.index} created in scene`, scene.scene.key);
   }
 
   update(time: number, delta: number) {
@@ -39,10 +43,12 @@ export class Player<T extends Character> {
 
   destroy() {}
   listeners() {
-    mcEvents.on(mcEventTypes.TOOK_HIT, () => {
-      if (this.character.isDead()) mcEvents.emit(mcEventTypes.DIED);
+    mcEvents.on(mcEventTypes.TOOK_HIT, (i: number) => {
+      if (i !== this.index) return;
+      if (this.character.isDead()) mcEvents.emit(mcEventTypes.DIED, i);
     });
-    mcEvents.on(mcEventTypes.DIED, () => {
+    mcEvents.on(mcEventTypes.DIED, (i: number) => {
+      if (i !== this.index) return;
       killCharacter(this);
     });
 
@@ -52,21 +58,19 @@ export class Player<T extends Character> {
     };
   }
 
+  get index() {
+    return getOrThrow(this._index, "Index");
+  }
+
   get scene() {
-    if (!this._scene)
-      throw new Error("Scene is not defined, call create first");
-    return this._scene;
+    return getOrThrow(this._scene, "Scene");
   }
 
   get sprite() {
-    if (!this._sprite)
-      throw new Error("Sprite is not defined, call create first");
-    return this._sprite;
+    return getOrThrow(this._sprite, "Sprite");
   }
 
   get attackrect() {
-    if (!this._attackrect)
-      throw new Error("Attackrect is not defined, call create first");
-    return this._attackrect;
+    return getOrThrow(this._attackrect, "Attackrect");
   }
 }

@@ -1,6 +1,6 @@
 import { Giant, create_giant } from "../../game/Karakter";
 import { goblinAnimTypes } from "../../game/types/types";
-import { MOB } from "../../objects/Mob/goblinobj";
+import { Mob } from "../../objects/Mob";
 import MainScene from "./MainScene";
 import { createCollider } from "./TileGround";
 import goblinController from "../../objects/Mob/goblinController";
@@ -10,7 +10,7 @@ export function createMob(scene: MainScene) {
     const { x = 0, y = 0, name, id } = objData;
     const { value } = objData.properties[0];
 
-    const newGoblin = new MOB(new Giant(create_giant(value).state));
+    const newGoblin = new Mob(new Giant(create_giant(value).state));
     newGoblin.create(
       scene,
       x,
@@ -39,10 +39,10 @@ export function createMob(scene: MainScene) {
     createCollider(newGoblin.sprite);
 
     scene.mobController.push(
-      new goblinController(newGoblin, scene.player, {
-        healtbar: healtbar,
-        spbar: spbar,
-        hptitle: hptitle,
+      new goblinController(newGoblin, scene.playerManager, {
+        healtbar,
+        spbar,
+        hptitle,
       })
     );
   });

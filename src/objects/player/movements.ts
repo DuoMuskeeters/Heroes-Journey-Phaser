@@ -46,15 +46,32 @@ export function killCharacter(player: Player<Character>) {
 export function playerMovementUpdate(player: Player<Character>) {
   const scene = player.scene;
   if (!(scene instanceof MainScene)) return;
-  const Space_isD = scene.keySpace.isDown;
-  const W_isDOWN = scene.keyW.isDown;
-  const A_isDOWN = scene.keyA.isDown;
-  const D_isDOWN = scene.keyD.isDown;
-  const justQ = Phaser.Input.Keyboard.JustDown(scene.keyQ);
-  const mouse = scene.input.activePointer.leftButtonDown();
+  const keys = {
+    0: {
+      W: scene.keyW.isDown,
+      A: scene.keyA.isDown,
+      D: scene.keyD.isDown,
+      Space: scene.keySpace.isDown,
+      Q: scene.keyQ,
+    },
+    1: {
+      W: scene.keyUp.isDown,
+      A: scene.keyLeft.isDown,
+      D: scene.keyRight.isDown,
+      Space: scene.keyEnter.isDown,
+      Q: scene.keyP,
+    },
+  } as const;
+  const pressed = keys[player.index as 0 | 1];
 
-  const isNotDown =
-    !D_isDOWN && !W_isDOWN && !A_isDOWN && !Space_isD && !mouse && !justQ;
+  const Space_isD = pressed.Space;
+  const W_isDOWN = pressed.W;
+  const A_isDOWN = pressed.A;
+  const D_isDOWN = pressed.D;
+  const justQ = Phaser.Input.Keyboard.JustDown(pressed.Q);
+  // const mouse = scene.input.activePointer.leftButtonDown();
+
+  const isNotDown = !D_isDOWN && !W_isDOWN && !A_isDOWN && !Space_isD && !justQ;
 
   const RunisDown = D_isDOWN || A_isDOWN;
   const isanimplaying = player.sprite.anims.isPlaying;
@@ -91,7 +108,8 @@ export function playerMovementUpdate(player: Player<Character>) {
   if (OnStun) return;
   if (W_isDOWN && !attckQActive) jumpandFallonupdate(player);
   if (RunisDown && !W_isDOWN && canMoVE) runonUpdate(player);
-  if ((mouse || Space_isD) && !attckQActive) attackonUpdate(player);
+  // if ((mouse || Space_isD) && !attckQActive) attackonUpdate(player);
+  if (Space_isD && !attckQActive) attackonUpdate(player);
 
   if (justQ) {
     if (player.character instanceof Warrior)

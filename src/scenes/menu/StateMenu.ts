@@ -111,22 +111,24 @@ Job: Samurai    MAX HP:   ${this.character.state.max_hp}`
       .setFontStyle("bold")
       .setOrigin(1, 0);
 
-    this.container.add(panel);
-    this.container.add(playeravatar);
-    this.container.add(this.jacktext);
-    this.container.add(Constitution);
-    this.container.add(Constitutiontext);
-    this.container.add(Intelligence);
-    this.container.add(Intelligencetext);
-    this.container.add(Agility);
-    this.container.add(Agilitytext);
-    this.container.add(Strenght);
-    this.container.add(Strenghttext);
-    this.container.add(line);
-    this.container.add(title);
-    this.container.add(titletext);
-    this.container.add(this.remaininpoints);
-    this.container.add(preesc);
+    this.container.add([
+      panel,
+      playeravatar,
+      this.jacktext,
+      Constitution,
+      Constitutiontext,
+      Intelligence,
+      Intelligencetext,
+      Agility,
+      Agilitytext,
+      Strenght,
+      Strenghttext,
+      line,
+      title,
+      titletext,
+      this.remaininpoints,
+      preesc,
+    ]);
   }
   show() {
     this.scene.tweens.add({

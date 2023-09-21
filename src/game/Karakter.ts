@@ -248,7 +248,7 @@ export class Archer extends Character {
   arrowCount = 0;
 }
 
-export class Mob extends Canlı {
+export class MobCanlı extends Canlı {
   calculate_power() {
     super.calculate_power();
     this.state.max_sp = 150 - this.state.Intelligence * 0.5;
@@ -297,14 +297,15 @@ export class Mob extends Canlı {
   }
 }
 
-export class Giant extends Mob {
+export class Giant extends MobCanlı {
   giant_skill() {
     const damage = this.state.ATK * 3;
     return {
       damage,
-      hit: (rakip?: Canlı) => {
-        if (rakip) rakip.state.HP = Math.max(rakip.state.HP - damage, 0);
-      },
+      hit: (rakipler: Canlı[]) =>
+        rakipler.map(
+          (rakip) => (rakip.state.HP = Math.max(rakip.state.HP - damage, 0))
+        ),
     };
   }
 }
@@ -365,7 +366,7 @@ export function create_giant(Level: number): Giant {
   return giant;
 }
 
-export class Bird extends Mob {
+export class Bird extends MobCanlı {
   calculate_bird_skill() {
     return this.state.Agility * 1.5 + this.state.ATK * 1.5;
   }

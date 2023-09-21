@@ -1,133 +1,165 @@
 import MainScene from "../main/MainScene";
 import goblinController from "../../objects/Mob/goblinController";
 
-export function playerhealtbar(scene: MainScene) {
-  const state = scene.player.character.state;
-  const getMaxHp = () => state.max_hp - state.HP;
-  const maxframepercent = Math.floor(state.max_hp / 5);
+export function UI_createPlayers(scene: MainScene) {
+  scene.playerManager.forEach(({ player, UI }, i) => {
+    i++;
+    UI.hpbar = scene.add
+      .sprite(238, 76 * i, "hp-bar")
+      .setScale(5, 2.7)
+      .setDepth(5)
+      .setScrollFactor(0);
+    UI.manabar = scene.add
+      .sprite(214, 112 * i, "mana-bar")
+      .setScale(3.8, 2.7)
+      .setDepth(5)
+      .setScrollFactor(0);
 
-  const rawFramePercent = getMaxHp() / maxframepercent;
+    UI.hptitle = scene.add
+      .text(370, 65 * i, `${player.character.state.HP}`)
+      .setStyle({
+        fontSize: "22px Arial",
+        color: "red",
+        align: "center",
+      })
+      .setFontFamily("URW Chancery L, cursive")
+      .setFontStyle("bold")
+      .setScrollFactor(0);
 
-  let framepercent =
-    Math.floor(rawFramePercent) === 0
-      ? rawFramePercent
-      : Math.floor(rawFramePercent);
-
-  if (6 <= framepercent) framepercent = 5;
-
-  if (framepercent >= 1 || framepercent === 0) {
-    scene.anims.remove("hp-bar");
-    scene.anims.create({
-      key: "hp-bar",
-      frames: scene.anims.generateFrameNumbers("hp-bar", {
-        start: framepercent,
-        end: framepercent,
-      }),
-      frameRate: 10,
-      repeat: 0,
-    });
-    scene.playerUI.hpbar.anims.play("hp-bar", true);
-  }
-  scene.playerUI.hptitle.setText(
-    `${Math.round(Math.max(0, scene.player.character.state.HP))}`
-  );
+    UI.sptitle = scene.add
+      .text(340, 103 * i, `${player.character.state.SP}`)
+      .setStyle({
+        fontSize: "22px Arial",
+        align: "center",
+      })
+      .setFontFamily("URW Chancery L, cursive")
+      .setFontStyle("bold")
+      .setScrollFactor(0);
+  });
 }
-export function playerspbar(scene: MainScene) {
-  const state = scene.player.character.state;
-  const getMaxSp = () =>
-    scene.player.character.state.max_sp - scene.player.character.state.SP;
-  const maxframepercent = Math.floor(state.max_sp / 5);
 
-  const rawFramePercent = getMaxSp() / maxframepercent;
+export function UI_updatePlayersHP(scene: MainScene) {
+  // TODO: use playerManager instead of scene (remove scene.anims.remove code below first)
+  scene.playerManager.forEach(({ player, UI }, i) => {
+    const state = player.character.state;
+    const getMaxHp = () => state.max_hp - state.HP;
+    const maxframepercent = Math.floor(state.max_hp / 5);
 
-  let framepercent =
-    Math.floor(rawFramePercent) === 0
-      ? rawFramePercent
-      : Math.floor(rawFramePercent);
-  if (6 <= framepercent) framepercent = 5;
-  if (framepercent >= 1 || framepercent === 0) {
-    scene.anims.remove("mana-bar");
-    scene.anims.create({
-      key: "mana-bar",
-      frames: scene.anims.generateFrameNumbers("mana-bar", {
-        start: framepercent,
-        end: framepercent,
-      }),
-      frameRate: 10,
-      repeat: 0,
-    });
-    scene.playerUI.manabar.anims.play("mana-bar", true);
-  }
-  if (state.SP >= 50) {
-    scene.playerUI.sptitle.setTint(0x71e5f2);
-    scene.playerUI.manaicon.setTint(0xffffff);
-  } else {
-    scene.playerUI.sptitle.setTint(0x4396d6);
-    scene.playerUI.manaicon.setTint(0x4396d6);
-  }
-  scene.playerUI.sptitle.setText(`${Math.round(Math.max(0, state.SP))}`);
+    const rawFramePercent = getMaxHp() / maxframepercent;
+
+    let framepercent =
+      Math.floor(rawFramePercent) === 0
+        ? rawFramePercent
+        : Math.floor(rawFramePercent);
+
+    if (6 <= framepercent) framepercent = 5;
+
+    if (framepercent >= 1 || framepercent === 0) {
+      // TODO: remove this if statement
+      // anims.remove should not be called since we are updating every player
+      scene.anims.remove("hp-bar");
+      scene.anims.create({
+        key: "hp-bar",
+        frames: scene.anims.generateFrameNumbers("hp-bar", {
+          start: framepercent,
+          end: framepercent,
+        }),
+        frameRate: 10,
+        repeat: 0,
+      });
+      UI.hpbar.anims.play("hp-bar", true);
+    }
+    UI.hptitle.setText(`${Math.round(Math.max(0, state.HP))}`);
+  });
+}
+export function UI_updatePlayersSP(scene: MainScene) {
+  // TODO: use playerManager instead of scene (remove scene.anims.remove code below first)
+  scene.playerManager.forEach(({ player, UI }) => {
+    const state = player.character.state;
+    const getMaxSp = () => state.max_sp - state.SP;
+    const maxframepercent = Math.floor(state.max_sp / 5);
+
+    const rawFramePercent = getMaxSp() / maxframepercent;
+
+    let framepercent =
+      Math.floor(rawFramePercent) === 0
+        ? rawFramePercent
+        : Math.floor(rawFramePercent);
+    if (6 <= framepercent) framepercent = 5;
+    if (framepercent >= 1 || framepercent === 0) {
+      // TODO: remove this if statement
+      // anims.remove should not be called since we are updating every player
+      scene.anims.remove("mana-bar");
+      scene.anims.create({
+        key: "mana-bar",
+        frames: scene.anims.generateFrameNumbers("mana-bar", {
+          start: framepercent,
+          end: framepercent,
+        }),
+        frameRate: 10,
+        repeat: 0,
+      });
+      UI.manabar.anims.play("mana-bar", true);
+    }
+    if (state.SP >= 50) {
+      UI.sptitle.setTint(0x71e5f2);
+      UI.manaicon.setTint(0xffffff);
+    } else {
+      UI.sptitle.setTint(0x4396d6);
+      UI.manaicon.setTint(0x4396d6);
+    }
+    UI.sptitle.setText(`${Math.round(Math.max(0, state.SP))}`);
+  });
 }
 
 export function goblinHealtbar(controller: goblinController) {
+  const goblin = controller.goblin;
+  const state = goblin.mob.state;
+  const UI = controller.mobUI;
   const width = 100;
-  const percent =
-    Math.max(0, controller.goblin.mob.state.HP) /
-    controller.goblin.mob.state.max_hp;
-  controller.mobUI.hptitle
+  const percent = Math.max(0, state.HP) / state.max_hp;
+
+  UI.hptitle
     .setText(
-      `${controller.goblin.name}: (${
-        controller.goblin.mob.state.Level
+      `${goblin.name}: (${
+        state.Level
       })\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t${Math.round(
-        Math.max(0, controller.goblin.mob.state.HP)
+        Math.max(0, state.HP)
       )}`
     )
-    .setPosition(
-      controller.goblin.sprite.x - 70,
-      controller.goblin.sprite.y - 72
-    )
+    .setPosition(goblin.sprite.x - 70, goblin.sprite.y - 72)
     .setDepth(5);
 
-  controller.mobUI.healtbar.clear();
-  controller.mobUI.healtbar.fillStyle(0x808080);
-  controller.mobUI.healtbar
+  UI.healtbar.clear();
+  UI.healtbar.fillStyle(0x808080);
+  UI.healtbar
     .fillRoundedRect(0, 0, width, 10, 5)
-    .setPosition(
-      controller.goblin.sprite.x - 50,
-      controller.goblin.sprite.y - 40
-    );
+    .setPosition(goblin.sprite.x - 50, goblin.sprite.y - 40);
   if (percent >= 0) {
-    controller.mobUI.healtbar.fillStyle(0x00ff00);
-    controller.mobUI.healtbar
+    UI.healtbar.fillStyle(0x00ff00);
+    UI.healtbar
       .fillRoundedRect(0, 0, width * percent, 10, 5)
-      .setPosition(
-        controller.goblin.sprite.x - 50,
-        controller.goblin.sprite.y - 40
-      )
+      .setPosition(goblin.sprite.x - 50, goblin.sprite.y - 40)
       .setDepth(5);
   }
 }
 export function goblinspbar(controller: goblinController) {
+  const goblin = controller.goblin;
+  const state = goblin.mob.state;
+  const UI = controller.mobUI;
   const width = 90;
-  const percent =
-    Math.max(0, controller.goblin.mob.state.SP) /
-    controller.goblin.mob.state.max_sp;
+  const percent = Math.max(0, state.SP) / state.max_sp;
 
-  controller.mobUI.spbar.clear();
-  controller.mobUI.spbar.fillStyle(0x808080);
-  controller.mobUI.spbar
+  UI.spbar.clear();
+  UI.spbar.fillStyle(0x808080);
+  UI.spbar
     .fillRoundedRect(0, 0, width, 3, 0)
-    .setPosition(
-      controller.goblin.sprite.x - 45,
-      controller.goblin.sprite.y - 30
-    );
+    .setPosition(goblin.sprite.x - 45, goblin.sprite.y - 30);
   if (percent > 0) {
-    controller.mobUI.spbar.fillStyle(0xffff00);
-    controller.mobUI.spbar
+    UI.spbar.fillStyle(0xffff00);
+    UI.spbar
       .fillRoundedRect(0, 0, width * percent, 3, 0)
-      .setPosition(
-        controller.goblin.sprite.x - 45,
-        controller.goblin.sprite.y - 30
-      )
+      .setPosition(goblin.sprite.x - 45, goblin.sprite.y - 30)
       .setDepth(5);
   }
 }
