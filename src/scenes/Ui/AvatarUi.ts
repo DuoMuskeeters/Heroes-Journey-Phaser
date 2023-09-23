@@ -1,36 +1,35 @@
 import MainScene from "../main/MainScene";
 
 export function createAvatarFrame(scene: MainScene) {
-  scene.playerManager.forEach(({ UI }, i) => {
-    UI.frame = scene.make.tilemap({ key: "player-avatar" });
-    const avatarframe = UI.frame.addTilesetImage("frame-set", "frame-set");
-    const avatarpng = UI.frame.addTilesetImage("jack-avatar", "jack-avatar");
-
-    if (avatarframe && avatarpng) {
-      UI.frame
-        .createLayer("frame", avatarframe)
+  scene.playerManager.forEach(({ player, UI }, i) => {
+    const frame = scene.make.tilemap({ key: "main-player-ui" });
+    const avatarframe = frame.addTilesetImage("frame-set", "frame-set");
+    const avatarpng = frame.addTilesetImage("jack-avatar", "jack-avatar");
+    const otherPlayersFrame = scene.make.tilemap({ key: "other-players-ui" });
+    if (i === 0) {
+      UI.frameLayer = frame
+        .createLayer("frame", [avatarframe!])
         ?.setScrollFactor(0)
-        .setDepth(200);
+        .setDepth(200)!;
 
-      UI.frame.createLayer("parchment", avatarframe)?.setScrollFactor(0);
+      frame.createLayer("parchement", avatarframe!)?.setScrollFactor(0);
 
-      UI.hearticon = UI.frame
-        .createLayer("hearticon", avatarframe, 10, 60 * i)
-        ?.setScrollFactor(0)!;
-
-      UI.manaicon = UI.frame
-        .createLayer("manaicon", avatarframe, 10, 130 * i)
-        ?.setScrollFactor(0)!;
-
-      UI.frame
-        .createLayer("bar", avatarframe, -37, -10 * i)
-        ?.setScale(1.1, 1.1)
-        ?.setScrollFactor(0)
-        .setDepth(100);
-      UI.frame
-        .createLayer("avatarpng", avatarpng, -155, -155 * i)
-        ?.setScale(3, 3)
-        .setScrollFactor(0);
+      frame
+        .createLayer("jack-avatar", avatarpng!)
+        ?.setScale(4)
+        .setScrollFactor(0)
+        .setPosition(-230, -300);
+    } else {
+      UI.playerindexText = scene.add.text(0, 0, `PLAYER: ${player.index + 1}`);
+      UI.playerleveltext = scene.add.text(
+        0,
+        0,
+        `${player.character.state.Level}`
+      );
+      UI.frameLayer = otherPlayersFrame
+        .createLayer("frame", [avatarframe!])
+        ?.setDepth(200)
+        .setScale(0.8)!;
     }
   });
 }

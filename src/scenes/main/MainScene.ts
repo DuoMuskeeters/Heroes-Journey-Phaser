@@ -3,11 +3,12 @@ import { createBackground } from "../preLoad/assets";
 import { loadAnimations } from "./Anims";
 import {
   UI_createPlayers,
+  UI_updateOtherPlayers,
   UI_updatePlayersHP,
   UI_updatePlayersSP,
 } from "../Ui/Components";
 import { Backroundmovement } from "./GameMovement";
-import { createCollider, createground } from "./TileGround";
+import { createground } from "./TileGround";
 import { createMob as createMobs } from "./CreateMob";
 import { createAvatarFrame } from "../Ui/AvatarUi";
 
@@ -71,7 +72,6 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
-    UI_createPlayers(this);
     this.playerManager.create(this, 300, 0);
 
     mcEvents.on(mcEventTypes.TOOK_HIT, (i: number, damage: number) => {
@@ -80,16 +80,6 @@ export default class MainScene extends Phaser.Scene {
       );
 
       const { UI } = this.playerManager[i];
-      UI.hearticon.setTint(0x020000);
-      UI.hptitle.setTint(0x020000);
-
-      this.time.addEvent({
-        delay: 400,
-        callback: () => {
-          UI.hearticon.setTint(0xffffff);
-          UI.hptitle.clearTint();
-        },
-      });
     });
 
     mcEvents.on(mcEventTypes.DIED, (i: number) => {
@@ -103,6 +93,7 @@ export default class MainScene extends Phaser.Scene {
     createAvatarFrame(this);
     loadAnimations(this);
     createground(this);
+    UI_createPlayers(this);
 
     // this.frontroad.setCollisionByExclusion([-1], true);
 
@@ -131,6 +122,7 @@ export default class MainScene extends Phaser.Scene {
 
   update(time: number, delta: number): void {
     this.playerManager.update(time, delta);
+    UI_updateOtherPlayers(this);
     Backroundmovement(this);
     UI_updatePlayersHP(this);
     UI_updatePlayersSP(this);

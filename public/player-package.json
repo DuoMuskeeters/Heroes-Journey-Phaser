@@ -22,16 +22,25 @@
       {
         "url": "hp-bar.png",
         "type": "spritesheet",
-        "key": "hp-bar",
+        "key": "hpBar",
         "frameConfig": {
           "frameWidth": 48,
           "frameHeight": 12
         }
       },
       {
-        "url": "mana-bar.png",
+        "url": "mainplayer-sp-bar.png",
         "type": "spritesheet",
-        "key": "mana-bar",
+        "key": "spBar-0",
+        "frameConfig": {
+          "frameWidth": 48,
+          "frameHeight": 12
+        }
+      },
+      {
+        "url": "other-players-sp-bar.png",
+        "type": "spritesheet",
+        "key": "spBar-1",
         "frameConfig": {
           "frameWidth": 48,
           "frameHeight": 12

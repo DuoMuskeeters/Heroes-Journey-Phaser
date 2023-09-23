@@ -63,7 +63,7 @@ export default class goblinController {
     });
   };
 
-  private isMcTouchingBomb() {
+  private playersTouchingBomb() {
     const atFrame = Number(this.bomb?.anims.getFrameName()) === 6;
 
     return this.playerManager.map(
@@ -198,11 +198,11 @@ export default class goblinController {
     });
 
     this.bomb?.on(Phaser.Animations.Events.ANIMATION_UPDATE, () => {
-      const isTouchingBomb = this.isMcTouchingBomb();
+      const areTouchingBomb = this.playersTouchingBomb();
       const characters: Character[] = [];
 
-      isTouchingBomb.forEach((isTouching, i) => {
-        if (!isTouching) return;
+      areTouchingBomb.forEach((isTouching, i) => {
+        if (!isTouching) return; 
         const { player } = this.playerManager[i];
         player.sprite.setVelocityX(0);
         player.sprite.anims.play(mcAnimTypes.TAKE_HIT, true);

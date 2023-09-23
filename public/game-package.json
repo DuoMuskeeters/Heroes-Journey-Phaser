@@ -2,10 +2,16 @@
   "section1": {
     "files": [
       {
-        "url": "player-avatar.json",
+        "url": "main-player-ui.json",
         "type": "tilemapTiledJSON",
-        "key": "player-avatar"
+        "key": "main-player-ui"
       },
+      {
+        "url": "other-players-ui.json",
+        "type": "tilemapTiledJSON",
+        "key": "other-players-ui"
+      },
+
       {
         "url": "frame-set.png",
         "type": "image",

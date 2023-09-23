@@ -3,13 +3,13 @@ import { Character } from "../../game/Karakter";
 import { UI_createPlayers } from "../../scenes/Ui/Components";
 
 export type PlayerUI = {
-  hpbar: Phaser.GameObjects.Sprite;
-  manabar: Phaser.GameObjects.Sprite;
-  hptitle: Phaser.GameObjects.Text;
-  sptitle: Phaser.GameObjects.Text;
-  frame: Phaser.Tilemaps.Tilemap;
-  hearticon: Phaser.Tilemaps.TilemapLayer;
-  manaicon: Phaser.Tilemaps.TilemapLayer;
+  hpBar: Phaser.GameObjects.Sprite;
+  spBar: Phaser.GameObjects.Sprite;
+  hptext: Phaser.GameObjects.Text;
+  sptext: Phaser.GameObjects.Text;
+  frameLayer: Phaser.Tilemaps.TilemapLayer;
+  playerindexText: Phaser.GameObjects.Text;
+  playerleveltext: Phaser.GameObjects.Text;
 };
 
 export class PlayerManager extends Array<{
