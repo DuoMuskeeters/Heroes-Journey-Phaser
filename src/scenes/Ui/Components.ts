@@ -1,8 +1,7 @@
 import MainScene from "../main/MainScene";
 import goblinController from "../../objects/Mob/goblinController";
 import { createBar } from "../main/Anims";
-import { Player } from "../../objects/player";
-import { Character, State } from "../../game/Karakter";
+import { State } from "../../game/Karakter";
 import { PlayerUI } from "../../objects/player/manager";
 
 export function UI_createPlayers(scene: MainScene) {
@@ -59,7 +58,7 @@ export function UI_createPlayers(scene: MainScene) {
       .setDepth(500);
   });
 }
-const updateHP = (state: State, UI: PlayerUI,idx:number) => {
+const updateHP = (state: State, UI: PlayerUI, idx: number) => {
   const getMaxHp = () => state.max_hp - state.HP;
   const maxframepercent = Math.floor(state.max_hp / 5);
 
@@ -77,7 +76,7 @@ const updateHP = (state: State, UI: PlayerUI,idx:number) => {
     UI.hpBar.anims.play(`hpBar-${idx}`, true);
   }
 };
-const updateSP = (state: State, UI: PlayerUI,idx:number) => {
+const updateSP = (state: State, UI: PlayerUI, idx: number) => {
   const getMaxSp = () => state.max_sp - state.SP;
   const maxframepercent = Math.floor(state.max_sp / 5);
 
@@ -106,7 +105,7 @@ export function UI_updateOtherPlayers(scene: MainScene) {
 export function UI_updatePlayersHP(scene: MainScene) {
   scene.playerManager.forEach(({ player, UI }, i) => {
     const state = player.character.state;
-    updateHP(state, UI,i);
+    updateHP(state, UI, i);
     if (i === 0) {
       UI.hptext.setText(`${Math.round(Math.max(0, state.HP))}`);
     } else {
@@ -129,7 +128,7 @@ export function UI_updatePlayersHP(scene: MainScene) {
 export function UI_updatePlayersSP(scene: MainScene) {
   scene.playerManager.forEach(({ player, UI }, i) => {
     const state = player.character.state;
-    updateSP(state, UI,i);
+    updateSP(state, UI, i);
     if (i === 0) {
       UI.sptext.setText(`${Math.round(Math.max(0, state.SP))}`);
     } else {
@@ -140,7 +139,7 @@ export function UI_updatePlayersSP(scene: MainScene) {
       UI.sptext
         .setPosition(
           UI.spBar.getRightCenter().x! - 10,
-          UI.spBar.getRightCenter().y! -6
+          UI.spBar.getRightCenter().y! - 6
         )
         .setScrollFactor(1)
         .setText(`${Math.floor(Math.max(0, state.SP))}`)
