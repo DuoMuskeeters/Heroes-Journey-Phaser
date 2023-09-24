@@ -50,6 +50,7 @@ export class Player<T extends Character> {
     mcEvents.on(mcEventTypes.DIED, (i: number) => {
       if (i !== this.index) return;
       killCharacter(this);
+      this.destroy();
     });
 
     this.destroy = () => {

@@ -78,12 +78,6 @@ export default class MainScene extends Phaser.Scene {
       console.log(
         `player ${i} took hit damage: ${damage} after hp: ${this.playerManager[i].player.character.state.HP}`
       );
-
-      const { UI } = this.playerManager[i];
-    });
-
-    mcEvents.on(mcEventTypes.DIED, (i: number) => {
-      console.log(`player ${i} died`);
     });
 
     this.tilemap = this.make.tilemap({ key: "roadfile" });

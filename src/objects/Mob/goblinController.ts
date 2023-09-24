@@ -44,7 +44,7 @@ export default class goblinController {
     return isOverlapping;
   };
 
-  public isMcHitting = () => {
+  public arePlayersHitting = () => {
     return this.playerManager.map(({ player }) => {
       const atFrame = Number(player.sprite.anims.getFrameName()) >= 4;
       const animsName = player.sprite.anims.getName() as
@@ -202,7 +202,7 @@ export default class goblinController {
       const characters: Character[] = [];
 
       areTouchingBomb.forEach((isTouching, i) => {
-        if (!isTouching) return; 
+        if (!isTouching) return;
         const { player } = this.playerManager[i];
         player.sprite.setVelocityX(0);
         player.sprite.anims.play(mcAnimTypes.TAKE_HIT, true);

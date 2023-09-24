@@ -19,7 +19,7 @@ export function playerAttackListener(player: Player<Character>) {
     Phaser.Animations.Events.ANIMATION_STOP,
     (animation: Phaser.Animations.Animation) => {
       const affectedMobs = controllers.filter(
-        (mob) => mob.isMcHitting()[player.index]
+        (mob) => mob.arePlayersHitting()[player.index]
       );
 
       if (animation.key === mcAnimTypes.ATTACK_1) {

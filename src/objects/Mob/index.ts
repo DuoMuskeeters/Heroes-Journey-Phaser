@@ -49,10 +49,11 @@ export class Mob<T extends MobCanlı> {
   }
 
   update(time: number, delta: number) {}
-
+  destroy() {}
   listeners() {
     mobEvents.on(mobEventsTypes.DIED, (id: number) => {
       if (this.id === id) console.log(`${this.name} died`);
+      this.destroy();
     });
     mobEvents.on(
       mobEventsTypes.TOOK_HIT,
@@ -65,6 +66,10 @@ export class Mob<T extends MobCanlı> {
           );
       }
     );
+    this.destroy = () => {
+      mobEvents.off(mobEventsTypes.DIED);
+      mobEvents.off(mobEventsTypes.TOOK_HIT);
+    };
   }
 
   get scene() {

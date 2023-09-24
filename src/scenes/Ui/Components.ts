@@ -2,7 +2,7 @@ import MainScene from "../main/MainScene";
 import goblinController from "../../objects/Mob/goblinController";
 import { createBar } from "../main/Anims";
 import { State } from "../../game/Karakter";
-import { PlayerUI } from "../../objects/player/manager";
+import { PlayerManager, PlayerUI } from "../../objects/player/manager";
 
 export function UI_createPlayers(scene: MainScene) {
   scene.playerManager.forEach(({ player, UI }, i) => {
@@ -58,7 +58,8 @@ export function UI_createPlayers(scene: MainScene) {
       .setDepth(500);
   });
 }
-const updateHP = (state: State, UI: PlayerUI, idx: number) => {
+const UI_updateHP = ({ player, UI }: PlayerManager[number]) => {
+  const state = player.character.state;
   const getMaxHp = () => state.max_hp - state.HP;
   const maxframepercent = Math.floor(state.max_hp / 5);
 
@@ -72,11 +73,13 @@ const updateHP = (state: State, UI: PlayerUI, idx: number) => {
   if (6 <= framepercent) framepercent = 5;
 
   if (framepercent >= 1 || framepercent === 0) {
-    createBar(framepercent, `hpBar-${idx}`);
-    UI.hpBar.anims.play(`hpBar-${idx}`, true);
+    createBar(framepercent, `hpBar-${player.index}`);
+    UI.hpBar.anims.play(`hpBar-${player.index}`, true);
   }
 };
-const updateSP = (state: State, UI: PlayerUI, idx: number) => {
+const UI_updateSP = ({ player, UI }: PlayerManager[number]) => {
+  const state = player.character.state;
+
   const getMaxSp = () => state.max_sp - state.SP;
   const maxframepercent = Math.floor(state.max_sp / 5);
 
@@ -88,8 +91,8 @@ const updateSP = (state: State, UI: PlayerUI, idx: number) => {
       : Math.floor(rawFramePercent);
   if (6 <= framepercent) framepercent = 5;
   if (framepercent >= 1 || framepercent === 0) {
-    createBar(framepercent, `spBar-${idx}`);
-    UI.spBar.anims.play(`spBar-${idx}`, true);
+    createBar(framepercent, `spBar-${player.index}`);
+    UI.spBar.anims.play(`spBar-${player.index}`, true);
   }
 };
 export function UI_updateOtherPlayers(scene: MainScene) {
@@ -105,21 +108,19 @@ export function UI_updateOtherPlayers(scene: MainScene) {
 export function UI_updatePlayersHP(scene: MainScene) {
   scene.playerManager.forEach(({ player, UI }, i) => {
     const state = player.character.state;
-    updateHP(state, UI, i);
-    if (i === 0) {
-      UI.hptext.setText(`${Math.round(Math.max(0, state.HP))}`);
-    } else {
+    const UIhpText = UI.hptext;
+    UIhpText.setText(`${Math.floor(state.HP)}`);
+    UI_updateHP(scene.playerManager[i]);
+    if (i !== 0) {
       UI.hpBar
         .setScale(3, 3)
         .setPosition(UI.frameLayer.x + 110, UI.frameLayer.y + 50);
 
-      UI.hptext
-        .setPosition(
-          UI.hpBar.getRightCenter().x! - 25,
-          UI.hpBar.getRightCenter().y! - 10
-        )
+      UIhpText.setPosition(
+        UI.hpBar.getRightCenter().x! - 25,
+        UI.hpBar.getRightCenter().y! - 10
+      )
         .setScrollFactor(1)
-        .setText(`${Math.floor(state.HP)}`)
         .setScale(0.7);
     }
   });
@@ -128,21 +129,20 @@ export function UI_updatePlayersHP(scene: MainScene) {
 export function UI_updatePlayersSP(scene: MainScene) {
   scene.playerManager.forEach(({ player, UI }, i) => {
     const state = player.character.state;
-    updateSP(state, UI, i);
-    if (i === 0) {
-      UI.sptext.setText(`${Math.round(Math.max(0, state.SP))}`);
-    } else {
+    UI_updateSP(scene.playerManager[i]);
+    const UIspText = UI.sptext;
+    UIspText.setText(`${Math.floor(state.SP)}`);
+
+    if (i !== 0) {
       UI.spBar
         .setScale(2.1, 3)
         .setPosition(UI.frameLayer.x + 95, UI.frameLayer.y + 75);
 
-      UI.sptext
-        .setPosition(
-          UI.spBar.getRightCenter().x! - 10,
-          UI.spBar.getRightCenter().y! - 6
-        )
+      UIspText.setPosition(
+        UI.spBar.getRightCenter().x! - 10,
+        UI.spBar.getRightCenter().y! - 6
+      )
         .setScrollFactor(1)
-        .setText(`${Math.floor(Math.max(0, state.SP))}`)
         .setScale(0.7);
     }
   });
