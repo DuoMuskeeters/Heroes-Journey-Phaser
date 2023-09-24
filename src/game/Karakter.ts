@@ -93,9 +93,7 @@ export class Canlı {
     this.state = state ?? create_state("Canlı");
     this.calculate_power();
   }
-  isDead() {
-    return Math.floor(this.state.HP) === 0;
-  }
+  isDead = () => Math.floor(this.state.HP) === 0;
 
   /**
    * known as ATTACK_1 for all Canlı

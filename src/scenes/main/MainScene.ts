@@ -14,7 +14,14 @@ import { createAvatarFrame } from "../Ui/AvatarUi";
 
 import { Player } from "../../objects/player";
 import { Warrior } from "../../game/Karakter";
-import { mcAnimTypes, mcEventTypes, mcEvents } from "../../game/types";
+import {
+  GoblinTookHit,
+  mcAnimTypes,
+  mcEventTypes,
+  mcEvents,
+  mobEvents,
+  mobEventsTypes,
+} from "../../game/types";
 import { CONFIG } from "../../PhaserGame";
 import goblinController from "../../objects/Mob/goblinController";
 import { PlayerManager } from "../../objects/player/manager";
@@ -79,6 +86,23 @@ export default class MainScene extends Phaser.Scene {
       console.log(`player ${i} died`);
     });
 
+    mobEvents.on(
+      mobEventsTypes.TOOK_HIT,
+      (id: number, details: GoblinTookHit) => {
+        const ctrl = this.mobController[id - 1];
+        if (ctrl.goblin.id === id)
+          console.log(
+            `goblin ${ctrl.goblin.name} took hit ${
+              details.stun ? "(STUN)" : "(NORMAL)"
+            } damage: ${details.damage} after hp: ${ctrl.goblin.mob.state.HP}`
+          );
+      }
+    );
+
+    mobEvents.on(mobEventsTypes.DIED, (id: number) => {
+      const ctrl = this.mobController[id - 1];
+      if (ctrl.goblin.id === id) console.log(`${ctrl.goblin.name} died`);
+    });
     this.tilemap = this.make.tilemap({ key: "roadfile" });
 
     this.Addkey();

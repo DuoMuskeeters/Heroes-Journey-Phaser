@@ -28,6 +28,7 @@ export class PlayerManager extends Array<{
     return this[0];
   }
   create(scene: Phaser.Scene, x: number, y: number) {
+    this.listeners();
     this.forEach(({ player }, i) => player.create(scene, x, y, i));
   }
   update(time: number, delta: number) {

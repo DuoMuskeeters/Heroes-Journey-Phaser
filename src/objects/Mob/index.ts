@@ -45,33 +45,9 @@ export class Mob<T extends MobCanlı> {
 
     (this._attackrect.body as Phaser.Physics.Arcade.Body).allowGravity = false;
     this.attackrect.setDisplaySize(Rectx, Recty).setDepth(0).setVisible(false);
-
-    this.listeners();
   }
 
   update(time: number, delta: number) {}
-  destroy() {}
-  listeners() {
-    mobEvents.on(mobEventsTypes.DIED, (id: number) => {
-      if (this.id === id) console.log(`${this.name} died`);
-      this.destroy();
-    });
-    mobEvents.on(
-      mobEventsTypes.TOOK_HIT,
-      (id: number, details: GoblinTookHit) => {
-        if (this.id === id)
-          console.log(
-            `goblin ${this.name} took hit ${
-              details.stun ? "(STUN)" : "(NORMAL)"
-            } damage: ${details.damage} after hp: ${this.mob.state.HP}`
-          );
-      }
-    );
-    this.destroy = () => {
-      mobEvents.off(mobEventsTypes.DIED);
-      mobEvents.off(mobEventsTypes.TOOK_HIT);
-    };
-  }
 
   get scene() {
     if (!this._scene)

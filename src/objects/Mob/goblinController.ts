@@ -216,7 +216,7 @@ export default class goblinController {
     });
   }
   hasUltimate = this.goblin.mob.hasUlti;
-  isDead = () => this.goblin.mob.isDead;
+  isDead = this.goblin.mob.isDead;
   OnStun() {
     const animsKey = this.goblin.sprite?.anims.getName();
     return this.goblin.sprite.body && animsKey === goblinAnimTypes.TAKE_HIT;
