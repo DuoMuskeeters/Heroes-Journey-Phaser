@@ -11,12 +11,34 @@ export function loadAnimations(scene: Phaser.Scene) {
 
 export function createPlayeranims(scene: Phaser.Scene) {
   const isMainScene = scene instanceof MainScene;
+  const iroh = {
+    ıdle: 7,
+    run: 7,
+    jump: 2,
+    fall: 2,
+    death: 10,
+    takehit: 3,
+    attack1: 4,
+    attack2: 3,
+    attack3: 3,
+    Q: 15,
+  } as const;
+  const jack = {
+    ıdle: 7,
+    run: 7,
+    jump: 2,
+    fall: 3,
+    attack1: 6,
+    attack2: 6,
+    death: 6,
+    takehit: 4,
+  } as const;
 
   scene.anims.create({
     key: mcAnimTypes.IDLE,
     frames: scene.anims.generateFrameNumbers(mcAnimTypes.IDLE, {
       start: 0,
-      end: 8,
+      end: iroh.ıdle,
     }),
     frameRate: 10,
     repeat: -1,
@@ -26,7 +48,7 @@ export function createPlayeranims(scene: Phaser.Scene) {
     key: mcAnimTypes.RUN,
     frames: scene.anims.generateFrameNumbers(mcAnimTypes.RUN, {
       start: 0,
-      end: 8,
+      end: iroh.run,
     }),
     frameRate: 10,
     repeat: -1,
@@ -36,40 +58,56 @@ export function createPlayeranims(scene: Phaser.Scene) {
     key: mcAnimTypes.JUMP,
     frames: scene.anims.generateFrameNumbers(mcAnimTypes.JUMP, {
       start: 0,
-      end: 2,
+      end: iroh.jump,
     }),
     frameRate: 10,
     repeat: -1,
   });
-
+  scene.anims.create({
+    key: mcAnimTypes.Q,
+    frames: scene.anims.generateFrameNumbers(mcAnimTypes.Q, {
+      start: 0,
+      end: iroh.Q,
+    }),
+    frameRate: 10,
+    repeat: -1,
+  });
   if (isMainScene)
     scene.anims.create({
-      key: mcAnimTypes.ATTACK_1,
-      frames: scene.anims.generateFrameNumbers(mcAnimTypes.ATTACK_1, {
+      key: mcAnimTypes.ATTACK_1_COMBO1,
+      frames: scene.anims.generateFrameNumbers(mcAnimTypes.ATTACK_1_COMBO1, {
         start: 0,
-        end: 6,
+        end: iroh.attack1,
       }),
-      frameRate: scene.player.character.state.ATKRATE * 10,
+      frameRate: 10,
       repeat: -1,
     });
 
   scene.anims.create({
+    key: mcAnimTypes.ATTACK_1_COMBO2,
+    frames: scene.anims.generateFrameNumbers(mcAnimTypes.ATTACK_1_COMBO2, {
+      start: 0,
+      end: iroh.attack2,
+    }),
+    frameRate: 10,
+    repeat: 0,
+  });
+  scene.anims.create({
+    key: mcAnimTypes.ATTACK_1_COMBO3,
+    frames: scene.anims.generateFrameNumbers(mcAnimTypes.ATTACK_1_COMBO3, {
+      start: 0,
+      end: iroh.attack3,
+    }),
+    frameRate: 10,
+    repeat: 0,
+  });
+  scene.anims.create({
     key: mcAnimTypes.FALL,
     frames: scene.anims.generateFrameNumbers(mcAnimTypes.FALL, {
       start: 0,
-      end: 2,
+      end: iroh.fall,
     }),
     frameRate: 10,
-    repeat: -1,
-  });
-
-  scene.anims.create({
-    key: mcAnimTypes.ATTACK_2,
-    frames: scene.anims.generateFrameNumbers(mcAnimTypes.ATTACK_2, {
-      start: 0,
-      end: 6,
-    }),
-    frameRate: 17,
     repeat: -1,
   });
 
@@ -77,7 +115,7 @@ export function createPlayeranims(scene: Phaser.Scene) {
     key: mcAnimTypes.DEATH,
     frames: scene.anims.generateFrameNumbers(mcAnimTypes.DEATH, {
       start: 0,
-      end: 6,
+      end: iroh.death,
     }),
     frameRate: 10,
     repeat: 1,
@@ -87,7 +125,7 @@ export function createPlayeranims(scene: Phaser.Scene) {
     key: mcAnimTypes.TAKE_HIT,
     frames: scene.anims.generateFrameNumbers(mcAnimTypes.TAKE_HIT, {
       start: 0,
-      end: 4,
+      end: iroh.takehit,
     }),
     frameRate: 4,
     repeat: -1,
@@ -197,13 +235,13 @@ export function shop(scene: MainScene | MenuScene) {
 
 export function createBar(framepercent: number, key: string) {
   const mainscene = PhaserGame.scene.keys.mainscene as MainScene;
-  let idxandBar = key.split("-")[1];// find id 
+  let idxandBar = key.split("-")[1]; // find id
   if (key.split("-")[0] === "spBar" && idxandBar !== "0") {
-    idxandBar = "spBar-1";// others-sp
+    idxandBar = "spBar-1"; // others-sp
   } else if (key.split("-")[0] === "spBar") {
-    idxandBar = "spBar-0";//mainplayer-sp
+    idxandBar = "spBar-0"; //mainplayer-sp
   } else {
-    idxandBar = key.split("-")[0];//hp same for everyone
+    idxandBar = key.split("-")[0]; //hp same for everyone
   }
   mainscene.anims.remove(key);
   mainscene.anims.create({

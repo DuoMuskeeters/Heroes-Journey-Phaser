@@ -48,11 +48,16 @@ export default class goblinController {
     return this.playerManager.map(({ player }) => {
       const atFrame = Number(player.sprite.anims.getFrameName()) >= 4;
       const animsName = player.sprite.anims.getName() as
-        | typeof mcAnimTypes.ATTACK_1
-        | typeof mcAnimTypes.ATTACK_2;
-      const isAttacking = [mcAnimTypes.ATTACK_1, mcAnimTypes.ATTACK_2].includes(
-        animsName
-      );
+        | typeof mcAnimTypes.ATTACK_1_COMBO1
+        | typeof mcAnimTypes.ATTACK_1_COMBO2
+        | typeof mcAnimTypes.ATTACK_1_COMBO3
+        | typeof mcAnimTypes.Q;
+      const isAttacking = [
+        mcAnimTypes.ATTACK_1_COMBO1,
+        mcAnimTypes.ATTACK_1_COMBO2,
+        mcAnimTypes.ATTACK_1_COMBO3,
+        mcAnimTypes.Q,
+      ].includes(animsName);
 
       const isOverlapping = this.goblin.scene.physics.overlap(
         this.goblin.sprite,
@@ -202,7 +207,7 @@ export default class goblinController {
       const characters: Character[] = [];
 
       areTouchingBomb.forEach((isTouching, i) => {
-        if (!isTouching) return; 
+        if (!isTouching) return;
         const { player } = this.playerManager[i];
         player.sprite.setVelocityX(0);
         player.sprite.anims.play(mcAnimTypes.TAKE_HIT, true);

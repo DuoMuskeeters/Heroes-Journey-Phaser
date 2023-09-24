@@ -2,7 +2,7 @@
   "section1": {
     "files": [
       {
-        "url": "goblin-idle.png",
+        "url": "mob/goblin/goblin-idle.png",
         "type": "spritesheet",
         "key": "goblin-idle",
         "frameConfig": {
@@ -11,7 +11,7 @@
         }
       },
       {
-        "url": "goblin-ulti.png",
+        "url": "mob/goblin/goblin-ulti.png",
         "type": "spritesheet",
         "key": "goblin-ulti",
         "frameConfig": {
@@ -20,7 +20,7 @@
         }
       },
       {
-        "url": "goblin-run.png",
+        "url": "mob/goblin/goblin-run.png",
         "type": "spritesheet",
         "key": "goblin-run",
         "frameConfig": {
@@ -29,7 +29,7 @@
         }
       },
       {
-        "url": "goblin-attack.png",
+        "url": "mob/goblin/goblin-attack.png",
         "type": "spritesheet",
         "key": "goblin-attack",
         "frameConfig": {
@@ -38,7 +38,7 @@
         }
       },
       {
-        "url": "goblin-takehit.png",
+        "url": "mob/goblin/goblin-takehit.png",
         "type": "spritesheet",
         "key": "goblin-takehit",
         "frameConfig": {
@@ -47,7 +47,7 @@
         }
       },
       {
-        "url": "goblin-death.png",
+        "url": "mob/goblin/goblin-death.png",
         "type": "spritesheet",
         "key": "goblin-death",
         "frameConfig": {
@@ -56,7 +56,7 @@
         }
       },
       {
-        "url": "goblin-bomb.png",
+        "url": "mob/goblin/goblin-bomb.png",
         "type": "spritesheet",
         "key": "goblin-bomb",
         "frameConfig": {

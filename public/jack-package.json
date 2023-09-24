@@ -2,7 +2,7 @@
   "section1": {
     "files": [
       {
-        "url": "Idle.png",
+        "url": "jack/Idle.png",
         "type": "spritesheet",
         "key": "idle",
         "frameConfig": {
@@ -11,7 +11,7 @@
         }
       },
       {
-        "url": "Run.png",
+        "url": "jack/Run.png",
         "type": "spritesheet",
         "key": "run",
         "frameConfig": {
@@ -19,35 +19,9 @@
           "frameHeight": 200
         }
       },
+
       {
-        "url": "hp-bar.png",
-        "type": "spritesheet",
-        "key": "hpBar",
-        "frameConfig": {
-          "frameWidth": 48,
-          "frameHeight": 12
-        }
-      },
-      {
-        "url": "mainplayer-sp-bar.png",
-        "type": "spritesheet",
-        "key": "spBar-0",
-        "frameConfig": {
-          "frameWidth": 48,
-          "frameHeight": 12
-        }
-      },
-      {
-        "url": "other-players-sp-bar.png",
-        "type": "spritesheet",
-        "key": "spBar-1",
-        "frameConfig": {
-          "frameWidth": 48,
-          "frameHeight": 12
-        }
-      },
-      {
-        "url": "take-hit.png",
+        "url": "jack/take-hit.png",
         "type": "spritesheet",
         "key": "take-hit",
         "frameConfig": {
@@ -56,7 +30,7 @@
         }
       },
       {
-        "url": "Jump.png",
+        "url": "jack/Jump.png",
         "type": "spritesheet",
         "key": "jump",
         "frameConfig": {
@@ -65,7 +39,7 @@
         }
       },
       {
-        "url": "Attack1.png",
+        "url": "jack/Attack1.png",
         "type": "spritesheet",
         "key": "attack1",
         "frameConfig": {
@@ -74,7 +48,7 @@
         }
       },
       {
-        "url": "Fall.png",
+        "url": "jack/Fall.png",
         "type": "spritesheet",
         "key": "fall",
         "frameConfig": {
@@ -83,7 +57,7 @@
         }
       },
       {
-        "url": "Attack2.png",
+        "url": "jack/Attack2.png",
         "type": "spritesheet",
         "key": "attack2",
         "frameConfig": {
@@ -92,7 +66,7 @@
         }
       },
       {
-        "url": "Death.png",
+        "url": "jack/Death.png",
         "type": "spritesheet",
         "key": "death",
         "frameConfig": {
