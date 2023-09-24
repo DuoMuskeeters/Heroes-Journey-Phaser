@@ -1,6 +1,7 @@
 import { MobCanlı } from "../../game/Karakter";
 import {
-  Direction,
+  type Direction,
+  direction,
   GoblinAnimTypes,
   GoblinTookHit,
   mobEvents,
@@ -11,7 +12,7 @@ export class Mob<T extends MobCanlı> {
   private _scene?: Phaser.Scene;
   private _sprite?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   private _attackrect?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
-  public lastdirection: Direction = Direction.right;
+  public lastdirection: Direction = direction.right;
   public id?: number;
   public name?: string;
 

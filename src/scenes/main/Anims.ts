@@ -1,4 +1,3 @@
-import PhaserGame from "../../PhaserGame";
 import { Character } from "../../game/Karakter";
 import { goblinAnimTypes, mcAnimTypes } from "../../game/types/types";
 import { Player } from "../../objects/player";
@@ -195,20 +194,24 @@ export function shop(scene: MainScene | MenuScene) {
   });
 }
 
-export function createBar(framepercent: number, key: string) {
-  const mainscene = PhaserGame.scene.keys.mainscene as MainScene;
-  let idxandBar = key.split("-")[1];// find id 
-  if (key.split("-")[0] === "spBar" && idxandBar !== "0") {
-    idxandBar = "spBar-1";// others-sp
-  } else if (key.split("-")[0] === "spBar") {
-    idxandBar = "spBar-0";//mainplayer-sp
-  } else {
-    idxandBar = key.split("-")[0];//hp same for everyone
-  }
-  mainscene.anims.remove(key);
-  mainscene.anims.create({
-    key: key,
-    frames: mainscene.anims.generateFrameNumbers(idxandBar, {
+export function createBar(
+  scene: MainScene,
+  framepercent: number,
+  bar: "hpBar" | "spBar",
+  index: number
+) {
+  const keyAnim = `${bar}-${index}` as const;
+
+  if (bar === "spBar" && index > 1) index = 1;
+
+  const keySpriteSheet =
+    bar === "spBar" ? (`${bar}-${index as 0 | 1}` as const) : bar;
+  // bu kadar saçmalığa gerek yoktu ama mouse üstüne götürünce çok havalı
+
+  scene.anims.remove(keyAnim);
+  scene.anims.create({
+    key: keyAnim,
+    frames: scene.anims.generateFrameNumbers(keySpriteSheet, {
       start: framepercent,
       end: framepercent,
     }),

@@ -1,8 +1,7 @@
 import MainScene from "../main/MainScene";
 import goblinController from "../../objects/Mob/goblinController";
 import { createBar } from "../main/Anims";
-import { State } from "../../game/Karakter";
-import { PlayerManager, PlayerUI } from "../../objects/player/manager";
+import { PlayerManager } from "../../objects/player/manager";
 
 export function UI_createPlayers(scene: MainScene) {
   scene.playerManager.forEach(({ player, UI }, i) => {
@@ -58,7 +57,10 @@ export function UI_createPlayers(scene: MainScene) {
       .setDepth(500);
   });
 }
-const UI_updateHP = ({ player, UI }: PlayerManager[number]) => {
+const UI_updateHP = (
+  scene: MainScene,
+  { player, UI }: PlayerManager[number]
+) => {
   const state = player.character.state;
   const getMaxHp = () => state.max_hp - state.HP;
   const maxframepercent = Math.floor(state.max_hp / 5);
@@ -73,11 +75,14 @@ const UI_updateHP = ({ player, UI }: PlayerManager[number]) => {
   if (6 <= framepercent) framepercent = 5;
 
   if (framepercent >= 1 || framepercent === 0) {
-    createBar(framepercent, `hpBar-${player.index}`);
+    createBar(scene, framepercent, "hpBar", player.index);
     UI.hpBar.anims.play(`hpBar-${player.index}`, true);
   }
 };
-const UI_updateSP = ({ player, UI }: PlayerManager[number]) => {
+const UI_updateSP = (
+  scene: MainScene,
+  { player, UI }: PlayerManager[number]
+) => {
   const state = player.character.state;
 
   const getMaxSp = () => state.max_sp - state.SP;
@@ -91,7 +96,8 @@ const UI_updateSP = ({ player, UI }: PlayerManager[number]) => {
       : Math.floor(rawFramePercent);
   if (6 <= framepercent) framepercent = 5;
   if (framepercent >= 1 || framepercent === 0) {
-    createBar(framepercent, `spBar-${player.index}`);
+    createBar(scene, framepercent, "hpBar", player.index);
+    createBar(scene, framepercent, "spBar", player.index);
     UI.spBar.anims.play(`spBar-${player.index}`, true);
   }
 };
@@ -110,7 +116,7 @@ export function UI_updatePlayersHP(scene: MainScene) {
     const state = player.character.state;
     const UIhpText = UI.hptext;
     UIhpText.setText(`${Math.floor(state.HP)}`);
-    UI_updateHP(scene.playerManager[i]);
+    UI_updateHP(scene, scene.playerManager[i]);
     if (i !== 0) {
       UI.hpBar
         .setScale(3, 3)
@@ -129,7 +135,7 @@ export function UI_updatePlayersHP(scene: MainScene) {
 export function UI_updatePlayersSP(scene: MainScene) {
   scene.playerManager.forEach(({ player, UI }, i) => {
     const state = player.character.state;
-    UI_updateSP(scene.playerManager[i]);
+    UI_updateSP(scene, scene.playerManager[i]);
     const UIspText = UI.sptext;
     UIspText.setText(`${Math.floor(state.SP)}`);
 
@@ -153,15 +159,13 @@ export function goblinHealtbar(controller: goblinController) {
   const state = goblin.mob.state;
   const UI = controller.mobUI;
   const width = 100;
-  const percent = Math.max(0, state.HP) / state.max_hp;
+  const percent = state.HP / state.max_hp;
 
   UI.hptitle
     .setText(
       `${goblin.name}: (${
         state.Level
-      })\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t${Math.round(
-        Math.max(0, state.HP)
-      )}`
+      })\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t${Math.round(state.HP)}`
     )
     .setPosition(goblin.sprite.x - 70, goblin.sprite.y - 72)
     .setDepth(5);
@@ -184,7 +188,7 @@ export function goblinspbar(controller: goblinController) {
   const state = goblin.mob.state;
   const UI = controller.mobUI;
   const width = 90;
-  const percent = Math.max(0, state.SP) / state.max_sp;
+  const percent = state.SP / state.max_sp;
 
   UI.spbar.clear();
   UI.spbar.fillStyle(0x808080);

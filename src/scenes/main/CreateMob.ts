@@ -36,7 +36,7 @@ export function createMob(scene: MainScene) {
       .setFontFamily('Georgia, "Goudy Bookletter 1911", Times, serif')
       .setFontStyle("bold");
 
-    createCollider(newGoblin.sprite);
+    createCollider(scene, newGoblin.sprite);
 
     scene.mobController.push(
       new goblinController(newGoblin, scene.playerManager, {

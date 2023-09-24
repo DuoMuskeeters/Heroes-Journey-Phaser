@@ -19,23 +19,24 @@ import { CONFIG } from "../../PhaserGame";
 import goblinController from "../../objects/Mob/goblinController";
 import { PlayerManager } from "../../objects/player/manager";
 
+type Key = Phaser.Input.Keyboard.Key;
+
 export default class MainScene extends Phaser.Scene {
   frontroad!: Phaser.Tilemaps.TilemapLayer;
   backroad!: Phaser.Tilemaps.TilemapLayer;
-  // bu keyler için şamar gelebilir hocam. (key.W) | (key: { w: Keyboard.Key })
 
-  keySpace!: Phaser.Input.Keyboard.Key;
-  keyW!: Phaser.Input.Keyboard.Key;
-  keyA!: Phaser.Input.Keyboard.Key;
-  keyD!: Phaser.Input.Keyboard.Key;
-  keyQ!: Phaser.Input.Keyboard.Key;
+  keySpace!: Key;
+  keyW!: Key;
+  keyA!: Key;
+  keyD!: Key;
+  keyQ!: Key;
 
-  keyEnter!: Phaser.Input.Keyboard.Key;
-  keyUp!: Phaser.Input.Keyboard.Key;
-  keyLeft!: Phaser.Input.Keyboard.Key;
-  keyRight!: Phaser.Input.Keyboard.Key;
-  keyi!: Phaser.Input.Keyboard.Key;
-  keyP!: Phaser.Input.Keyboard.Key;
+  keyEnter!: Key;
+  keyUp!: Key;
+  keyLeft!: Key;
+  keyRight!: Key;
+  keyi!: Key;
+  keyP!: Key;
   playerManager;
   friendlyFire = false;
 
@@ -48,12 +49,6 @@ export default class MainScene extends Phaser.Scene {
   }
 
   mobController: goblinController[] = [];
-  // TODO: mobUI, mobController içinde olmalı (1 tane mob yok...)
-  mobUI = {
-    healtbar: {} as Phaser.GameObjects.Graphics,
-    hptitle: {} as Phaser.GameObjects.Text,
-    spbar: {} as Phaser.GameObjects.Graphics,
-  };
   backgrounds!: {
     rationx: number;
     sprite: Phaser.GameObjects.TileSprite;
@@ -78,6 +73,10 @@ export default class MainScene extends Phaser.Scene {
       console.log(
         `player ${i} took hit damage: ${damage} after hp: ${this.playerManager[i].player.character.state.HP}`
       );
+    });
+
+    mcEvents.on(mcEventTypes.DIED, (i: number) => {
+      console.log(`player ${i} died`);
     });
 
     this.tilemap = this.make.tilemap({ key: "roadfile" });

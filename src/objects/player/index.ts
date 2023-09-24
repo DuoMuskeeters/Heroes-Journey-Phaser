@@ -1,6 +1,6 @@
 import { Character } from "../../game/Karakter";
 import { mcEventTypes, mcEvents } from "../../game/types/events";
-import { Direction, mcAnimTypes } from "../../game/types/types";
+import { type Direction, direction, mcAnimTypes } from "../../game/types/types";
 import { playerAttackListener } from "../../scenes/main/Playerattack";
 import { getOrThrow } from "../utils";
 import { killCharacter, playerMovementUpdate } from "./movements";
@@ -10,7 +10,7 @@ export class Player<T extends Character> {
   private _scene?: Phaser.Scene;
   private _sprite?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   private _attackrect?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
-  public lastdirection: Direction = Direction.right;
+  public lastdirection: Direction = direction.right;
 
   constructor(public character: T) {}
 
@@ -33,30 +33,19 @@ export class Player<T extends Character> {
     (this._attackrect.body as Phaser.Physics.Arcade.Body).allowGravity = false;
 
     playerAttackListener(this);
-    this.listeners();
     console.log(`player ${this.index} created in scene`, scene.scene.key);
+  }
+
+  onTookHit(damage: number) {
+    if (this.character.isDead()) mcEvents.emit(mcEventTypes.DIED, this.index);
+  }
+
+  onDied() {
+    killCharacter(this);
   }
 
   update(time: number, delta: number) {
     playerMovementUpdate(this);
-  }
-
-  destroy() {}
-  listeners() {
-    mcEvents.on(mcEventTypes.TOOK_HIT, (i: number) => {
-      if (i !== this.index) return;
-      if (this.character.isDead()) mcEvents.emit(mcEventTypes.DIED, i);
-    });
-    mcEvents.on(mcEventTypes.DIED, (i: number) => {
-      if (i !== this.index) return;
-      killCharacter(this);
-      this.destroy();
-    });
-
-    this.destroy = () => {
-      mcEvents.off(mcEventTypes.TOOK_HIT);
-      mcEvents.off(mcEventTypes.DIED);
-    };
   }
 
   get index() {
