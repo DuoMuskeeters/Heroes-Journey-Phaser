@@ -1,4 +1,3 @@
-import { Plugins } from "phaser";
 import { Archer, Character, Warrior } from "../../game/Karakter";
 import {
   GoblinTookHit,
@@ -23,7 +22,7 @@ export function playerAttackListener(player: Player<Character>) {
         (mob) => mob.isMcHitting()[player.index]
       );
 
-      if (animation.key === mcAnimTypes.ATTACK_1_COMBO1) {
+      if (animation.key === mcAnimTypes.ATTACK_1) {
         mcEvents.emit(mcEventTypes.BASIC_ATTACK_USED, player.index);
         affectedMobs.forEach((mobController) => {
           const goblin = mobController.goblin.mob;
@@ -36,7 +35,7 @@ export function playerAttackListener(player: Player<Character>) {
             fromJack: true,
           } satisfies GoblinTookHit);
         });
-      } else if (animation.key === mcAnimTypes.Q) {
+      } else if (animation.key === mcAnimTypes.ATTACK_2) {
         let damages: number[];
 
         if (player.character instanceof Warrior) {
@@ -65,7 +64,7 @@ export function playerAttackListener(player: Player<Character>) {
     (animation: Phaser.Animations.Animation) => {
       if (player.scene instanceof MainScene) {
         const keySpace = Phaser.Input.Keyboard.JustDown(player.scene.keySpace);
-        if (animation.key === mcAnimTypes.ATTACK_1_COMBO1) {
+        if (animation.key === mcAnimTypes.ATTACK_1) {
           if (keySpace) spaceCount += 1;
           console.log(spaceCount);
           if (spaceCount === 2) {
@@ -83,7 +82,7 @@ export function playerAttackListener(player: Player<Character>) {
     Phaser.Animations.Events.ANIMATION_COMPLETE,
     (animation: any) => {
       if (animation.key === mcAnimTypes.ATTACK_1_COMBO2) {
-        console.log(animation.key,"combo 2 used");
+        console.log(animation.key, "combo 2 used");
       }
     }
   );

@@ -1,6 +1,5 @@
 import { Player } from ".";
 import { Character } from "../../game/Karakter";
-import { UI_createPlayers } from "../../scenes/Ui/Components";
 
 export type PlayerUI = {
   hpBar: Phaser.GameObjects.Sprite;

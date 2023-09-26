@@ -15,10 +15,10 @@ export const dirVelocity: Record<Direction, number> = {
 
 export const mcAnimTypes = {
   DEATH: "death",
-  ATTACK_1_COMBO1: "attack1",
-  ATTACK_1_COMBO2: "attack2",
-  ATTACK_1_COMBO3: "attack3",
-  Q: "iroh-Q",
+  ATTACK_1: "attack1",
+  ATTACK_1_COMBO2: "attack1-combo2",
+  ATTACK_1_COMBO3: "attack1-combo3",
+  ATTACK_2: "attack2",
   IDLE: "idle",
   RUN: "run",
   TAKE_HIT: "take-hit",

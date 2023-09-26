@@ -1,17 +1,17 @@
 import PhaserGame from "../../PhaserGame";
-import { Character } from "../../game/Karakter";
+import { Character, Warrior } from "../../game/Karakter";
 import { goblinAnimTypes, mcAnimTypes } from "../../game/types/types";
 import { Player } from "../../objects/player";
 import MenuScene from "../menu/MenuScene";
 import MainScene from "./MainScene";
-export function loadAnimations(scene: Phaser.Scene) {
+export function loadAnimations(scene: MainScene | MenuScene) {
   createPlayeranims(scene);
   createGoblinAnims(scene);
 }
 
-export function createPlayeranims(scene: Phaser.Scene) {
-  const isMainScene = scene instanceof MainScene;
+export function createPlayeranims(scene: MainScene | MenuScene) {
   const iroh = {
+    type: "iroh" as const,
     ıdle: 7,
     run: 7,
     jump: 2,
@@ -19,11 +19,13 @@ export function createPlayeranims(scene: Phaser.Scene) {
     death: 10,
     takehit: 3,
     attack1: 4,
-    attack2: 3,
-    attack3: 3,
-    Q: 15,
+    attack1_combo2: 3,
+    attack1_combo3: 3,
+    attack2: 15,
   } as const;
+
   const jack = {
+    type: "jack" as const,
     ıdle: 7,
     run: 7,
     jump: 2,
@@ -34,11 +36,13 @@ export function createPlayeranims(scene: Phaser.Scene) {
     takehit: 4,
   } as const;
 
+  const mc = scene.player.character instanceof Warrior ? iroh : jack;
+
   scene.anims.create({
     key: mcAnimTypes.IDLE,
     frames: scene.anims.generateFrameNumbers(mcAnimTypes.IDLE, {
       start: 0,
-      end: iroh.ıdle,
+      end: mc.ıdle,
     }),
     frameRate: 10,
     repeat: -1,
@@ -48,7 +52,7 @@ export function createPlayeranims(scene: Phaser.Scene) {
     key: mcAnimTypes.RUN,
     frames: scene.anims.generateFrameNumbers(mcAnimTypes.RUN, {
       start: 0,
-      end: iroh.run,
+      end: mc.run,
     }),
     frameRate: 10,
     repeat: -1,
@@ -58,54 +62,55 @@ export function createPlayeranims(scene: Phaser.Scene) {
     key: mcAnimTypes.JUMP,
     frames: scene.anims.generateFrameNumbers(mcAnimTypes.JUMP, {
       start: 0,
-      end: iroh.jump,
+      end: mc.jump,
     }),
     frameRate: 10,
     repeat: -1,
   });
   scene.anims.create({
-    key: mcAnimTypes.Q,
-    frames: scene.anims.generateFrameNumbers(mcAnimTypes.Q, {
+    key: mcAnimTypes.ATTACK_2,
+    frames: scene.anims.generateFrameNumbers(mcAnimTypes.ATTACK_2, {
       start: 0,
-      end: iroh.Q,
+      end: mc.attack2,
     }),
     frameRate: 10,
     repeat: -1,
   });
-  if (isMainScene)
+  scene.anims.create({
+    key: mcAnimTypes.ATTACK_1,
+    frames: scene.anims.generateFrameNumbers(mcAnimTypes.ATTACK_1, {
+      start: 0,
+      end: mc.attack1,
+    }),
+    frameRate: 10,
+    repeat: -1,
+  });
+
+  if (mc.type === "iroh") {
     scene.anims.create({
-      key: mcAnimTypes.ATTACK_1_COMBO1,
-      frames: scene.anims.generateFrameNumbers(mcAnimTypes.ATTACK_1_COMBO1, {
+      key: mcAnimTypes.ATTACK_1_COMBO2,
+      frames: scene.anims.generateFrameNumbers(mcAnimTypes.ATTACK_1_COMBO2, {
         start: 0,
-        end: iroh.attack1,
+        end: mc.attack1_combo2,
       }),
       frameRate: 10,
-      repeat: -1,
+      repeat: 0,
     });
-
-  scene.anims.create({
-    key: mcAnimTypes.ATTACK_1_COMBO2,
-    frames: scene.anims.generateFrameNumbers(mcAnimTypes.ATTACK_1_COMBO2, {
-      start: 0,
-      end: iroh.attack2,
-    }),
-    frameRate: 10,
-    repeat: 0,
-  });
-  scene.anims.create({
-    key: mcAnimTypes.ATTACK_1_COMBO3,
-    frames: scene.anims.generateFrameNumbers(mcAnimTypes.ATTACK_1_COMBO3, {
-      start: 0,
-      end: iroh.attack3,
-    }),
-    frameRate: 10,
-    repeat: 0,
-  });
+    scene.anims.create({
+      key: mcAnimTypes.ATTACK_1_COMBO3,
+      frames: scene.anims.generateFrameNumbers(mcAnimTypes.ATTACK_1_COMBO3, {
+        start: 0,
+        end: mc.attack1_combo3,
+      }),
+      frameRate: 10,
+      repeat: 0,
+    });
+  }
   scene.anims.create({
     key: mcAnimTypes.FALL,
     frames: scene.anims.generateFrameNumbers(mcAnimTypes.FALL, {
       start: 0,
-      end: iroh.fall,
+      end: mc.fall,
     }),
     frameRate: 10,
     repeat: -1,
@@ -115,7 +120,7 @@ export function createPlayeranims(scene: Phaser.Scene) {
     key: mcAnimTypes.DEATH,
     frames: scene.anims.generateFrameNumbers(mcAnimTypes.DEATH, {
       start: 0,
-      end: iroh.death,
+      end: mc.death,
     }),
     frameRate: 10,
     repeat: 1,
@@ -125,7 +130,7 @@ export function createPlayeranims(scene: Phaser.Scene) {
     key: mcAnimTypes.TAKE_HIT,
     frames: scene.anims.generateFrameNumbers(mcAnimTypes.TAKE_HIT, {
       start: 0,
-      end: iroh.takehit,
+      end: mc.takehit,
     }),
     frameRate: 4,
     repeat: -1,

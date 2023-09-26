@@ -47,17 +47,11 @@ export default class goblinController {
   public isMcHitting = () => {
     return this.playerManager.map(({ player }) => {
       const atFrame = Number(player.sprite.anims.getFrameName()) >= 4;
-      const animsName = player.sprite.anims.getName() as
-        | typeof mcAnimTypes.ATTACK_1_COMBO1
-        | typeof mcAnimTypes.ATTACK_1_COMBO2
-        | typeof mcAnimTypes.ATTACK_1_COMBO3
-        | typeof mcAnimTypes.Q;
-      const isAttacking = [
-        mcAnimTypes.ATTACK_1_COMBO1,
-        mcAnimTypes.ATTACK_1_COMBO2,
-        mcAnimTypes.ATTACK_1_COMBO3,
-        mcAnimTypes.Q,
-      ].includes(animsName);
+      const animsName = player.sprite.anims.getName();
+
+      const isAttacking =
+        animsName.includes(mcAnimTypes.ATTACK_1) || // includes all a1 combos
+        animsName === mcAnimTypes.ATTACK_2;
 
       const isOverlapping = this.goblin.scene.physics.overlap(
         this.goblin.sprite,

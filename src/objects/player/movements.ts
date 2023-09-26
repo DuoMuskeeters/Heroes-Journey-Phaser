@@ -20,13 +20,13 @@ const jumpandFallonupdate = (player: Player<Character>) => {
 const heavyStrikeonUpdate = (player: Player<Warrior>) => {
   const { hit: heavyStrikeHit } = player.character.heavy_strike();
   if (heavyStrikeHit) {
-    player.sprite.anims.play(mcAnimTypes.Q, true);
+    player.sprite.anims.play(mcAnimTypes.ATTACK_2, true);
     player.sprite.anims.stopAfterRepeat(0);
     player.sprite.body.setVelocityX(0);
   }
 };
 const attackonUpdate = (player: Player<Character>) => {
-  player.sprite.anims.play(mcAnimTypes.ATTACK_1_COMBO1, true);
+  player.sprite.anims.play(mcAnimTypes.ATTACK_1, true);
   player.sprite.anims.stopAfterRepeat(0);
   player.sprite.body.setVelocityX(0);
 };
@@ -75,20 +75,10 @@ export function playerMovementUpdate(player: Player<Character>) {
 
   const RunisDown = D_isDOWN || A_isDOWN;
   const isanimplaying = player.sprite.anims.isPlaying;
-  const attckQActive = player.sprite.anims.getName() === mcAnimTypes.Q;
-  const attack1Combo_1active =
-    player.sprite.anims.getName() === mcAnimTypes.ATTACK_1_COMBO1;
-  const attack1Combo_2active =
-    player.sprite.anims.getName() === mcAnimTypes.ATTACK_1_COMBO2;
-  const attack1Combo_3active =
-    player.sprite.anims.getName() === mcAnimTypes.ATTACK_1_COMBO3;
+  const attckQActive = player.sprite.anims.getName() === mcAnimTypes.ATTACK_2;
+  const attack1 = player.sprite.anims.getName().includes(mcAnimTypes.ATTACK_1);
   const OnStun = player.sprite.anims.getName() === mcAnimTypes.TAKE_HIT;
-  const canMoVE =
-    !attckQActive &&
-    !OnStun &&
-    !attack1Combo_1active &&
-    !attack1Combo_2active &&
-    !attack1Combo_3active;
+  const canMoVE = !attckQActive && !OnStun && !attack1;
 
   setAttackrect(player);
 

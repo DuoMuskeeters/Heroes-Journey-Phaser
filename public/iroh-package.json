@@ -50,7 +50,7 @@
       {
         "url": "iroh/Attack3.png",
         "type": "spritesheet",
-        "key": "attack3",
+        "key": "attack1-combo3",
         "frameConfig": {
           "frameWidth": 144,
           "frameHeight": 80
@@ -59,7 +59,7 @@
       {
         "url": "iroh/iroh.png",
         "type": "spritesheet",
-        "key": "iroh-Q",
+        "key": "attack2",
         "frameConfig": {
           "frameWidth": 144,
           "frameHeight": 80
@@ -77,7 +77,7 @@
       {
         "url": "iroh/Attack2.png",
         "type": "spritesheet",
-        "key": "attack2",
+        "key": "attack1-combo2",
         "frameConfig": {
           "frameWidth": 144,
           "frameHeight": 80
