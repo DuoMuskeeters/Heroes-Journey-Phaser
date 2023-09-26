@@ -51,7 +51,7 @@ export default class goblinController {
 
       const isAttacking =
         animsName.includes(mcAnimTypes.ATTACK_1) || // includes all a1 combos
-        animsName === mcAnimTypes.ATTACK_2;
+        animsName.includes(mcAnimTypes.ATTACK_2);
 
       const isOverlapping = this.goblin.scene.physics.overlap(
         this.goblin.sprite,
@@ -204,7 +204,7 @@ export default class goblinController {
         if (!isTouching) return;
         const { player } = this.playerManager[i];
         player.sprite.setVelocityX(0);
-        player.sprite.anims.play(mcAnimTypes.TAKE_HIT, true);
+        player.play(mcAnimTypes.TAKE_HIT, true);
         player.sprite.anims.stopAfterRepeat(0);
         characters.push(player.character);
       });

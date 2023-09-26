@@ -13,7 +13,7 @@ import { createMob as createMobs } from "./CreateMob";
 import { createAvatarFrame } from "../Ui/AvatarUi";
 
 import { Player } from "../../objects/player";
-import { Warrior } from "../../game/Karakter";
+import { Iroh, Jack } from "../../game/Karakter";
 import { mcAnimTypes, mcEventTypes, mcEvents } from "../../game/types";
 import { CONFIG } from "../../PhaserGame";
 import goblinController from "../../objects/Mob/goblinController";
@@ -64,9 +64,9 @@ export default class MainScene extends Phaser.Scene {
 
   constructor() {
     super("mainscene");
-    const player = new Player(new Warrior());
+    const player = new Player(new Jack());
     this.playerManager = new PlayerManager();
-    const player2 = new Player(new Warrior());
+    const player2 = new Player(new Iroh());
     this.playerManager.push({ player, UI: {} as any });
     this.playerManager.push({ player: player2, UI: {} as any });
   }
@@ -114,7 +114,7 @@ export default class MainScene extends Phaser.Scene {
     }, 1000);
 
     this.cameras.main.startFollow(this.player.sprite, false, 1, 0, -420, -160);
-    this.player.sprite.anims.play(mcAnimTypes.FALL, true);
+    this.player.play(mcAnimTypes.FALL, true);
     this.player.sprite.anims.stopAfterRepeat(2);
     this.physics.world.setBounds(0, 0, Infinity, CONFIG.height - 300);
     this.scene.launch("ui");

@@ -5,7 +5,7 @@ import { Backroundmovement } from "../main/GameMovement";
 import { mcAnimTypes } from "../../game/types/types";
 import { CONFIG } from "../../PhaserGame";
 import { Player } from "../../objects/player";
-import { Warrior } from "../../game/Karakter";
+import { Jack } from "../../game/Karakter";
 import { PlayerManager } from "../../objects/player/manager";
 
 export default class MenuScene extends Phaser.Scene {
@@ -26,7 +26,7 @@ export default class MenuScene extends Phaser.Scene {
 
   constructor() {
     super("menu");
-    const player = new Player(new Warrior());
+    const player = new Player(new Jack());
     this.playerManager = new PlayerManager();
     this.playerManager.push({ player, UI: {} as any });
   }
@@ -86,16 +86,16 @@ export default class MenuScene extends Phaser.Scene {
       -1 * CONFIG.height * 0.5,
       -1 * CONFIG.height * 0.5
     );
-    this?.player.sprite.anims.play(mcAnimTypes.FALL, true);
+    this.player.play(mcAnimTypes.FALL, true);
     this.player.sprite.anims.stopAfterRepeat(3);
     this.shopobject?.anims.play("shop", true);
 
     this.player.sprite.once(Phaser.Animations.Events.ANIMATION_STOP, () => {
       if (
-        this.player.sprite.anims.getName() === mcAnimTypes.FALL &&
+        this.player.sprite.anims.getName().includes(mcAnimTypes.FALL) &&
         this.player.sprite.body instanceof Phaser.Physics.Arcade.Body
       ) {
-        this.player.sprite.anims.play(mcAnimTypes.RUN, true);
+        this.player.play(mcAnimTypes.RUN, true);
         this.player.sprite.body.setVelocityX(300);
       }
     });

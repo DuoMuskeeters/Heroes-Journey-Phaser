@@ -4,7 +4,7 @@
       {
         "url": "iroh/Idle.png",
         "type": "spritesheet",
-        "key": "idle",
+        "key": "iroh-idle",
         "frameConfig": {
           "frameWidth": 144,
           "frameHeight": 80
@@ -13,7 +13,7 @@
       {
         "url": "iroh/Run.png",
         "type": "spritesheet",
-        "key": "run",
+        "key": "iroh-run",
         "frameConfig": {
           "frameWidth": 144,
           "frameHeight": 80
@@ -23,7 +23,7 @@
       {
         "url": "iroh/take-hit.png",
         "type": "spritesheet",
-        "key": "take-hit",
+        "key": "iroh-take-hit",
         "frameConfig": {
           "frameWidth": 144,
           "frameHeight": 80
@@ -32,7 +32,7 @@
       {
         "url": "iroh/Jump.png",
         "type": "spritesheet",
-        "key": "jump",
+        "key": "iroh-jump",
         "frameConfig": {
           "frameWidth": 144,
           "frameHeight": 80
@@ -41,7 +41,7 @@
       {
         "url": "iroh/Attack1.png",
         "type": "spritesheet",
-        "key": "attack1",
+        "key": "iroh-attack1",
         "frameConfig": {
           "frameWidth": 144,
           "frameHeight": 80
@@ -50,7 +50,7 @@
       {
         "url": "iroh/Attack3.png",
         "type": "spritesheet",
-        "key": "attack1-combo3",
+        "key": "iroh-attack1-combo3",
         "frameConfig": {
           "frameWidth": 144,
           "frameHeight": 80
@@ -59,7 +59,7 @@
       {
         "url": "iroh/iroh.png",
         "type": "spritesheet",
-        "key": "attack2",
+        "key": "iroh-attack2",
         "frameConfig": {
           "frameWidth": 144,
           "frameHeight": 80
@@ -68,7 +68,7 @@
       {
         "url": "iroh/Fall.png",
         "type": "spritesheet",
-        "key": "fall",
+        "key": "iroh-fall",
         "frameConfig": {
           "frameWidth": 144,
           "frameHeight": 80
@@ -77,7 +77,7 @@
       {
         "url": "iroh/Attack2.png",
         "type": "spritesheet",
-        "key": "attack1-combo2",
+        "key": "iroh-attack1-combo2",
         "frameConfig": {
           "frameWidth": 144,
           "frameHeight": 80
@@ -86,7 +86,7 @@
       {
         "url": "iroh/Death.png",
         "type": "spritesheet",
-        "key": "death",
+        "key": "iroh-death",
         "frameConfig": {
           "frameWidth": 144,
           "frameHeight": 80

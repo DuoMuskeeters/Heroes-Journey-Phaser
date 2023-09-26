@@ -4,7 +4,8 @@ import MenuScene from "../menu/MenuScene";
 import LoadScene from "./Load";
 
 export function preloadAssets(scene: LoadScene) {
-  scene.load.pack("mainscene", "iroh-package.json");
+  scene.load.pack("jack", "jack-package.json");
+  scene.load.pack("iroh", "iroh-package.json");
   scene.load.pack("game", "game-package.json");
   scene.load.pack("goblin", "goblin-package.json");
 }

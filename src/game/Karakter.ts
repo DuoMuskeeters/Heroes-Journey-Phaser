@@ -204,9 +204,43 @@ function create_state(username: string, Level: number = 1): State {
   return new State(character_state);
 }
 
-export class Warrior extends Character {
+export class Iroh extends Character {
   private lastHeavyStrike: Date | null = null;
-  heavy_strike() {
+  heavyAttack() {
+    const halfSP = CONFIG.physics.arcade.debug ? 5 : this.state.max_sp / 2;
+    const damage = this.state.ATK * 2;
+    const standByTime = CONFIG.physics.arcade.debug ? 100 : 5 * 1000;
+
+    const hasUlti = () =>
+      (this.lastHeavyStrike?.getTime() ?? 0) + standByTime < Date.now();
+
+    if (this.state.SP >= halfSP && hasUlti())
+      return {
+        damage,
+        standByTime,
+        lastHeavyStrike: this.lastHeavyStrike,
+        hit: (rakipler: Canlı[]) => {
+          if (this.state.SP < halfSP || !hasUlti())
+            throw new Error("Ulti için gerekli koşullar sağlanmadı.");
+          this.lastHeavyStrike = new Date();
+          this.state.SP = Math.max(this.state.SP - halfSP, 0);
+          return rakipler.map(
+            (rakip) => (rakip.state.HP = Math.max(rakip.state.HP - damage, 0))
+          );
+        },
+      };
+
+    return {
+      damage,
+      standByTime,
+      lastHeavyStrike: this.lastHeavyStrike,
+    };
+  }
+}
+
+export class Jack extends Character {
+  private lastHeavyStrike: Date | null = null;
+  heavyAttack() {
     const halfSP = CONFIG.physics.arcade.debug ? 5 : this.state.max_sp / 2;
     const damage = this.state.ATK * 2;
     const standByTime = CONFIG.physics.arcade.debug ? 100 : 5 * 1000;
