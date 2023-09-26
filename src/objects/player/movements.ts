@@ -1,4 +1,4 @@
-import { Direction, dirVelocity, mcAnimTypes } from "../../game/types";
+import { direction, dirVelocity, mcAnimTypes } from "../../game/types";
 import { Player } from ".";
 import { Character, Iroh, Jack } from "../../game/Karakter";
 import MainScene from "../../scenes/main/MainScene";
@@ -89,11 +89,11 @@ export function playerMovementUpdate(player: Player<Character>) {
   if (player.character.isDead()) return;
 
   if (A_isDOWN && canMoVE) {
-    player.lastdirection = Direction.left;
+    player.lastdirection = direction.left;
     player.sprite.setFlipX(true);
   }
   if (D_isDOWN && canMoVE) {
-    player.lastdirection = Direction.right;
+    player.lastdirection = direction.right;
     player.sprite.setFlipX(false);
   }
 

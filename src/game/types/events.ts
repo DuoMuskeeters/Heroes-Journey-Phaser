@@ -19,7 +19,7 @@ export const mobEventsTypes = {
   ATTACKING: "ATTACKING",
   IDLE: "IDLE",
 } as const;
-export type GoblinEventsTypes =
+export type MobEventsTypes =
   (typeof mobEventsTypes)[keyof typeof mobEventsTypes];
 // Details
 export type GoblinTookHit = {

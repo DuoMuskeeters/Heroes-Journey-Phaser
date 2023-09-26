@@ -1,5 +1,6 @@
-import MainScene from "../main/MainScene";
-import PhaserGame, { CONFIG } from "../../PhaserGame";
+import { CONFIG } from "../../PhaserGame";
+import { Player } from "../../objects/player";
+import { Character } from "../../game/Karakter";
 
 export default class statemenu {
   scene!: Phaser.Scene;
@@ -11,12 +12,11 @@ export default class statemenu {
   get isOpen() {
     return this.opened;
   }
-  constructor(scene: Phaser.Scene) {
+  constructor(scene: Phaser.Scene, player: Player<Character>) {
     this.scene = scene;
-    const mainscene = PhaserGame.scene.keys.mainscene as MainScene;
 
     this.container = scene.add.container(CONFIG.width, 0);
-    this.character = mainscene.player.character;
+    this.character = player.character;
     const title = scene.add
       .image(-265, -300, "title-iron")
       .setScale(0.3, 0.3)

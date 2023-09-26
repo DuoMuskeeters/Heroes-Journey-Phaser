@@ -93,9 +93,7 @@ export class Canlı {
     this.state = state ?? create_state("Canlı");
     this.calculate_power();
   }
-  isDead() {
-    return Math.floor(this.state.HP) === 0;
-  }
+  isDead = () => Math.floor(this.state.HP) === 0;
 
   /**
    * known as ATTACK_1 for all Canlı
@@ -332,10 +330,12 @@ export class MobCanlı extends Canlı {
 }
 
 export class Giant extends MobCanlı {
+  hasUlti = () => this.state.SP === this.state.max_sp;
   giant_skill() {
     const damage = this.state.ATK * 3;
     return {
       damage,
+      consumeSP: () => (this.state.SP = 0),
       hit: (rakipler: Canlı[]) =>
         rakipler.map(
           (rakip) => (rakip.state.HP = Math.max(rakip.state.HP - damage, 0))

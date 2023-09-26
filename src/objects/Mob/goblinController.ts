@@ -1,3 +1,5 @@
+import PhaserGame from "../../PhaserGame";
+
 import {
   GoblinTookHit,
   mobEvents,
@@ -7,9 +9,8 @@ import {
 } from "../../game/types/events";
 import { createGoblinBomb } from "../../scenes/main/Anims";
 import { goblinHealtbar, goblinspbar } from "../../scenes/Ui/Components";
-import MainScene from "../../scenes/main/MainScene";
 import {
-  Direction,
+  direction,
   GoblinAnimTypes,
   goblinAnimTypes,
   mcAnimTypes,
@@ -18,14 +19,12 @@ import { createCollider } from "../../scenes/main/TileGround";
 import { Character, Giant } from "../../game/Karakter";
 import { Mob } from ".";
 import { PlayerManager } from "../player/manager";
+import MainScene from "../../scenes/main/MainScene";
 
 export default class goblinController {
   private ıdletime = 0;
-  goblin: Mob<Giant>;
-  playerManager: PlayerManager;
 
   private bomb?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
-  public mobUI!: MainScene["mobUI"];
   /**
    * @returns Array of true if mob is hitting player and attack animation is at first frame
    */
@@ -44,7 +43,7 @@ export default class goblinController {
     return isOverlapping;
   };
 
-  public isMcHitting = () => {
+  public arePlayersHitting = () => {
     return this.playerManager.map(({ player }) => {
       const atFrame = Number(player.sprite.anims.getFrameName()) >= 4;
       const animsName = player.sprite.anims.getName();
@@ -103,7 +102,7 @@ export default class goblinController {
             ıdle: 0,
           },
           flip: false,
-          Direction: Direction.left,
+          Direction: direction.left,
         }
       : {
           velocity: {
@@ -111,19 +110,19 @@ export default class goblinController {
             ıdle: 0,
           },
           flip: true,
-          Direction: Direction.right,
+          Direction: direction.right,
         };
   };
 
   constructor(
-    goblin: Mob<Giant>,
-    playerManager: PlayerManager,
-    mobUI: MainScene["mobUI"]
+    public goblin: Mob<Giant>,
+    public playerManager: PlayerManager,
+    public mobUI = {
+      healtbar: {} as Phaser.GameObjects.Graphics,
+      hptitle: {} as Phaser.GameObjects.Text,
+      spbar: {} as Phaser.GameObjects.Graphics,
+    }
   ) {
-    this.goblin = goblin;
-    this.mobUI = mobUI;
-    this.playerManager = playerManager;
-
     this.goblin.sprite.on(
       Phaser.Animations.Events.ANIMATION_STOP,
       (animation: Phaser.Animations.Animation) => {
@@ -139,9 +138,12 @@ export default class goblinController {
         }
         if (animation.key === goblinAnimTypes.ULTI) {
           const { player } = this.playerManager[this.closestPlayer()];
-          goblin.mob.state.SP = 0;
+          goblin.mob.giant_skill().consumeSP();
           this.bomb = createGoblinBomb(goblin.scene, player);
-          createCollider(this.bomb);
+          // TODO: remove this line
+          const mainscene = PhaserGame.scene.keys.mainscene as MainScene;
+          createCollider(mainscene, this.bomb);
+
           this.bomb?.anims.play(goblinAnimTypes.BOMB, true);
           this.bomb?.anims.stopAfterRepeat(0);
           this.BombListener();
@@ -212,13 +214,8 @@ export default class goblinController {
       this.goblin.mob.giant_skill().hit(characters); // giant skill hit is now Array instead of single character
     });
   }
-  hasUltimate() {
-    const { state } = this.goblin.mob;
-    return state.SP === state.max_sp;
-  }
-
-  isDead = () => this.goblin.mob.state.HP <= 0;
-
+  hasUltimate = this.goblin.mob.hasUlti;
+  isDead = this.goblin.mob.isDead;
   OnStun() {
     const animsKey = this.goblin.sprite?.anims.getName();
     return this.goblin.sprite.body && animsKey === goblinAnimTypes.TAKE_HIT;
@@ -281,6 +278,7 @@ export default class goblinController {
       this.ıdleOnUpdate(dt);
     }
     if (!canSeeAnyPlayer) {
+      // TODO: slowly decrease sp (x/2 where x is default sp regen)
       this.goblin.mob.state.SP = 0;
     }
 
@@ -297,12 +295,12 @@ export default class goblinController {
     this.goblin.sprite.setVelocityX(0);
 
     if (this.ıdletime > 4000) {
-      if (this.goblin.lastdirection === Direction.left) {
+      if (this.goblin.lastdirection === direction.left) {
         this.goblin.sprite.setFlipX(true);
-        this.goblin.lastdirection = Direction.right;
+        this.goblin.lastdirection = direction.right;
       } else {
         this.goblin.sprite.setFlipX(false);
-        this.goblin.lastdirection = Direction.left;
+        this.goblin.lastdirection = direction.left;
       }
       this.ıdletime = 0;
     }
