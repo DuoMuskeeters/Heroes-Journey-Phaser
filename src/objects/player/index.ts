@@ -1,9 +1,17 @@
-import { Character } from "../../game/Karakter";
+import { Character, Iroh, Jack } from "../../game/Karakter";
 import { mcEventTypes, mcEvents } from "../../game/types/events";
-import { type Direction, direction, mcAnimTypes } from "../../game/types/types";
+import { type Direction, direction, McAnimTypes, mcAnimTypes } from "../../game/types/types";
 import { playerAttackListener } from "../../scenes/main/Playerattack";
 import { getOrThrow } from "../utils";
 import { killCharacter, playerMovementUpdate } from "./movements";
+
+export function getCharacterType(character: Character) {
+  return character instanceof Jack
+    ? "jack"
+    : character instanceof Iroh
+    ? "iroh"
+    : "unknown";
+}
 
 export class Player<T extends Character> {
   private _index?: number;
@@ -15,10 +23,12 @@ export class Player<T extends Character> {
   constructor(public character: T) {}
 
   create(scene: Phaser.Scene, x: number, y: number, i: number) {
+    const type = getCharacterType(this.character);
+
     this._index = i;
     this._scene = scene;
     this._sprite = scene.physics.add
-      .sprite(x, y, mcAnimTypes.IDLE)
+      .sprite(x, y, type + "-" + mcAnimTypes.IDLE)
       .setCollideWorldBounds(true)
       .setBounce(0.1)
       .setScale(2.55)
@@ -46,6 +56,12 @@ export class Player<T extends Character> {
 
   update(time: number, delta: number) {
     playerMovementUpdate(this);
+  }
+
+  play(key: McAnimTypes, ignoreIfPlaying?: boolean) {
+    const type = getCharacterType(this.character);
+    this.sprite.anims.play(type + "-" + key, ignoreIfPlaying);
+    // play("jack-idle") play("iroh-idle")
   }
 
   get index() {
