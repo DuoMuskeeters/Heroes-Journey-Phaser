@@ -11,17 +11,16 @@ export const mcEventTypes = {
 
 export type McEventTypes = (typeof mcEventTypes)[keyof typeof mcEventTypes];
 
-export const goblinEventsTypes = {
+export const mobEventsTypes = {
   TOOK_HIT: "TOOK_HIT",
   DIED: "DIED",
   STARTED_RUNNING: "STARTED_RUNNING",
   ULTI: "ULTI",
   ATTACKING: "ATTACKING",
   IDLE: "IDLE",
-  BOMB: "BOMB",
 } as const;
-export type GoblinEventsTypes =
-  (typeof goblinEventsTypes)[keyof typeof goblinEventsTypes];
+export type MobEventsTypes =
+  (typeof mobEventsTypes)[keyof typeof mobEventsTypes];
 // Details
 export type GoblinTookHit = {
   damage: number;
@@ -31,4 +30,4 @@ export type GoblinTookHit = {
 
 export const gameEvents = new Phaser.Events.EventEmitter();
 export const mcEvents = new Phaser.Events.EventEmitter();
-export const goblinEvents = new Phaser.Events.EventEmitter();
+export const mobEvents = new Phaser.Events.EventEmitter();

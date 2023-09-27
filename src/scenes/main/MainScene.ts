@@ -1,58 +1,61 @@
 import Phaser from "phaser";
-import { Direction, mcAnimTypes } from "../../game/types/types";
-import { Giant, Warrior, create_character } from "../../game/Karakter";
 import { createBackground } from "../preLoad/assets";
-import PhaserGame, { CONFIG } from "../../PhaserGame";
-import { createPlayeranims } from "./Anims";
-import { JackDied, JackOnUpdate } from "./PlayerController";
-import { playerhealtbar, playerspbar } from "../Ui/Components";
+import { loadAnimations } from "./Anims";
+import {
+  UI_createPlayers,
+  UI_updateOtherPlayers,
+  UI_updatePlayersHP,
+  UI_updatePlayersSP,
+} from "../Ui/Components";
 import { Backroundmovement } from "./GameMovement";
-import { UiScene } from "../Ui/uiScene";
-import MobController from "./mobController";
-import { createCollider, createground } from "./TileGround";
-import { createMob } from "./CreateMob";
+import { createground } from "./TileGround";
+import { createMob as createMobs } from "./CreateMob";
 import { createAvatarFrame } from "../Ui/AvatarUi";
+
+import { Player } from "../../objects/player";
+import { Iroh, Jack } from "../../game/Karakter";
 import {
   GoblinTookHit,
-  goblinEvents,
-  goblinEventsTypes,
+  mcAnimTypes,
   mcEventTypes,
   mcEvents,
-} from "../../game/types/events";
-import { playerAttackListener } from "./Playerattack";
+  mobEvents,
+  mobEventsTypes,
+} from "../../game/types";
+import { CONFIG } from "../../PhaserGame";
+import goblinController from "../../objects/Mob/goblinController";
+import { PlayerManager } from "../../objects/player/manager";
 
-const jack = Warrior.from_Character(create_character("Ali"));
+type Key = Phaser.Input.Keyboard.Key;
 
 export default class MainScene extends Phaser.Scene {
   frontroad!: Phaser.Tilemaps.TilemapLayer;
   backroad!: Phaser.Tilemaps.TilemapLayer;
 
-  player = {
-    sprite: {} as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody,
-    attackrect: {} as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody,
-    lastdirection: Direction.right as Direction,
-    standbytime: 5000,
-    ultimate: true,
-    user: jack,
-    hpbar: {} as Phaser.GameObjects.Sprite,
-    manabar: {} as Phaser.GameObjects.Sprite,
-    hptitle: {} as Phaser.GameObjects.Text,
-    sptitle: {} as Phaser.GameObjects.Text,
-    frame: {} as Phaser.Tilemaps.Tilemap,
-    hearticon: {} as Phaser.Tilemaps.TilemapLayer,
-    manaicon: {} as Phaser.Tilemaps.TilemapLayer,
-  };
-  mobController: MobController[] = [];
-  mob = {
-    sprite: {} as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody,
-    attackrect: {} as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody,
-    lastdirection: Direction.left as Direction,
-    goblin: {} as Giant,
-    healtbar: {} as Phaser.GameObjects.Graphics,
-    hptitle: {} as Phaser.GameObjects.Text,
-    spbar: {} as Phaser.GameObjects.Graphics,
-    bomb: {} as Phaser.Types.Physics.Arcade.SpriteWithDynamicBody,
-  };
+  keySpace!: Key;
+  keyW!: Key;
+  keyA!: Key;
+  keyD!: Key;
+  keyQ!: Key;
+
+  keyEnter!: Key;
+  keyUp!: Key;
+  keyLeft!: Key;
+  keyRight!: Key;
+  keyi!: Key;
+  keyP!: Key;
+  playerManager;
+  friendlyFire = false;
+
+  get player() {
+    return this.playerManager.mainPlayer().player;
+  }
+
+  get playerUI() {
+    return this.playerManager.mainPlayer().UI;
+  }
+
+  mobController: goblinController[] = [];
   backgrounds!: {
     rationx: number;
     sprite: Phaser.GameObjects.TileSprite;
@@ -60,127 +63,101 @@ export default class MainScene extends Phaser.Scene {
 
   shopobject?: Phaser.GameObjects.Sprite;
   tilemap!: Phaser.Tilemaps.Tilemap;
+
   constructor() {
     super("mainscene");
+    const player = new Player(new Jack());
+    this.playerManager = new PlayerManager();
+    const player2 = new Player(new Iroh());
+    this.playerManager.push({ player, UI: {} as any });
+    this.playerManager.push({ player: player2, UI: {} as any });
   }
 
   create() {
-    mcEvents.on(mcEventTypes.TOOK_HIT, (damage: number) => {
-      console.log(`mc took hit damage: ${damage} after hp: ${jack.state.HP}`);
-      if (jack.isDead()) {
-        mcEvents.emit(mcEventTypes.DIED);
-      }
+    this.playerManager.create(this, 300, 0);
+
+    mcEvents.on(mcEventTypes.TOOK_HIT, (i: number, damage: number) => {
+      console.log(
+        `player ${i} took hit damage: ${damage} after hp: ${this.playerManager[i].player.character.state.HP}`
+      );
     });
-    mcEvents.on(mcEventTypes.DIED, () => {
-      JackDied(this);
-      console.log(`mc died`);
+
+    mcEvents.on(mcEventTypes.DIED, (i: number) => {
+      console.log(`player ${i} died`);
     });
-    goblinEvents.on(goblinEventsTypes.DIED, () => {
-      console.log(`goblin died`);
-    });
-    goblinEvents.on(
-      goblinEventsTypes.TOOK_HIT,
+
+    mobEvents.on(
+      mobEventsTypes.TOOK_HIT,
       (id: number, details: GoblinTookHit) => {
-        const controller = this.mobController[id - 1]!;
-        console.log(
-          `goblin ${controller.name} took hit ${
-            details.stun ? "(STUN)" : "(NORMAL)"
-          } damage: ${details.damage} after hp: ${jack.state.HP}`
-        );
-        if (controller.mob.goblin.isDead()) {
-          goblinEvents.emit(goblinEventsTypes.DIED);
-        }
+        const ctrl = this.mobController[id - 1];
+        if (ctrl.goblin.id === id)
+          console.log(
+            `goblin ${ctrl.goblin.name} took hit ${
+              details.stun ? "(STUN)" : "(NORMAL)"
+            } damage: ${details.damage} after hp: ${ctrl.goblin.mob.state.HP}`
+          );
       }
     );
 
+    mobEvents.on(mobEventsTypes.DIED, (id: number) => {
+      const ctrl = this.mobController[id - 1];
+      if (ctrl.goblin.id === id) console.log(`${ctrl.goblin.name} died`);
+    });
     this.tilemap = this.make.tilemap({ key: "roadfile" });
 
+    this.Addkey();
     createBackground(this);
     createAvatarFrame(this);
-    createPlayeranims(this);
-    playerAttackListener(this);
+    loadAnimations(this);
     createground(this);
-
-    this.player.attackrect = this.physics.add
-      .sprite(500, 500, "attackrect")
-      .setDisplaySize(280, 170)
-      .setVisible(false);
-
-    (this.player.attackrect.body as Phaser.Physics.Arcade.Body).allowGravity =
-      false;
+    UI_createPlayers(this);
 
     // this.frontroad.setCollisionByExclusion([-1], true);
 
-    createCollider(this, [this.player.sprite], [this.backroad, this.frontroad]);
-    createMob(this);
+    this.physics.add.collider(
+      this.playerManager.map(({ player }) => player.sprite),
+      [this.frontroad, this.backroad]
+    );
+    createMobs(this);
 
     setInterval(() => {
       if (this.scene.isPaused()) return;
-      this.player.user.regeneration();
+      this.playerManager.forEach(({ player }) =>
+        player.character.regeneration()
+      );
       this.mobController.forEach((controller) => {
-        controller.mob.goblin.regeneration();
+        controller.goblin.mob.regeneration();
       });
     }, 1000);
 
     this.cameras.main.startFollow(this.player.sprite, false, 1, 0, -420, -160);
-
-    this.player.hpbar = this.add
-      .sprite(238, 76, "hp-bar")
-      .setScale(5, 2.7)
-      .setDepth(5)
-      .setScrollFactor(0);
-    this.player.manabar = this.add
-      .sprite(214, 112, "mana-bar")
-      .setScale(3.8, 2.7)
-      .setDepth(5)
-      .setScrollFactor(0);
-
-    this.player.sprite.anims.play(mcAnimTypes.FALL, true);
+    this.player.play(mcAnimTypes.FALL, true);
     this.player.sprite.anims.stopAfterRepeat(2);
-
     this.physics.world.setBounds(0, 0, Infinity, CONFIG.height - 300);
-
-    this.player.hptitle = this.add
-      .text(370, 65, `${this.player.user.state.HP}`)
-      .setStyle({
-        fontSize: "22px Arial",
-        color: "red",
-        align: "center",
-      })
-      .setFontFamily("URW Chancery L, cursive")
-      .setFontStyle("bold")
-      .setScrollFactor(0);
-
-    this.player.sptitle = this.add
-      .text(340, 103, `${this.player.user.state.SP}`)
-      .setStyle({
-        fontSize: "22px Arial",
-        align: "center",
-      })
-      .setFontFamily("URW Chancery L, cursive")
-      .setFontStyle("bold")
-      .setScrollFactor(0);
-
     this.scene.launch("ui");
   }
 
   update(time: number, delta: number): void {
-    const uiscene = PhaserGame.scene.keys.ui as UiScene;
-    JackOnUpdate(this);
+    this.playerManager.update(time, delta);
+    UI_updateOtherPlayers(this);
     Backroundmovement(this);
-    playerhealtbar(this);
-    playerspbar(this);
-    uiscene.statemenu.remaininpoints.setText(
-      `Remaining Points :  ${this.player.user.state.stat_point}`
-    );
-    uiscene.statemenu.jacktext.setText(
-      `Name: Jack    Level: ${this.player.user.state.Level}
-
-Job: Samurai  MAX HP: ${this.player.user.state.max_hp}`
-    );
-
+    UI_updatePlayersHP(this);
+    UI_updatePlayersSP(this);
     this.mobController.forEach((mobCcontroller) => {
-      if (mobCcontroller.mob.sprite.body) mobCcontroller.update(delta);
+      if (mobCcontroller.goblin.sprite.body) mobCcontroller.update(delta);
     });
+  }
+  Addkey() {
+    this.keySpace = this.input.keyboard?.addKey("SPACE")!;
+    this.keyW = this.input.keyboard?.addKey("W")!;
+    this.keyA = this.input.keyboard?.addKey("A")!;
+    this.keyD = this.input.keyboard?.addKey("D")!;
+    this.keyQ = this.input.keyboard?.addKey("Q")!;
+
+    this.keyEnter = this.input.keyboard?.addKey("ENTER")!;
+    this.keyUp = this.input.keyboard?.addKey("UP")!;
+    this.keyLeft = this.input.keyboard?.addKey("LEFT")!;
+    this.keyRight = this.input.keyboard?.addKey("RIGHT")!;
+    this.keyP = this.input.keyboard?.addKey("P")!;
   }
 }

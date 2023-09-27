@@ -1,4 +1,3 @@
-import { CONFIG } from "../../PhaserGame";
 import MainScene from "./MainScene";
 
 export function createground(scene: MainScene) {
@@ -24,9 +23,9 @@ export function createground(scene: MainScene) {
   scene.tilemap
     .createLayer("fence", [fence_1!, fence_2!], 0, 15)
     ?.setScale(2.55, 2.55);
-  scene.tilemap.createLayer("rock_3", rock3!,0,15)?.setScale(2.55, 2.55);
-  scene.tilemap.createLayer("rock_2", rock2!,0,30)?.setScale(2.55, 2.55);
-  scene.tilemap.createLayer("rock_1", rock1!,0,33)?.setScale(2.55, 2.55);
+  scene.tilemap.createLayer("rock_3", rock3!, 0, 15)?.setScale(2.55, 2.55);
+  scene.tilemap.createLayer("rock_2", rock2!, 0, 30)?.setScale(2.55, 2.55);
+  scene.tilemap.createLayer("rock_1", rock1!, 0, 33)?.setScale(2.55, 2.55);
 
   scene.tilemap.createLayer("sign", sign!, 0, -20)?.setScale(2.55, 2.55);
   scene.tilemap
@@ -38,8 +37,7 @@ export function createground(scene: MainScene) {
 }
 export function createCollider(
   scene: MainScene,
-  object1: Phaser.Types.Physics.Arcade.ArcadeColliderType,
-  object2: Phaser.Types.Physics.Arcade.ArcadeColliderType
+  object: Phaser.Types.Physics.Arcade.ArcadeColliderType
 ) {
-  scene.physics.add.collider(object1, object2);
+  scene.physics.add.collider(object, [scene.frontroad, scene.backroad]);
 }

@@ -1,41 +1,35 @@
 import MainScene from "../main/MainScene";
 
 export function createAvatarFrame(scene: MainScene) {
-  scene.player.frame = scene.make.tilemap({ key: "player-avatar" });
-  const avatarframe = scene.player.frame.addTilesetImage(
-    "frame-set",
-    "frame-set"
-  );
-  const avatarpng = scene.player.frame.addTilesetImage(
-    "jack-avatar",
-    "jack-avatar"
-  );
-  if (avatarframe && avatarpng) {
-    scene.player.frame
-      .createLayer("frame", avatarframe)
-      ?.setScrollFactor(0)
-      .setDepth(200);
+  scene.playerManager.forEach(({ player, UI }, i) => {
+    const frame = scene.make.tilemap({ key: "main-player-ui" });
+    const avatarframe = frame.addTilesetImage("frame-set", "frame-set");
+    const avatarpng = frame.addTilesetImage("jack-avatar", "jack-avatar");
+    const otherPlayersFrame = scene.make.tilemap({ key: "other-players-ui" });
+    if (i === 0) {
+      UI.frameLayer = frame
+        .createLayer("frame", [avatarframe!])
+        ?.setScrollFactor(0)
+        .setDepth(200)!;
 
-    scene.player.frame
-      .createLayer("parchment", avatarframe)
-      ?.setScrollFactor(0);
+      frame.createLayer("parchement", avatarframe!)?.setScrollFactor(0);
 
-    scene.player.hearticon = scene.player.frame
-      .createLayer("hearticon", avatarframe, 10, 0)
-      ?.setScrollFactor(0)!;
-
-    scene.player.manaicon = scene.player.frame
-      .createLayer("manaicon", avatarframe, 10, 3)
-      ?.setScrollFactor(0)!;
-
-    scene.player.frame
-      .createLayer("bar", avatarframe, -37, -10)
-      ?.setScale(1.1, 1.1)
-      ?.setScrollFactor(0)
-      .setDepth(100);
-    scene.player.frame
-      .createLayer("avatarpng", avatarpng, -155, -155)
-      ?.setScale(3, 3)
-      .setScrollFactor(0);
-  }
+      frame
+        .createLayer("jack-avatar", avatarpng!)
+        ?.setScale(4)
+        .setScrollFactor(0)
+        .setPosition(-230, -300);
+    } else {
+      UI.playerindexText = scene.add.text(0, 0, `PLAYER: ${player.index + 1}`);
+      UI.playerleveltext = scene.add.text(
+        0,
+        0,
+        `${player.character.state.Level}`
+      );
+      UI.frameLayer = otherPlayersFrame
+        .createLayer("frame", [avatarframe!])
+        ?.setDepth(200)
+        .setScale(0.8)!;
+    }
+  });
 }

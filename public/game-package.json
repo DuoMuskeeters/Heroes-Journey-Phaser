@@ -2,9 +2,41 @@
   "section1": {
     "files": [
       {
-        "url": "player-avatar.json",
+        "url": "main-player-ui.json",
         "type": "tilemapTiledJSON",
-        "key": "player-avatar"
+        "key": "main-player-ui"
+      },
+      {
+        "url": "other-players-ui.json",
+        "type": "tilemapTiledJSON",
+        "key": "other-players-ui"
+      },
+      {
+        "url": "mainplayer-sp-bar.png",
+        "type": "spritesheet",
+        "key": "spBar-0",
+        "frameConfig": {
+          "frameWidth": 48,
+          "frameHeight": 12
+        }
+      },
+      {
+        "url": "other-players-sp-bar.png",
+        "type": "spritesheet",
+        "key": "spBar-1",
+        "frameConfig": {
+          "frameWidth": 48,
+          "frameHeight": 12
+        }
+      },
+      {
+        "url": "hp-bar.png",
+        "type": "spritesheet",
+        "key": "hpBar",
+        "frameConfig": {
+          "frameWidth": 48,
+          "frameHeight": 12
+        }
       },
       {
         "url": "frame-set.png",

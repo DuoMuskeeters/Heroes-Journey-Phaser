@@ -1,22 +1,18 @@
 import Phaser from "phaser";
-import { createPlayeranims, shop } from "../main/Anims";
+import { loadAnimations, shop } from "../main/Anims";
 import { createBackground, forestRoad } from "../preLoad/assets";
 import { Backroundmovement } from "../main/GameMovement";
-import { Direction, mcAnimTypes } from "../../game/types/types";
+import { mcAnimTypes } from "../../game/types/types";
 import { CONFIG } from "../../PhaserGame";
+import { Player } from "../../objects/player";
+import { Jack } from "../../game/Karakter";
+import { PlayerManager } from "../../objects/player/manager";
 
 export default class MenuScene extends Phaser.Scene {
   logo = {} as Phaser.GameObjects.Image;
   brand = {} as Phaser.GameObjects.Text;
   gameTitle = {} as Phaser.GameObjects.Text;
-  player = {
-    sprite: {} as Phaser.GameObjects.Sprite,
-    lastdirection: Direction.right,
-  };
-  goblin = {
-    sprite: {} as Phaser.GameObjects.Sprite,
-    lastdirection: Direction["left"],
-  };
+  playerManager;
 
   backgrounds!: {
     rationx: number;
@@ -30,9 +26,17 @@ export default class MenuScene extends Phaser.Scene {
 
   constructor() {
     super("menu");
+    const player = new Player(new Jack());
+    this.playerManager = new PlayerManager();
+    this.playerManager.push({ player, UI: {} as any });
+  }
+
+  get player() {
+    return this.playerManager.mainPlayer().player;
   }
 
   create() {
+    this.playerManager.create(this, 300, 0);
     this.cameras.main.fadeIn(1000, 0, 0, 0);
     this.cameras.main.postFX.addBloom(
       undefined,
@@ -42,7 +46,7 @@ export default class MenuScene extends Phaser.Scene {
       0.1
     );
 
-    this.input.keyboard?.on("keydown-SPACE", () => this.handleStartGame());
+    this.input.keyboard?.once("keydown-SPACE", () => this.handleStartGame());
     this.logo = this.add.image(0, 0, "logo");
     this.brand = this.add
       .text(0, 0, "Created By\nDuoMuskeeters")
@@ -70,7 +74,7 @@ export default class MenuScene extends Phaser.Scene {
 
     createBackground(this);
     forestRoad(this);
-    createPlayeranims(this);
+    loadAnimations(this);
     this.physics.world.setBounds(0, 0, Infinity, CONFIG.height - 140);
     shop(this);
 
@@ -82,16 +86,16 @@ export default class MenuScene extends Phaser.Scene {
       -1 * CONFIG.height * 0.5,
       -1 * CONFIG.height * 0.5
     );
-    this?.player.sprite.anims.play(mcAnimTypes.FALL, true);
+    this.player.play(mcAnimTypes.FALL, true);
     this.player.sprite.anims.stopAfterRepeat(3);
     this.shopobject?.anims.play("shop", true);
 
-    this.player.sprite.on(Phaser.Animations.Events.ANIMATION_STOP, () => {
+    this.player.sprite.once(Phaser.Animations.Events.ANIMATION_STOP, () => {
       if (
-        this.player.sprite.anims.getName() === mcAnimTypes.FALL &&
+        this.player.sprite.anims.getName().includes(mcAnimTypes.FALL) &&
         this.player.sprite.body instanceof Phaser.Physics.Arcade.Body
       ) {
-        this.player.sprite.anims.play(mcAnimTypes.RUN, true);
+        this.player.play(mcAnimTypes.RUN, true);
         this.player.sprite.body.setVelocityX(300);
       }
     });
@@ -127,6 +131,7 @@ export default class MenuScene extends Phaser.Scene {
       Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
       () => {
         console.log("Starting game");
+        this.playerManager.destroy();
         this.scene.start("mainscene");
       }
     );

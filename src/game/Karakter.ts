@@ -74,17 +74,34 @@ export class State {
     this.Intelligence = Intelligence;
     this.Constitution = Constitution;
   }
+  calculate_power() {
+    this.max_hp = 100 + this.Constitution * 10;
+    this.HP_reg = 5 + this.Constitution * 0.1;
+    this.Armor = this.Constitution / (this.Constitution + 100);
+    this.max_sp = 50 + this.Intelligence * 5;
+    this.SP_reg = 2.5 + this.Intelligence * 0.05;
+    this.m_resist = this.Constitution / (this.Constitution + 100);
+    this.ATK = 30 + this.Strength * 2;
+    this.ATKRATE = 1 + this.Agility * 0.008;
+  }
 }
 
 export class Canlı {
   state: State;
 
-  constructor(state: State) {
-    this.state = state;
+  /**
+   * @internal use only
+   * take damage until 0 HP
+   */
+  _takeDamage(damage: number) {
+    return (this.state.HP = Math.max(0, this.state.HP - damage));
   }
-  isDead() {
-    return this.state.HP === 0;
+
+  constructor(state?: State) {
+    this.state = state ?? create_state("Canlı");
+    this.calculate_power();
   }
+  isDead = () => Math.floor(this.state.HP) === 0;
 
   /**
    * known as ATTACK_1 for all Canlı
@@ -95,11 +112,11 @@ export class Canlı {
    * const lastHp = hit(rakip);
    *
    */
-  basicAttack(rakip: Canlı) {
-    const damage = (1 - rakip.state.Armor) * this.state.ATK;
+  basicAttack(rakip?: Canlı) {
+    const damage = (1 - (rakip?.state.Armor ?? 0)) * this.state.ATK;
     return {
       damage,
-      hit: () => (rakip.state.HP = Math.max(0, rakip.state.HP - damage)),
+      hit: () => rakip?._takeDamage(damage) ?? 0,
     };
   }
   regeneration() {
@@ -125,24 +142,14 @@ export class Canlı {
     }
   }
   calculate_power() {
-    const s = this.state;
-    s.HP = 100 + s.Constitution * 10;
-    s.max_hp = s.HP;
-    s.HP_reg = 5 + s.Constitution * 0.1;
-    s.Armor = s.Constitution / (s.Constitution + 100);
-    s.SP = 50 + s.Intelligence * 5;
-    s.max_sp = s.SP;
-    s.SP_reg = 2.5 + s.Intelligence * 0.05;
-    s.m_resist = s.Constitution / (s.Constitution + 100);
-    s.ATK = 30 + s.Strength * 2;
-    s.ATKRATE = 1 + s.Agility * 0.008;
+    this.state.calculate_power();
   }
 }
 
 export class Character extends Canlı {
   exp: number;
 
-  constructor(state: State, exp: number = 0) {
+  constructor(state?: State, exp: number = 0) {
     super(state);
     this.exp = exp;
   }
@@ -164,10 +171,7 @@ export class Character extends Canlı {
   }
 }
 
-export function create_character(
-  username: string,
-  Level: number = 1
-): Character {
+function create_state(username: string, Level: number = 1): State {
   const Strength = 10;
   const Agility = 10;
   const Intelligence = 10;
@@ -203,18 +207,85 @@ export function create_character(
     Constitution,
   });
 
-  const character = new Character(character_state);
-  character.calculate_power();
-
-  return character;
+  return new State(character_state);
 }
 
-export class Warrior extends Character {
-  private lastHeavyStrike: Date | null = null;
-  static from_Character(character: Character) {
-    return new this(character.state, character.exp);
+export class Iroh extends Character {
+  ATK1_MS = 2 * 1000;
+  lastCombo: 0 | 1 | 2 = 0;
+  lastBasicAttack: Date | null = null;
+
+  inComboTime() {
+    return Date.now() - (this.lastBasicAttack?.getTime() ?? 0) < this.ATK1_MS;
   }
-  heavy_strike() {
+
+  basicAttack_ = {
+    damage: this.basicAttackDamage,
+    hit: this.basicAttackHit,
+  };
+
+  basicAttackDamage(rakip?: Canlı) {
+    const basic = super.basicAttack(rakip);
+    return this.inComboTime() && this.lastCombo === 2
+      ? basic.damage * 2
+      : basic.damage;
+  }
+
+  basicAttackHit(rakip?: Canlı) {
+    const basic = super.basicAttack(rakip);
+    switch (this.lastCombo) {
+      case 0:
+      case 1: {
+        if (this.inComboTime()) {
+          this.lastCombo += 1;
+        } else {
+          this.lastCombo = 1;
+        }
+        this.lastBasicAttack = new Date();
+        return rakip?._takeDamage(basic.damage) ?? 0;
+      }
+
+      case 2: {
+        this.lastCombo = 0;
+        if (this.inComboTime()) {
+          this.lastBasicAttack = new Date();
+          return rakip?._takeDamage(basic.damage * 2) ?? 0;
+        }
+
+        this.lastBasicAttack = new Date();
+        return rakip?._takeDamage(basic.damage) ?? 0;
+      }
+
+      default:
+        throw new Error("Combo sayısı 0, 1 veya 2 olmalıdır.");
+    }
+  }
+  heavyAttack(chunk: number = 12) {
+    const damage = (this.state.ATK * 2) / chunk;
+    const spCost = damage / 2;
+
+    if (this.state.SP >= spCost)
+      return {
+        damage,
+        hit: (rakipler: Canlı[]) => {
+          if (this.state.SP < spCost)
+            throw new Error("Ulti için gerekli koşullar sağlanmadı.");
+          this.state.SP = Math.max(this.state.SP - spCost, 0);
+          return rakipler.map(
+            (rakip) => (rakip.state.HP = Math.max(rakip.state.HP - damage, 0))
+          );
+        },
+      };
+
+    return {
+      damage,
+    };
+  }
+}
+
+export class Jack extends Character {
+  private lastHeavyStrike: Date | null = null;
+  heavyAttack() {
     const halfSP = CONFIG.physics.arcade.debug ? 5 : this.state.max_sp / 2;
     const damage = this.state.ATK * 2;
     const standByTime = CONFIG.physics.arcade.debug ? 100 : 5 * 1000;
@@ -252,7 +323,11 @@ export class Warrior extends Character {
   }
 }
 
-export class Mob extends Canlı {
+export class Archer extends Character {
+  arrowCount = 0;
+}
+
+export class MobCanlı extends Canlı {
   calculate_power() {
     super.calculate_power();
     this.state.max_sp = 150 - this.state.Intelligence * 0.5;
@@ -301,14 +376,17 @@ export class Mob extends Canlı {
   }
 }
 
-export class Giant extends Mob {
+export class Giant extends MobCanlı {
+  hasUlti = () => this.state.SP === this.state.max_sp;
   giant_skill() {
     const damage = this.state.ATK * 3;
     return {
       damage,
-      hit: (rakip?: Canlı) => {
-        if (rakip) rakip.state.HP = Math.max(rakip.state.HP - damage, 0);
-      },
+      consumeSP: () => (this.state.SP = 0),
+      hit: (rakipler: Canlı[]) =>
+        rakipler.map(
+          (rakip) => (rakip.state.HP = Math.max(rakip.state.HP - damage, 0))
+        ),
     };
   }
 }
@@ -369,7 +447,7 @@ export function create_giant(Level: number): Giant {
   return giant;
 }
 
-export class Bird extends Mob {
+export class Bird extends MobCanlı {
   calculate_bird_skill() {
     return this.state.Agility * 1.5 + this.state.ATK * 1.5;
   }

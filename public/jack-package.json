@@ -2,90 +2,73 @@
   "section1": {
     "files": [
       {
-        "url": "Idle.png",
+        "url": "jack/Idle.png",
         "type": "spritesheet",
-        "key": "idle",
+        "key": "jack-idle",
         "frameConfig": {
           "frameWidth": 200,
           "frameHeight": 200
         }
       },
       {
-        "url": "Run.png",
+        "url": "jack/Run.png",
         "type": "spritesheet",
-        "key": "run",
+        "key": "jack-run",
+        "frameConfig": {
+          "frameWidth": 200,
+          "frameHeight": 200
+        }
+      },
+
+      {
+        "url": "jack/take-hit.png",
+        "type": "spritesheet",
+        "key": "jack-take-hit",
         "frameConfig": {
           "frameWidth": 200,
           "frameHeight": 200
         }
       },
       {
-        "url": "hp-bar.png",
+        "url": "jack/Jump.png",
         "type": "spritesheet",
-        "key": "hp-bar",
-        "frameConfig": {
-          "frameWidth": 48,
-          "frameHeight": 12
-        }
-      },
-      {
-        "url": "mana-bar.png",
-        "type": "spritesheet",
-        "key": "mana-bar",
-        "frameConfig": {
-          "frameWidth": 48,
-          "frameHeight": 12
-        }
-      },
-      {
-        "url": "take-hit.png",
-        "type": "spritesheet",
-        "key": "take-hit",
+        "key": "jack-jump",
         "frameConfig": {
           "frameWidth": 200,
           "frameHeight": 200
         }
       },
       {
-        "url": "Jump.png",
+        "url": "jack/Attack1.png",
         "type": "spritesheet",
-        "key": "jump",
+        "key": "jack-attack1",
         "frameConfig": {
           "frameWidth": 200,
           "frameHeight": 200
         }
       },
       {
-        "url": "Attack1.png",
+        "url": "jack/Fall.png",
         "type": "spritesheet",
-        "key": "attack1",
+        "key": "jack-fall",
         "frameConfig": {
           "frameWidth": 200,
           "frameHeight": 200
         }
       },
       {
-        "url": "Fall.png",
+        "url": "jack/Attack2.png",
         "type": "spritesheet",
-        "key": "fall",
+        "key": "jack-attack2",
         "frameConfig": {
           "frameWidth": 200,
           "frameHeight": 200
         }
       },
       {
-        "url": "Attack2.png",
+        "url": "jack/Death.png",
         "type": "spritesheet",
-        "key": "attack2",
-        "frameConfig": {
-          "frameWidth": 200,
-          "frameHeight": 200
-        }
-      },
-      {
-        "url": "Death.png",
-        "type": "spritesheet",
-        "key": "death",
+        "key": "jack-death",
         "frameConfig": {
           "frameWidth": 200,
           "frameHeight": 200
