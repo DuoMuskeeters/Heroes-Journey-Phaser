@@ -13,8 +13,8 @@ export default class LoadScene extends Phaser.Scene {
     preloadAssets(this);
 
     this.load.on("complete", () => {
-      this.scene.start("menu");
       gameEvents.emit(eventTypes.GAME_LOADED);
+      this.scene.start(CONFIG.physics.arcade.debug ? "mainscene" : "menu");
     });
 
     this.load.image("logo", "DuoMuskeeters.jpg");
@@ -44,8 +44,6 @@ export default class LoadScene extends Phaser.Scene {
     for (let i = 0; i <= 3; i++) {
       this.array.push("Packages Loading" + ".".repeat(i));
     }
-
-   
   }
   update(time: number, delta: number): void {
     this.modnumber += 1;

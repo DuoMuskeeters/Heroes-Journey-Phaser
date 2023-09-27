@@ -89,6 +89,14 @@ export class State {
 export class Canlı {
   state: State;
 
+  /**
+   * @internal use only
+   * take damage until 0 HP
+   */
+  _takeDamage(damage: number) {
+    return (this.state.HP = Math.max(0, this.state.HP - damage));
+  }
+
   constructor(state?: State) {
     this.state = state ?? create_state("Canlı");
     this.calculate_power();
@@ -104,11 +112,11 @@ export class Canlı {
    * const lastHp = hit(rakip);
    *
    */
-  basicAttack(rakip: Canlı) {
-    const damage = (1 - rakip.state.Armor) * this.state.ATK;
+  basicAttack(rakip?: Canlı) {
+    const damage = (1 - (rakip?.state.Armor ?? 0)) * this.state.ATK;
     return {
       damage,
-      hit: () => (rakip.state.HP = Math.max(0, rakip.state.HP - damage)),
+      hit: () => rakip?._takeDamage(damage) ?? 0,
     };
   }
   regeneration() {
@@ -203,25 +211,66 @@ function create_state(username: string, Level: number = 1): State {
 }
 
 export class Iroh extends Character {
-  private lastHeavyStrike: Date | null = null;
-  heavyAttack() {
-    const halfSP = CONFIG.physics.arcade.debug ? 5 : this.state.max_sp / 2;
-    const damage = this.state.ATK * 2;
-    const standByTime = CONFIG.physics.arcade.debug ? 100 : 5 * 1000;
+  ATK1_MS = 2 * 1000;
+  lastCombo: 0 | 1 | 2 = 0;
+  lastBasicAttack: Date | null = null;
 
-    const hasUlti = () =>
-      (this.lastHeavyStrike?.getTime() ?? 0) + standByTime < Date.now();
+  inComboTime() {
+    return Date.now() - (this.lastBasicAttack?.getTime() ?? 0) < this.ATK1_MS;
+  }
 
-    if (this.state.SP >= halfSP && hasUlti())
+  basicAttack_ = {
+    damage: this.basicAttackDamage,
+    hit: this.basicAttackHit,
+  };
+
+  basicAttackDamage(rakip?: Canlı) {
+    const basic = super.basicAttack(rakip);
+    return this.inComboTime() && this.lastCombo === 2
+      ? basic.damage * 2
+      : basic.damage;
+  }
+
+  basicAttackHit(rakip?: Canlı) {
+    const basic = super.basicAttack(rakip);
+    switch (this.lastCombo) {
+      case 0:
+      case 1: {
+        if (this.inComboTime()) {
+          this.lastCombo += 1;
+        } else {
+          this.lastCombo = 1;
+        }
+        this.lastBasicAttack = new Date();
+        return rakip?._takeDamage(basic.damage) ?? 0;
+      }
+
+      case 2: {
+        this.lastCombo = 0;
+        if (this.inComboTime()) {
+          this.lastBasicAttack = new Date();
+          return rakip?._takeDamage(basic.damage * 2) ?? 0;
+        }
+
+        this.lastBasicAttack = new Date();
+        return rakip?._takeDamage(basic.damage) ?? 0;
+      }
+
+      default:
+        throw new Error("Combo sayısı 0, 1 veya 2 olmalıdır.");
+    }
+  }
+  heavyAttack(chunk: number = 12) {
+    const damage = (this.state.ATK * 2) / chunk;
+    const spCost = damage / 2;
+
+    if (this.state.SP >= spCost)
       return {
         damage,
-        standByTime,
-        lastHeavyStrike: this.lastHeavyStrike,
         hit: (rakipler: Canlı[]) => {
-          if (this.state.SP < halfSP || !hasUlti())
+          if (this.state.SP < spCost)
             throw new Error("Ulti için gerekli koşullar sağlanmadı.");
-          this.lastHeavyStrike = new Date();
-          this.state.SP = Math.max(this.state.SP - halfSP, 0);
+          this.state.SP = Math.max(this.state.SP - spCost, 0);
           return rakipler.map(
             (rakip) => (rakip.state.HP = Math.max(rakip.state.HP - damage, 0))
           );
@@ -230,8 +279,6 @@ export class Iroh extends Character {
 
     return {
       damage,
-      standByTime,
-      lastHeavyStrike: this.lastHeavyStrike,
     };
   }
 }

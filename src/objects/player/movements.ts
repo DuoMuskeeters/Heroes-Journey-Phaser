@@ -1,4 +1,9 @@
-import { direction, dirVelocity, mcAnimTypes } from "../../game/types";
+import {
+  direction,
+  dirVelocity,
+  McAnimTypes,
+  mcAnimTypes,
+} from "../../game/types";
 import { Player } from ".";
 import { Character, Iroh, Jack } from "../../game/Karakter";
 import MainScene from "../../scenes/main/MainScene";
@@ -26,7 +31,29 @@ const heavyStrikeonUpdate = (player: Player<Jack | Iroh>) => {
   }
 };
 const attackonUpdate = (player: Player<Character>) => {
-  player.play(mcAnimTypes.ATTACK_1, true);
+  let anim: McAnimTypes = mcAnimTypes.ATTACK_1;
+  if (player.character instanceof Iroh) {
+    const { lastCombo } = player.character;
+
+    if (player.character.inComboTime())
+      anim =
+        lastCombo === 2
+          ? mcAnimTypes.ATTACK_1_COMBO3
+          : mcAnimTypes.ATTACK_1_COMBO2;
+
+    console.log(
+      "lastCombo",
+      lastCombo,
+      "anim",
+      anim,
+      "inComboTime",
+      player.character.inComboTime(),
+
+      "lastBasic",
+      player.character.lastBasicAttack
+    );
+  }
+  player.play(anim, true);
   player.sprite.anims.stopAfterRepeat(0);
   player.sprite.body.setVelocityX(0);
 };

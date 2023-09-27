@@ -111,7 +111,7 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
           }
         ),
         frameRate: 10,
-        repeat: 0,
+        repeat: -1,
       });
       scene.anims.create({
         key: mc.type + "-" + mcAnimTypes.ATTACK_1_COMBO3,
@@ -123,7 +123,7 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
           }
         ),
         frameRate: 10,
-        repeat: 0,
+        repeat: -1,
       });
     }
     scene.anims.create({

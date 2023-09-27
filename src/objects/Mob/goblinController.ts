@@ -43,9 +43,9 @@ export default class goblinController {
     return isOverlapping;
   };
 
-  public arePlayersHitting = () => {
+  public arePlayersHitting = (skipFrame = false) => {
     return this.playerManager.map(({ player }) => {
-      const atFrame = Number(player.sprite.anims.getFrameName()) >= 4;
+      const atFrame = player.sprite.anims.currentFrame?.isLast || skipFrame
       const animsName = player.sprite.anims.getName();
 
       const isAttacking =
