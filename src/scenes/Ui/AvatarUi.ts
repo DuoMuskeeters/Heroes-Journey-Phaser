@@ -21,11 +21,7 @@ export function createAvatarFrame(scene: MainScene) {
         .setPosition(-230, -300);
     } else {
       UI.playerindexText = scene.add.text(0, 0, `PLAYER: ${player.index + 1}`);
-      UI.playerleveltext = scene.add.text(
-        0,
-        0,
-        `${player.character.state.Level}`
-      );
+      UI.playerleveltext = scene.add.text(0, 0, `${player.character.level}`);
       UI.frameLayer = otherPlayersFrame
         .createLayer("frame", [avatarframe!])
         ?.setDepth(200)

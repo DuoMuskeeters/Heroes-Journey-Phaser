@@ -10,7 +10,7 @@ export function createMob(scene: MainScene) {
     const { x = 0, y = 0, name, id } = objData;
     const { value } = objData.properties[0];
 
-    const newGoblin = new Mob(new Goblin(create_goblin(value).state));
+    const newGoblin = new Mob(new Goblin(name, create_goblin(value).state,value));
     newGoblin.create(
       scene,
       x,

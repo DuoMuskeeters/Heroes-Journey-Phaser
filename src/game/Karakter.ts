@@ -1,6 +1,6 @@
 import { Stats } from "fs";
 import { CONFIG } from "../PhaserGame";
-import { STATS } from "./mobStats";
+import { mobStats } from "./mobStats";
 
 export class State {
   HP: number;
@@ -53,6 +53,8 @@ export class State {
     this.max_sp = this.Intelligence * 4;
     this.ATK = this.Strength * 0.8;
     this.ATKRATE = this.Agility * 0.004;
+    this.HP = this.max_hp;
+    this.SP = this.max_sp;
   }
 }
 
@@ -91,18 +93,12 @@ export class Canlı {
       hit: () => rakip?._takeDamage(damage) ?? 0,
     };
   }
-  regeneration() {
-    const reg = 0.025;
-    if (!this.isDead()) {
-      this.state.HP = Math.min(this.state.max_hp, this.state.HP * reg);
-      this.state.SP = Math.min(this.state.max_sp, this.state.SP * reg);
-    }
-  }
+  
   regenerationCharacter() {
     const reg = 0.025;
+    const HP_reg: number = this.state.HP * reg;
+    const SP_reg: number = this.state.SP * reg;
     if (!this.isDead()) {
-      const HP_reg: number = this.state.HP * reg;
-      const SP_reg: number = this.state.SP * reg;
       return {
         HP_reg,
         SP_reg,
@@ -112,6 +108,10 @@ export class Canlı {
         },
       };
     }
+    return {
+      HP_reg,
+      SP_reg,
+    };
   }
   calculate_power() {
     this.state.calculate_power();
@@ -147,7 +147,7 @@ export class Character extends Canlı {
   }
 }
 
-function create_state(Level: number = 1): State {
+export function create_state(Level: number = 1): State {
   const character_state: State = new State({
     HP: 200,
     max_hp: 200,
@@ -174,6 +174,7 @@ export class Iroh extends Character {
   }
 
   // Bu nedir hocam
+  // öylesine yazmış -ali
   basicAttack_ = {
     damage: this.basicAttackDamage,
     hit: this.basicAttackHit,
@@ -181,17 +182,12 @@ export class Iroh extends Character {
 
   basicAttackDamage(rakip?: Canlı) {
     const basic = super.basicAttack(rakip);
-    if (this.inComboTime()) {
-      return this.lastCombo === 0
-        ? basic.damage * 0.3
-        : this.lastCombo === 1
-        ? basic.damage * 0.3
-        : basic.damage * 0.4;
-    }
-    // bu sekilde de kullaniliyor mu anlatmani beklerim ustam -ferhat
-    // return this.inComboTime() && this.lastCombo === 2
-    // ? basic.damage * 0.4
-    // : basic.damage;
+
+    return this.inComboTime() && this.lastCombo === 2
+      ? basic.damage * 0.4
+      : this.inComboTime()
+      ? basic.damage * 0.3
+      : 0;
   }
 
   basicAttackHit(rakip?: Canlı) {
@@ -226,7 +222,7 @@ export class Iroh extends Character {
   // heavy atackin sp dengesi henuz hazir degil
   spell_Q(chunk: number = 12) {
     const damage = (this.state.ATK * 2) / chunk;
-    const spCost = 50/chunk;
+    const spCost = 50 / chunk;
 
     if (this.state.SP >= spCost)
       return {
@@ -246,7 +242,7 @@ export class Iroh extends Character {
     };
   }
   spell_E() {
-    const damage = (this.state.ATK * 3);
+    const damage = this.state.ATK * 3;
     const spCost = 40;
 
     if (this.state.SP >= spCost)
@@ -271,7 +267,7 @@ export class Iroh extends Character {
 export class Jack extends Character {
   private lastHeavyStrike: Date | null = null;
   spell_Q() {
-    const spCost = CONFIG.physics.arcade.debug ? 5 : 50 ;
+    const spCost = CONFIG.physics.arcade.debug ? 5 : 50;
     const damage = this.state.ATK * 3;
     const standByTime = CONFIG.physics.arcade.debug ? 100 : 5 * 1000;
 
@@ -307,11 +303,18 @@ export class Archer extends Character {
 }
 
 export class MobCanlı extends Canlı {
+  tier: number;
+  constructor(name: string, state: State, tier: number) {
+    super(name, state);
+    this.tier = tier;
+  }
+
   calculate_power() {
     super.calculate_power();
     this.state.max_sp = 100;
     this.state.SP = 0;
   }
+
   OnUltimate() {
     if (this.state.SP === this.state.max_sp) {
       this.state.SP -= this.state.max_sp;
@@ -319,22 +322,32 @@ export class MobCanlı extends Canlı {
     }
     return false;
   }
+
   regenerationMob(hp_reg: number) {
     const sp_reg = this.state.Intelligence * 0.002;
     const SP_reg_value = sp_reg * 100;
+    const HP_reg: number = this.state.HP * hp_reg;
+    const SP_reg: number = this.state.SP * sp_reg;
     if (!this.isDead()) {
-      const HP_reg: number = this.state.HP * hp_reg;
-      const SP_reg: number = this.state.SP * sp_reg;
       return {
         HP_reg,
         SP_reg,
         regenerate: () => {
           this.state.HP = Math.min(this.state.max_hp, this.state.HP + HP_reg);
-          this.state.SP = Math.min(this.state.max_sp, this.state.SP + SP_reg_value);
+          this.state.SP = Math.min(
+            this.state.max_sp,
+            this.state.SP + SP_reg_value
+          );
         },
       };
     }
+    return {
+      HP_reg,
+      SP_reg,
+      regenerate: () => console.log("🤷‍♂️"),
+    };
   }
+
   basicAttack(rakip: Canlı) {
     if (!(rakip instanceof Character)) {
       throw new Error("NOTE: şu anda mob sadece karaktere vurabilir.");
@@ -358,15 +371,15 @@ export class Goblin extends MobCanlı {
     };
   }
 }
-export function create_goblin(Level: number): Goblin {
+export function create_goblin(tier: number): Goblin {
   const name = "Goblin";
-  const _ = STATS.goblin.TIER_1
-  const goblin_state = create_state()
-  goblin_state.Strength= _.Strength
-  goblin_state.Agility= _.Agility
-  goblin_state.Intelligence= _.Intelligence
-  goblin_state.Constitution= _.Constitution
-  const goblin = new Goblin(name, goblin_state);
+  const _ = mobStats.goblin.TIER_1;
+  const goblin_state = create_state();
+  goblin_state.Strength = _.Strength;
+  goblin_state.Agility = _.Agility;
+  goblin_state.Intelligence = _.Intelligence;
+  goblin_state.Constitution = _.Constitution;
+  const goblin = new Goblin(name, goblin_state, tier);
   goblin.calculate_power();
   return goblin;
 }

@@ -1,12 +1,5 @@
 import { MobCanlı } from "../../game/Karakter";
-import {
-  type Direction,
-  direction,
-  GoblinAnimTypes,
-  GoblinTookHit,
-  mobEvents,
-  mobEventsTypes,
-} from "../../game/types";
+import { type Direction, direction, GoblinAnimTypes } from "../../game/types";
 
 export class Mob<T extends MobCanlı> {
   private _scene?: Phaser.Scene;
