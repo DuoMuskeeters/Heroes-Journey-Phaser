@@ -7,7 +7,7 @@ import {
   mcEvents,
 } from "../../game/types/events";
 import { mcAnimTypes } from "../../game/types/types";
-import { Player } from "../../objects/player";
+import { Player, getCharacterType } from "../../objects/player";
 import MainScene from "./MainScene";
 
 export function playerAttackListener(player: Player<Character>) {
@@ -34,7 +34,7 @@ export function playerAttackListener(player: Player<Character>) {
             mobEvents.emit(mobEventsTypes.TOOK_HIT, mobController.goblin.id, {
               damage,
               stun: false,
-              fromJack: true,
+              from: getCharacterType(player.character),
             } satisfies GoblinTookHit);
           });
         } else if (player.character instanceof Iroh) {
@@ -46,7 +46,7 @@ export function playerAttackListener(player: Player<Character>) {
             mobEvents.emit(mobEventsTypes.TOOK_HIT, closest.goblin.id, {
               damage,
               stun: false,
-              fromJack: true,
+              from: getCharacterType(player.character),
             } satisfies GoblinTookHit);
         } else throw new Error("unknown character type for ATTACK_1");
       } else if (animation.key.includes(mcAnimTypes.ATTACK_2)) {
@@ -71,7 +71,7 @@ export function playerAttackListener(player: Player<Character>) {
             mobEvents.emit(mobEventsTypes.TOOK_HIT, mobController.goblin.id, {
               damage: damages[idx],
               stun: true,
-              fromJack: true,
+              from: getCharacterType(player.character),
             } satisfies GoblinTookHit);
         });
       }
@@ -110,7 +110,7 @@ export function playerAttackListener(player: Player<Character>) {
               mobEvents.emit(mobEventsTypes.TOOK_HIT, mobController.goblin.id, {
                 damage: damages[idx],
                 stun: true,
-                fromJack: true,
+                from: getCharacterType(player.character),
               } satisfies GoblinTookHit);
             });
           }

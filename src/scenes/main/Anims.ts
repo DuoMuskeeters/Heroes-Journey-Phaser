@@ -18,9 +18,9 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
       fall: 2,
       death: 10,
       takehit: 3,
-      attack1: 4,
+      attack1: 3,
       attack1_combo2: 3,
-      attack1_combo3: 3,
+      attack1_combo3: 4,
       attack2: 15,
     } as const,
     {
@@ -149,7 +149,7 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
         }
       ),
       frameRate: 10,
-      repeat: 1,
+      repeat: -1,
     });
 
     scene.anims.create({

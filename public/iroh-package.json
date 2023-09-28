@@ -48,7 +48,7 @@
         }
       },
       {
-        "url": "iroh/Attack3.png",
+        "url": "iroh/Attack1-combo3.png",
         "type": "spritesheet",
         "key": "iroh-attack1-combo3",
         "frameConfig": {
@@ -57,7 +57,7 @@
         }
       },
       {
-        "url": "iroh/iroh.png",
+        "url": "iroh/Attack-2.png",
         "type": "spritesheet",
         "key": "iroh-attack2",
         "frameConfig": {
@@ -75,7 +75,7 @@
         }
       },
       {
-        "url": "iroh/Attack2.png",
+        "url": "iroh/Attack1-combo2.png",
         "type": "spritesheet",
         "key": "iroh-attack1-combo2",
         "frameConfig": {

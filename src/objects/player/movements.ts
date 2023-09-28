@@ -39,7 +39,9 @@ const attackonUpdate = (player: Player<Character>) => {
       anim =
         lastCombo === 2
           ? mcAnimTypes.ATTACK_1_COMBO3
-          : mcAnimTypes.ATTACK_1_COMBO2;
+          : lastCombo === 1
+          ? mcAnimTypes.ATTACK_1_COMBO2
+          : mcAnimTypes.ATTACK_1;
 
     console.log(
       "lastCombo",
@@ -109,7 +111,7 @@ export function playerMovementUpdate(player: Player<Character>) {
     .getName()
     .includes(mcAnimTypes.ATTACK_1);
   const OnStun = player.sprite.anims.getName().includes(mcAnimTypes.TAKE_HIT);
-  const canMoVE = !attackQActive && !OnStun && !attack1Active;
+  const canMoVE = !OnStun && !attack1Active;
 
   setAttackrect(player);
 
@@ -135,12 +137,13 @@ export function playerMovementUpdate(player: Player<Character>) {
     }
     return;
   }
-  if ((canMoVE && isNotDown) || !isanimplaying) ıdleonUpdate(player);
+  // can't idle while attackQactive
+  if ((canMoVE && isNotDown && !attackQActive) || !isanimplaying)
+    ıdleonUpdate(player);
   if (OnStun) return;
   if (W_isDOWN && !attackQActive) jumpandFallonupdate(player);
-  if (RunisDown && !W_isDOWN && canMoVE) runonUpdate(player);
-  // if ((mouse || Space_isD) && !attckQActive) attackonUpdate(player);
-  if (Space_isD && !attackQActive && canMoVE) attackonUpdate(player);
+  if (RunisDown && !W_isDOWN && canMoVE) runonUpdate(player); //Can run while AttackQactive
+  if (Space_isD && canMoVE) attackonUpdate(player); //Can base attack while AttackQctive
 
   if (justQ) {
     if (player.character instanceof Jack)

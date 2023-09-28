@@ -1,3 +1,5 @@
+import { Character } from "../Karakter";
+
 export const eventTypes = {
   GAME_LOADED: "GAME_LOADED",
 } as const;
@@ -25,7 +27,7 @@ export type MobEventsTypes =
 export type GoblinTookHit = {
   damage: number;
   stun: boolean;
-  fromJack: true;
+  from: "jack" | "iroh" | "unknown";
 };
 
 export const gameEvents = new Phaser.Events.EventEmitter();
