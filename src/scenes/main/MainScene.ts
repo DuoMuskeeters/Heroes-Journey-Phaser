@@ -125,11 +125,8 @@ export default class MainScene extends Phaser.Scene {
     setInterval(() => {
       if (this.scene.isPaused()) return;
       this.playerManager.forEach(({ player }) => {
-        const {
-          regenerate: regenerate,
-          HP_reg,
-          SP_reg,
-        } = player.character.regenerationCharacter();
+        const { regenerate: regenerate } =
+          player.character.regenerationCharacter();
         if (regenerate) regenerate();
       });
       this.mobController.forEach((controller) => {

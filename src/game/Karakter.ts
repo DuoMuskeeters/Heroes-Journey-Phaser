@@ -93,26 +93,7 @@ export class Canlı {
       hit: () => rakip?._takeDamage(damage) ?? 0,
     };
   }
-  
-  regenerationCharacter() {
-    const reg = 0.025;
-    const HP_reg: number = this.state.HP * reg;
-    const SP_reg: number = this.state.SP * reg;
-    if (!this.isDead()) {
-      return {
-        HP_reg,
-        SP_reg,
-        regenerate: () => {
-          this.state.HP = Math.min(this.state.max_hp, this.state.HP + HP_reg);
-          this.state.SP = Math.min(this.state.max_sp, this.state.SP + SP_reg);
-        },
-      };
-    }
-    return {
-      HP_reg,
-      SP_reg,
-    };
-  }
+
   calculate_power() {
     this.state.calculate_power();
   }
@@ -144,6 +125,25 @@ export class Character extends Canlı {
       this.stat_point -= 1;
       this.calculate_power();
     }
+  }
+  regenerationCharacter() {
+    const reg = 0.025;
+    const HP_reg: number = this.state.HP * reg;
+    const SP_reg: number = this.state.SP * reg;
+    if (!this.isDead()) {
+      return {
+        HP_reg,
+        SP_reg,
+        regenerate: () => {
+          this.state.HP = Math.min(this.state.max_hp, this.state.HP + HP_reg);
+          this.state.SP = Math.min(this.state.max_sp, this.state.SP + SP_reg);
+        },
+      };
+    }
+    return {
+      HP_reg,
+      SP_reg,
+    };
   }
 }
 
