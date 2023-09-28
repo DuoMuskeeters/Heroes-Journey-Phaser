@@ -1,4 +1,4 @@
-import { Giant, create_giant } from "../../game/Karakter";
+import { Goblin, create_goblin } from "../../game/Karakter";
 import { goblinAnimTypes } from "../../game/types/types";
 import { Mob } from "../../objects/Mob";
 import MainScene from "./MainScene";
@@ -10,7 +10,7 @@ export function createMob(scene: MainScene) {
     const { x = 0, y = 0, name, id } = objData;
     const { value } = objData.properties[0];
 
-    const newGoblin = new Mob(new Giant(create_giant(value).state));
+    const newGoblin = new Mob(new Goblin(create_goblin(value).state));
     newGoblin.create(
       scene,
       x,

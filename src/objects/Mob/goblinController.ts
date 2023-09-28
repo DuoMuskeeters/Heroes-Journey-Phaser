@@ -16,7 +16,7 @@ import {
   mcAnimTypes,
 } from "../../game/types/types";
 import { createCollider } from "../../scenes/main/TileGround";
-import { Character, Giant } from "../../game/Karakter";
+import { Character, Goblin } from "../../game/Karakter";
 import { Mob } from ".";
 import { PlayerManager } from "../player/manager";
 import MainScene from "../../scenes/main/MainScene";
@@ -115,7 +115,7 @@ export default class goblinController {
   };
 
   constructor(
-    public goblin: Mob<Giant>,
+    public goblin: Mob<Goblin>,
     public playerManager: PlayerManager,
     public mobUI = {
       healtbar: {} as Phaser.GameObjects.Graphics,
@@ -138,7 +138,7 @@ export default class goblinController {
         }
         if (animation.key === goblinAnimTypes.ULTI) {
           const { player } = this.playerManager[this.closestPlayer()];
-          goblin.mob.giant_skill().consumeSP();
+          goblin.mob.goblin_skill().consumeSP();
           this.bomb = createGoblinBomb(goblin.scene, player);
           // TODO: remove this line
           const mainscene = PhaserGame.scene.keys.mainscene as MainScene;
@@ -211,7 +211,7 @@ export default class goblinController {
         characters.push(player.character);
       });
 
-      this.goblin.mob.giant_skill().hit(characters); // giant skill hit is now Array instead of single character
+      this.goblin.mob.goblin_skill().hit(characters); // giant skill hit is now Array instead of single character
     });
   }
   hasUltimate = this.goblin.mob.hasUlti;

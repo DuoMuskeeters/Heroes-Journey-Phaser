@@ -53,7 +53,7 @@ export function playerAttackListener(player: Player<Character>) {
         let damages: number[];
 
         if (player.character instanceof Jack) {
-          const { hit } = player.character.heavyAttack();
+          const { hit } = player.character.spell_Q();
           if (!hit) throw new Error("player heavy strike not ready but used");
           damages = hit(affectedMobs.map((ctrl) => ctrl.goblin.mob));
         } else if (player.character instanceof Iroh) {
@@ -96,7 +96,7 @@ export function playerAttackListener(player: Player<Character>) {
           const isAtFrame = !!frames.find((f) => f.index === frame.index);
 
           if (isAtFrame) {
-            const { hit } = player.character.heavyAttack();
+            const { hit } = player.character.spell_Q();
             if (!hit) {
               console.log(
                 `[PlayerAttack] player ${player.index} heavy strike has exhausted`

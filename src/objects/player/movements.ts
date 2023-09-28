@@ -23,7 +23,7 @@ const jumpandFallonupdate = (player: Player<Character>) => {
   player.sprite.body.setVelocityY(-900);
 };
 const heavyStrikeonUpdate = (player: Player<Jack | Iroh>) => {
-  const { hit: heavyStrikeHit } = player.character.heavyAttack();
+  const { hit: heavyStrikeHit } = player.character.spell_Q();
   if (heavyStrikeHit) {
     player.play(mcAnimTypes.ATTACK_2, true);
     player.sprite.anims.stopAfterRepeat(0);

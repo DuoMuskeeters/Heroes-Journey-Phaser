@@ -1,27 +1,15 @@
-const STATS = {
+import { Stats } from "fs";
+
+export const STATS = {
   goblin: {
     TIER_1: {
-      HP: 100,
-      ATK: 2,
-      REG: 0.25,
+      Strength: 40,
+      Agility: 25,
+      Intelligence: 25,
+      Constitution: 60,
+      hp_reg: 1.025,
     },
-    TIER_2: {
-      HP: 200,
-      ATK: 2.5,
-      REG: 0.25,
-    },
-  },
-  skeleton: {
-    TIER_1: {
-      HP: 100,
-      ATK: 2,
-      REG: 0.25,
-    },
-    TIER_2: {
-      HP: 200,
-      ATK: 2.5,
-      REG: 0.25,
-    },
+    
   },
 };
 
