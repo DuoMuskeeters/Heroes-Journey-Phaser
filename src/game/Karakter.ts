@@ -1,6 +1,5 @@
-import { Stats } from "fs";
 import { CONFIG } from "../PhaserGame";
-import { mobStats } from "./mobStats";
+import { baseTypes } from "./playerStats";
 
 export class State {
   HP: number;
@@ -69,9 +68,9 @@ export class Canlı {
     return (this.state.HP = Math.max(0, this.state.HP - damage));
   }
 
-  constructor(name: string, state?: State) {
+  constructor(name: string, state: State) {
     this.name = name;
-    this.state = state ?? create_state();
+    this.state = state;
     this.calculate_power();
   }
   isDead = () => Math.floor(this.state.HP) === 0;
@@ -104,7 +103,7 @@ export class Character extends Canlı {
   level: number;
   stat_point: number;
 
-  constructor(name: string, state?: State, exp: number = 0, level: number = 1) {
+  constructor(name: string, state: State, exp: number = 0, level: number = 1) {
     super(name, state);
     this.exp = exp;
     this.level = level;
@@ -147,21 +146,22 @@ export class Character extends Canlı {
   }
 }
 
-export function create_state(Level: number = 1): State {
-  const character_state: State = new State({
+export function createState(baseStats: baseTypes): State {
+  const _ = baseStats;
+  const canlıState: State = new State({
     HP: 200,
     max_hp: 200,
     max_sp: 100,
     SP: 100,
     ATK: 20,
     ATKRATE: 1,
-    Strength: 25,
-    Agility: 25,
-    Intelligence: 25,
-    Constitution: 25,
+    Strength: _.Strength,
+    Agility: _.Agility,
+    Constitution: _.Constitution,
+    Intelligence: _.Intelligence,
   });
 
-  return new State(character_state);
+  return new State(canlıState);
 }
 
 export class Iroh extends Character {
@@ -185,9 +185,7 @@ export class Iroh extends Character {
 
     return this.inComboTime() && this.lastCombo === 2
       ? basic.damage * 0.4
-      : this.inComboTime()
-      ? basic.damage * 0.3
-      : 0;
+      : basic.damage * 0.3;
   }
 
   basicAttackHit(rakip?: Canlı) {
@@ -303,10 +301,10 @@ export class Archer extends Character {
 }
 
 export class MobCanlı extends Canlı {
-  tier: number;
-  constructor(name: string, state: State, tier: number) {
+  tier: 1 | 2 | 3 | 4;
+  constructor(name: string, state: State, tier: 1 | 2 | 3 | 4) {
     super(name, state);
-    this.tier = tier;
+    this.tier = tier ?? 1;
   }
 
   calculate_power() {
@@ -371,18 +369,7 @@ export class Goblin extends MobCanlı {
     };
   }
 }
-export function create_goblin(tier: number): Goblin {
-  const name = "Goblin";
-  const _ = mobStats.goblin.TIER_1;
-  const goblin_state = create_state();
-  goblin_state.Strength = _.Strength;
-  goblin_state.Agility = _.Agility;
-  goblin_state.Intelligence = _.Intelligence;
-  goblin_state.Constitution = _.Constitution;
-  const goblin = new Goblin(name, goblin_state, tier);
-  goblin.calculate_power();
-  return goblin;
-}
+
 // random mob eksik
 export function level_exp(
   level: number,

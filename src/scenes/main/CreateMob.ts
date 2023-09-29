@@ -1,16 +1,20 @@
-import { Goblin, create_goblin } from "../../game/Karakter";
+import { Goblin, createState } from "../../game/Karakter";
 import { goblinAnimTypes } from "../../game/types/types";
 import { Mob } from "../../objects/Mob";
 import MainScene from "./MainScene";
 import { createCollider } from "./TileGround";
 import goblinController from "../../objects/Mob/goblinController";
+import { mobStats } from "../../game/mobStats";
 
 export function createMob(scene: MainScene) {
   scene.tilemap.getObjectLayer("goblin")?.objects.forEach((objData) => {
     const { x = 0, y = 0, name, id } = objData;
-    const { value } = objData.properties[0];
+    const value: 1 | 2 | 3 | 4 = objData.properties[0].value;
 
-    const newGoblin = new Mob(new Goblin(name, create_goblin(value).state,value));
+    const newGoblin = new Mob(
+      new Goblin(name, createState(mobStats.goblin[`TIER_${value}`]), value)
+    );
+    newGoblin.mob.calculate_power(); //  this in create_goblin too 
     newGoblin.create(
       scene,
       x,

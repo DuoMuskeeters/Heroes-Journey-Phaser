@@ -30,7 +30,7 @@ export function playerAttackListener(player: Player<Character>) {
             const goblin = mobController.goblin.mob;
             const { damage, hit } = player.character.basicAttack(goblin);
             hit();
-
+            console.log(damage);
             mobEvents.emit(mobEventsTypes.TOOK_HIT, mobController.goblin.id, {
               damage,
               stun: false,
@@ -50,12 +50,13 @@ export function playerAttackListener(player: Player<Character>) {
             } satisfies GoblinTookHit);
         } else throw new Error("unknown character type for ATTACK_1");
       } else if (animation.key.includes(mcAnimTypes.ATTACK_2)) {
-        let damages: number[];
+        let damages: number;
 
         if (player.character instanceof Jack) {
-          const { hit } = player.character.spell_Q();
+          const { hit, damage } = player.character.spell_Q();
           if (!hit) throw new Error("player heavy strike not ready but used");
-          damages = hit(affectedMobs.map((ctrl) => ctrl.goblin.mob));
+          hit(affectedMobs.map((ctrl) => ctrl.goblin.mob));
+          damages = damage;
         } else if (player.character instanceof Iroh) {
           // Iroh has continuous attack, handled in ANIMATION_UPDATE
           // const { hit } = player.character.heavyAttack();
@@ -69,7 +70,7 @@ export function playerAttackListener(player: Player<Character>) {
         affectedMobs.forEach((mobController, idx) => {
           if (damages)
             mobEvents.emit(mobEventsTypes.TOOK_HIT, mobController.goblin.id, {
-              damage: damages[idx],
+              damage: damages,
               stun: true,
               from: getCharacterType(player.character),
             } satisfies GoblinTookHit);
@@ -96,19 +97,19 @@ export function playerAttackListener(player: Player<Character>) {
           const isAtFrame = !!frames.find((f) => f.index === frame.index);
 
           if (isAtFrame) {
-            const { hit } = player.character.spell_Q();
+            const { hit, damage } = player.character.spell_Q();
             if (!hit) {
               console.log(
                 `[PlayerAttack] player ${player.index} heavy strike has exhausted`
               );
               return player.sprite.anims.stop();
             }
-            damages = hit(affectedMobs.map((ctrl) => ctrl.goblin.mob));
+            hit(affectedMobs.map((ctrl) => ctrl.goblin.mob));
 
             mcEvents.emit(mcEventTypes.HEAVY_ATTACK_USED, player.index);
             affectedMobs.forEach((mobController, idx) => {
               mobEvents.emit(mobEventsTypes.TOOK_HIT, mobController.goblin.id, {
-                damage: damages[idx],
+                damage: damage,
                 stun: true,
                 from: getCharacterType(player.character),
               } satisfies GoblinTookHit);

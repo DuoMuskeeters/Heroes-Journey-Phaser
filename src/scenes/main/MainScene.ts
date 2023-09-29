@@ -13,7 +13,7 @@ import { createMob as createMobs } from "./CreateMob";
 import { createAvatarFrame } from "../Ui/AvatarUi";
 
 import { Player } from "../../objects/player";
-import { Iroh, Jack, create_state } from "../../game/Karakter";
+import { Iroh, Jack, createState } from "../../game/Karakter";
 import {
   GoblinTookHit,
   mcAnimTypes,
@@ -25,8 +25,8 @@ import {
 import { CONFIG } from "../../PhaserGame";
 import goblinController from "../../objects/Mob/goblinController";
 import { PlayerManager } from "../../objects/player/manager";
-import { Stats } from "fs";
 import { mobStats } from "../../game/mobStats";
+import { playerStats } from "../../game/playerStats";
 
 type Key = Phaser.Input.Keyboard.Key;
 
@@ -68,9 +68,9 @@ export default class MainScene extends Phaser.Scene {
 
   constructor() {
     super("mainscene");
-    const player = new Player(new Jack("jack", create_state(1)));
+    const player = new Player(new Jack("jack", createState(playerStats.jack)));
     this.playerManager = new PlayerManager();
-    const player2 = new Player(new Iroh("iroh", create_state(1)));
+    const player2 = new Player(new Iroh("iroh", createState(playerStats.iroh)));
     this.playerManager.push({ player, UI: {} as any });
     this.playerManager.push({ player: player2, UI: {} as any });
   }
