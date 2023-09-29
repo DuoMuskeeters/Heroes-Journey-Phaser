@@ -1,5 +1,3 @@
-import { Character } from "../Karakter";
-
 export const eventTypes = {
   GAME_LOADED: "GAME_LOADED",
 } as const;

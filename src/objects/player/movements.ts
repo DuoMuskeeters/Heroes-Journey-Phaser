@@ -23,8 +23,7 @@ const jumpandFallonupdate = (player: Player<Character>) => {
   player.sprite.body.setVelocityY(-900);
 };
 const heavyStrikeonUpdate = (player: Player<Jack | Iroh>) => {
-  const { hit: heavyStrikeHit } = player.character.spell_Q();
-  if (heavyStrikeHit) {
+  if (player.character.spellQ.has()) {
     player.play(mcAnimTypes.ATTACK_2, true);
     player.sprite.anims.stopAfterRepeat(0);
     player.sprite.body.setVelocityX(0);
@@ -42,18 +41,6 @@ const attackonUpdate = (player: Player<Character>) => {
           : lastCombo === 1
           ? mcAnimTypes.ATTACK_1_COMBO2
           : mcAnimTypes.ATTACK_1;
-
-    console.log(
-      "lastCombo",
-      lastCombo,
-      "anim",
-      anim,
-      "inComboTime",
-      player.character.inComboTime(),
-
-      "lastBasic",
-      player.character.lastBasicAttack
-    );
   }
   player.play(anim, true);
   player.sprite.anims.stopAfterRepeat(0);
@@ -110,6 +97,9 @@ export function playerMovementUpdate(player: Player<Character>) {
   const attack1Active = player.sprite.anims
     .getName()
     .includes(mcAnimTypes.ATTACK_1);
+
+  const cancelableQ = attackQActive && player.character.spellQ.cancelable
+  const cancelableA1 = attack1Active && player.character.basicAttack.cancelable
   const OnStun = player.sprite.anims.getName().includes(mcAnimTypes.TAKE_HIT);
   const canMoVE = !OnStun && !attack1Active;
 

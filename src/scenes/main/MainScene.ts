@@ -13,7 +13,7 @@ import { createMob as createMobs } from "./CreateMob";
 import { createAvatarFrame } from "../Ui/AvatarUi";
 
 import { Player } from "../../objects/player";
-import { Iroh, Jack, createState } from "../../game/Karakter";
+import { Iroh, Jack } from "../../game/Karakter";
 import {
   GoblinTookHit,
   mcAnimTypes,
@@ -26,7 +26,7 @@ import { CONFIG } from "../../PhaserGame";
 import goblinController from "../../objects/Mob/goblinController";
 import { PlayerManager } from "../../objects/player/manager";
 import { mobStats } from "../../game/mobStats";
-import { playerStats } from "../../game/playerStats";
+import { playerBaseStates } from "../../game/playerStats";
 
 type Key = Phaser.Input.Keyboard.Key;
 
@@ -68,9 +68,9 @@ export default class MainScene extends Phaser.Scene {
 
   constructor() {
     super("mainscene");
-    const player = new Player(new Jack("jack", createState(playerStats.jack)));
+    const player = new Player(new Jack("jack", playerBaseStates.jack));
     this.playerManager = new PlayerManager();
-    const player2 = new Player(new Iroh("iroh", createState(playerStats.iroh)));
+    const player2 = new Player(new Iroh("iroh", playerBaseStates.iroh));
     this.playerManager.push({ player, UI: {} as any });
     this.playerManager.push({ player: player2, UI: {} as any });
   }
@@ -125,12 +125,11 @@ export default class MainScene extends Phaser.Scene {
     setInterval(() => {
       if (this.scene.isPaused()) return;
       this.playerManager.forEach(({ player }) => {
-        const { regenerate: regenerate } =
-          player.character.regenerationCharacter();
+        const { regenerate } = player.character.regeneration();
         if (regenerate) regenerate();
       });
       this.mobController.forEach((controller) => {
-        const { regenerate } = controller.goblin.mob.regenerationMob(
+        const { regenerate } = controller.goblin.mob.regeneration(
           mobStats.goblin.TIER_1.hp_reg
         );
         if (regenerate) regenerate();

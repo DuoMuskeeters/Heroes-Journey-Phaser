@@ -5,9 +5,9 @@ import { Backroundmovement } from "../main/GameMovement";
 import { mcAnimTypes } from "../../game/types/types";
 import { CONFIG } from "../../PhaserGame";
 import { Player } from "../../objects/player";
-import { Jack, createState } from "../../game/Karakter";
+import { Jack } from "../../game/Karakter";
 import { PlayerManager } from "../../objects/player/manager";
-import { playerStats } from "../../game/playerStats";
+import { playerBaseStates } from "../../game/playerStats";
 
 export default class MenuScene extends Phaser.Scene {
   logo = {} as Phaser.GameObjects.Image;
@@ -27,7 +27,7 @@ export default class MenuScene extends Phaser.Scene {
 
   constructor() {
     super("menu");
-    const player = new Player(new Jack("jack", createState(playerStats.jack)));
+    const player = new Player(new Jack("jack", playerBaseStates.jack));
     this.playerManager = new PlayerManager();
     this.playerManager.push({ player, UI: {} as any });
   }

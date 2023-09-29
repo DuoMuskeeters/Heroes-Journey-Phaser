@@ -45,7 +45,7 @@ export default class goblinController {
 
   public arePlayersHitting = (skipFrame = false) => {
     return this.playerManager.map(({ player }) => {
-      const atFrame = player.sprite.anims.currentFrame?.isLast || skipFrame
+      const atFrame = player.sprite.anims.currentFrame?.isLast || skipFrame;
       const animsName = player.sprite.anims.getName();
 
       const isAttacking =
@@ -138,7 +138,7 @@ export default class goblinController {
         }
         if (animation.key === goblinAnimTypes.ULTI) {
           const { player } = this.playerManager[this.closestPlayer()];
-          goblin.mob.goblin_skill().consumeSP();
+          goblin.mob.spellQ.onUse();
           this.bomb = createGoblinBomb(goblin.scene, player);
           // TODO: remove this line
           const mainscene = PhaserGame.scene.keys.mainscene as MainScene;
@@ -185,8 +185,8 @@ export default class goblinController {
     const { player } = this.playerManager[i];
     const goblin = this.goblin.mob;
 
-    const { damage, hit } = goblin.basicAttack(player.character);
-    hit();
+    const damage = goblin.basicAttack.damage(player.character);
+    goblin.basicAttack.hit(player.character);
 
     mcEvents.emit(mcEventTypes.TOOK_HIT, i, damage);
   }
@@ -198,23 +198,28 @@ export default class goblinController {
       }
     });
 
-    this.bomb?.on(Phaser.Animations.Events.ANIMATION_UPDATE, () => {
-      const areTouchingBomb = this.playersTouchingBomb();
-      const characters: Character[] = [];
+    this.bomb?.on(
+      Phaser.Animations.Events.ANIMATION_UPDATE,
+      (anim: any, frame: Phaser.Animations.AnimationFrame) => {
+        const areTouchingBomb = this.playersTouchingBomb();
+        const characters: Character[] = [];
 
-      areTouchingBomb.forEach((isTouching, i) => {
-        if (!isTouching) return;
-        const { player } = this.playerManager[i];
-        player.sprite.setVelocityX(0);
-        player.play(mcAnimTypes.TAKE_HIT, true);
-        player.sprite.anims.stopAfterRepeat(0);
-        characters.push(player.character);
-      });
+        areTouchingBomb.forEach((isTouching, i) => {
+          if (!isTouching) return;
+          const { player } = this.playerManager[i];
+          player.sprite.setVelocityX(0);
+          player.play(mcAnimTypes.TAKE_HIT, true);
+          player.sprite.anims.stopAfterRepeat(0);
+          characters.push(player.character);
+        });
 
-      this.goblin.mob.goblin_skill().hit(characters); // giant skill hit is now Array instead of single character
-    });
+        if (!characters.length) return;
+
+        this.goblin.mob.spellQ.hit(characters); // giant skill hit is now Array instead of single character
+      }
+    );
   }
-  hasUltimate = this.goblin.mob.hasUlti;
+  hasUltimate = this.goblin.mob.spellQ.has;
   isDead = this.goblin.mob.isDead;
   OnStun() {
     const animsKey = this.goblin.sprite?.anims.getName();

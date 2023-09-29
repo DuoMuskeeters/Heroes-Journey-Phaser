@@ -1,4 +1,4 @@
-import { Goblin, createState } from "../../game/Karakter";
+import { Goblin, State } from "../../game/Karakter";
 import { goblinAnimTypes } from "../../game/types/types";
 import { Mob } from "../../objects/Mob";
 import MainScene from "./MainScene";
@@ -12,9 +12,13 @@ export function createMob(scene: MainScene) {
     const value: 1 | 2 | 3 | 4 = objData.properties[0].value;
 
     const newGoblin = new Mob(
-      new Goblin(name, createState(mobStats.goblin[`TIER_${value}`]), value)
+      new Goblin(
+        name,
+        State.fromBaseTypes(mobStats.goblin[`TIER_${value}`]),
+        value
+      )
     );
-    newGoblin.mob.calculate_power(); //  this in create_goblin too 
+    newGoblin.mob.calculate_power(); //  this in create_goblin too
     newGoblin.create(
       scene,
       x,

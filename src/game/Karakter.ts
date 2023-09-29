@@ -1,5 +1,15 @@
 import { CONFIG } from "../PhaserGame";
 import { baseTypes } from "./playerStats";
+import { Spell, SpellRange } from "./spell";
+
+export const defaultState = {
+  HP: 200,
+  max_hp: 200,
+  max_sp: 100,
+  SP: 100,
+  ATK: 20,
+  ATKRATE: 1,
+} satisfies Partial<State>;
 
 export class State {
   HP: number;
@@ -55,6 +65,13 @@ export class State {
     this.HP = this.max_hp;
     this.SP = this.max_sp;
   }
+
+  static fromBaseTypes(baseTypes: baseTypes) {
+    return new this({
+      ...defaultState,
+      ...baseTypes,
+    });
+  }
 }
 
 export class Canlı {
@@ -74,25 +91,6 @@ export class Canlı {
     this.calculate_power();
   }
   isDead = () => Math.floor(this.state.HP) === 0;
-
-  /**
-   * known as ATTACK_1 for all Canlı
-   * @note should be overwritten for each exotic Canlı if needed
-   *
-   * @example const { damage, hit } = this.basicAttak(rakip);
-   * console.log(damage);
-   * const lastHp = hit(rakip);
-   *
-   */
-
-  basicAttack(rakip?: Canlı) {
-    const damage = this.state.ATK;
-    return {
-      damage,
-      hit: () => rakip?._takeDamage(damage) ?? 0,
-    };
-  }
-
   calculate_power() {
     this.state.calculate_power();
   }
@@ -102,6 +100,17 @@ export class Character extends Canlı {
   exp: number;
   level: number;
   stat_point: number;
+
+  spellQ: Spell<any> = new Spell("heavy", SpellRange.SingleORNone, {
+    has: () => false,
+    damage: () => 0,
+    hit: () => undefined,
+  });
+
+  basicAttack: Spell<any> = new Spell("basic", SpellRange.SingleORNone, {
+    damage: () => this.state.ATK,
+    hit: (rakip, damage) => rakip?._takeDamage(damage),
+  });
 
   constructor(name: string, state: State, exp: number = 0, level: number = 1) {
     super(name, state);
@@ -125,10 +134,10 @@ export class Character extends Canlı {
       this.calculate_power();
     }
   }
-  regenerationCharacter() {
+  regeneration() {
     const reg = 0.025;
-    const HP_reg: number = this.state.HP * reg;
-    const SP_reg: number = this.state.SP * reg;
+    const HP_reg: number = this.state.max_hp * reg;
+    const SP_reg: number = this.state.max_sp * reg;
     if (!this.isDead()) {
       return {
         HP_reg,
@@ -146,24 +155,6 @@ export class Character extends Canlı {
   }
 }
 
-export function createState(baseStats: baseTypes): State {
-  const _ = baseStats;
-  const canlıState: State = new State({
-    HP: 200,
-    max_hp: 200,
-    max_sp: 100,
-    SP: 100,
-    ATK: 20,
-    ATKRATE: 1,
-    Strength: _.Strength,
-    Agility: _.Agility,
-    Constitution: _.Constitution,
-    Intelligence: _.Intelligence,
-  });
-
-  return new State(canlıState);
-}
-
 export class Iroh extends Character {
   ATK1_MS = CONFIG.physics.arcade.debug ? 2 * 1000 : 1000;
   lastCombo: 0 | 1 | 2 = 0;
@@ -173,127 +164,62 @@ export class Iroh extends Character {
     return Date.now() - (this.lastBasicAttack?.getTime() ?? 0) < this.ATK1_MS;
   }
 
-  // Bu nedir hocam
-  // öylesine yazmış -ali
-  basicAttack_ = {
-    damage: this.basicAttackDamage,
-    hit: this.basicAttackHit,
-  };
+  basicAttack = new Spell("basic", SpellRange.SingleORNone, {
+    damage: () => {
+      const damage = this.state.ATK;
+      return this.inComboTime() && this.lastCombo === 2
+        ? damage * 0.4
+        : damage * 0.3;
+    },
+    hit: (rakip, damage) => {
+      if (this.lastCombo === 2) this.lastCombo = 0;
+      else if (this.inComboTime()) this.lastCombo += 1;
+      else this.lastCombo = 1;
 
-  basicAttackDamage(rakip?: Canlı) {
-    const basic = super.basicAttack(rakip);
+      this.lastBasicAttack = new Date();
+      return rakip?._takeDamage(damage);
+    },
+  });
 
-    return this.inComboTime() && this.lastCombo === 2
-      ? basic.damage * 0.4
-      : basic.damage * 0.3;
-  }
+  private QcostSP = 4.16;
 
-  basicAttackHit(rakip?: Canlı) {
-    const basic = super.basicAttack(rakip);
-    switch (this.lastCombo) {
-      case 0:
-      case 1: {
-        if (this.inComboTime()) {
-          this.lastCombo += 1;
-        } else {
-          this.lastCombo = 1;
-        }
-        this.lastBasicAttack = new Date();
-        return rakip?._takeDamage(basic.damage * 0.3) ?? 0;
-      }
-
-      case 2: {
-        this.lastCombo = 0;
-        if (this.inComboTime()) {
-          this.lastBasicAttack = new Date();
-          return rakip?._takeDamage(basic.damage * 0.4) ?? 0;
-        }
-
-        this.lastBasicAttack = new Date();
-        return rakip?._takeDamage(basic.damage) ?? 0;
-      }
-
-      default:
-        throw new Error("Combo sayısı 0, 1 veya 2 olmalıdır.");
-    }
-  }
-  // heavy atackin sp dengesi henuz hazir degil
-  spell_Q(chunk: number = 12) {
-    const damage = (this.state.ATK * 2) / chunk;
-    const spCost = 50 / chunk;
-
-    if (this.state.SP >= spCost)
-      return {
-        damage,
-        hit: (rakipler: Canlı[]) => {
-          if (this.state.SP < spCost)
-            throw new Error("Ulti için gerekli koşullar sağlanmadı.");
-          this.state.SP = Math.max(this.state.SP - spCost, 0);
-          return rakipler.map(
-            (rakip) => (rakip.state.HP = Math.max(rakip.state.HP - damage, 0))
-          );
-        },
-      };
-
-    return {
-      damage,
-    };
-  }
-  spell_E() {
-    const damage = this.state.ATK * 3;
-    const spCost = 40;
-
-    if (this.state.SP >= spCost)
-      return {
-        damage,
-        hit: (rakipler: Canlı[]) => {
-          if (this.state.SP < spCost)
-            throw new Error("Ulti için gerekli koşullar sağlanmadı.");
-          this.state.SP = Math.max(this.state.SP - spCost, 0);
-          return rakipler.map(
-            (rakip) => (rakip.state.HP = Math.max(rakip.state.HP - damage, 0))
-          );
-        },
-      };
-
-    return {
-      damage,
-    };
-  }
+  spellQ = new Spell("heavy", SpellRange.Multiple, {
+    cancelable: true,
+    has: () => this.state.SP >= this.QcostSP,
+    damage: (rakipler) => rakipler.map((r) => this.state.ATK / 6),
+    hit: (rakipler, damages) => {
+      this.state.SP = Math.max(this.state.SP - this.QcostSP, 0);
+      return rakipler.map((rakip, i) => rakip._takeDamage(damages[i]));
+    },
+  });
 }
 
 export class Jack extends Character {
-  private lastHeavyStrike: Date | null = null;
-  spell_Q() {
-    const spCost = CONFIG.physics.arcade.debug ? 5 : 50;
-    const damage = this.state.ATK * 3;
-    const standByTime = CONFIG.physics.arcade.debug ? 100 : 5 * 1000;
+  private lastQ: Date | null = null;
+  private standByTime = CONFIG.physics.arcade.debug ? 100 : 5 * 1000;
+  private spCost = CONFIG.physics.arcade.debug ? 5 : 50;
 
-    const hasUlti = () =>
-      (this.lastHeavyStrike?.getTime() ?? 0) + standByTime < Date.now();
+  basicAttack = new Spell("basic", SpellRange.Multiple, {
+    damage: (rakipler) => rakipler.map((r) => this.state.ATK),
+    hit: (rakipler, damages) => rakipler.map((r, i) => r._takeDamage(damages[i])),
+  });
+  // basicAttack = new Spell("basic", SpellRange.SingleORNone, {
+  //   damage: () => this.state.ATK,
+  //   hit: (rakip, damage) => rakip?._takeDamage(damage),
+  // });
 
-    if (this.state.SP >= spCost && hasUlti())
-      return {
-        damage,
-        standByTime,
-        lastHeavyStrike: this.lastHeavyStrike,
-        hit: (rakipler: Canlı[]) => {
-          if (this.state.SP < spCost || !hasUlti())
-            throw new Error("Ulti için gerekli koşullar sağlanmadı.");
-          this.lastHeavyStrike = new Date();
-          this.state.SP = Math.max(this.state.SP - spCost, 0);
-          return rakipler.map(
-            (rakip) => (rakip.state.HP = Math.max(rakip.state.HP - damage, 0))
-          );
-        },
-      };
-
-    return {
-      damage,
-      standByTime,
-      lastHeavyStrike: this.lastHeavyStrike,
-    };
-  }
+  spellQ = new Spell("heavy", SpellRange.Multiple, {
+    has: () => (this.lastQ?.getTime() ?? 0) + this.standByTime < Date.now(),
+    damage: (rakipler) => rakipler.map((r) => this.state.ATK * 3),
+    hit: (rakipler, damages) => {
+      this.lastQ = new Date();
+      this.state.SP = Math.max(this.state.SP - this.spCost, 0);
+      return rakipler.map(
+        (rakip, i) =>
+          (rakip.state.HP = Math.max(rakip.state.HP - damages[i], 0))
+      );
+    },
+  });
 }
 
 export class Archer extends Character {
@@ -301,10 +227,8 @@ export class Archer extends Character {
 }
 
 export class MobCanlı extends Canlı {
-  tier: 1 | 2 | 3 | 4;
-  constructor(name: string, state: State, tier: 1 | 2 | 3 | 4) {
+  constructor(name: string, state: State, public tier: 1 | 2 | 3 | 4 = 1) {
     super(name, state);
-    this.tier = tier ?? 1;
   }
 
   calculate_power() {
@@ -321,7 +245,7 @@ export class MobCanlı extends Canlı {
     return false;
   }
 
-  regenerationMob(hp_reg: number) {
+  regeneration(hp_reg: number) {
     const sp_reg = this.state.Intelligence * 0.002;
     const SP_reg_value = sp_reg * 100;
     const HP_reg: number = this.state.HP * hp_reg;
@@ -342,32 +266,28 @@ export class MobCanlı extends Canlı {
     return {
       HP_reg,
       SP_reg,
-      regenerate: () => console.log("🤷‍♂️"),
     };
   }
 
-  basicAttack(rakip: Canlı) {
-    if (!(rakip instanceof Character)) {
-      throw new Error("NOTE: şu anda mob sadece karaktere vurabilir.");
-    }
+  basicAttack = new Spell("basic", SpellRange.SingleORNone, {
+    damage: () => this.state.ATK,
+    hit: (rakip, damage) => {
+      if (!(rakip instanceof Character))
+        throw new Error("NOTE: şu anda mob sadece karaktere vurabilir.");
 
-    return super.basicAttack(rakip);
-  }
+      return rakip?._takeDamage(damage);
+    },
+  });
 }
 
 export class Goblin extends MobCanlı {
-  hasUlti = () => this.state.SP === this.state.max_sp;
-  goblin_skill() {
-    const damage = this.state.ATK * 3;
-    return {
-      damage,
-      consumeSP: () => (this.state.SP = 0),
-      hit: (rakipler: Canlı[]) =>
-        rakipler.map(
-          (rakip) => (rakip.state.HP = Math.max(rakip.state.HP - damage, 0))
-        ),
-    };
-  }
+  spellQ = new Spell("heavy", SpellRange.Multiple, {
+    damage: (rakipler) => rakipler.map((r) => this.state.ATK * 3),
+    has: () => this.state.SP === this.state.max_sp,
+    onUse: () => (this.state.SP = 0),
+    hit: (rakipler, damages) =>
+      rakipler.map((rakip, i) => rakip._takeDamage(damages[i])),
+  });
 }
 
 // random mob eksik
