@@ -29,8 +29,8 @@ export function createMob(scene: MainScene) {
       220,
       110,
       2.55,
-      30,
-      46
+      32,
+      36
     );
     const healtbar = scene.add.graphics();
     const spbar = scene.add.graphics();

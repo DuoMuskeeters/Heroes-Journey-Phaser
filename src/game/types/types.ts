@@ -24,6 +24,9 @@ export const mcAnimTypes = {
   TAKE_HIT: "take-hit",
   JUMP: "jump",
   FALL: "fall",
+  FIRE: "fire",
+  NOFIRE: "nofire",
+  TRANSFORM:"transform",
 } as const;
 
 export type McAnimTypes = (typeof mcAnimTypes)[keyof typeof mcAnimTypes];

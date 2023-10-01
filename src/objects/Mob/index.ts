@@ -33,7 +33,7 @@ export class Mob<T extends MobCanlı> {
       .setCollideWorldBounds(true)
       .setBounce(0)
       .setDepth(100)
-      .setScale(scaleSize);
+      .setScale(scaleSize).setOffset(60, 65);
     this._attackrect = scene.physics.add.sprite(x, y, `$${name}-attackrect`);
 
     (this._attackrect.body as Phaser.Physics.Arcade.Body).allowGravity = false;

@@ -2,54 +2,9 @@
   "section1": {
     "files": [
       {
-        "url": "mob/goblin/goblin-idle.png",
+        "url": "mob/goblin/Goblin.png",
         "type": "spritesheet",
-        "key": "goblin-idle",
-        "frameConfig": {
-          "frameWidth": 150,
-          "frameHeight": 150
-        }
-      },
-      {
-        "url": "mob/goblin/goblin-ulti.png",
-        "type": "spritesheet",
-        "key": "goblin-ulti",
-        "frameConfig": {
-          "frameWidth": 150,
-          "frameHeight": 150
-        }
-      },
-      {
-        "url": "mob/goblin/goblin-run.png",
-        "type": "spritesheet",
-        "key": "goblin-run",
-        "frameConfig": {
-          "frameWidth": 150,
-          "frameHeight": 150
-        }
-      },
-      {
-        "url": "mob/goblin/goblin-attack.png",
-        "type": "spritesheet",
-        "key": "goblin-attack",
-        "frameConfig": {
-          "frameWidth": 150,
-          "frameHeight": 150
-        }
-      },
-      {
-        "url": "mob/goblin/goblin-takehit.png",
-        "type": "spritesheet",
-        "key": "goblin-takehit",
-        "frameConfig": {
-          "frameWidth": 150,
-          "frameHeight": 150
-        }
-      },
-      {
-        "url": "mob/goblin/goblin-death.png",
-        "type": "spritesheet",
-        "key": "goblin-death",
+        "key": "goblin",
         "frameConfig": {
           "frameWidth": 150,
           "frameHeight": 150

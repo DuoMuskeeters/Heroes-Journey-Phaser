@@ -29,16 +29,18 @@ export class Player<T extends Character> {
 
   create(scene: Phaser.Scene, x: number, y: number, i: number) {
     const type = getCharacterType(this.character);
-
+    const transMod = type === "jack" ? "" : "-" + mcAnimTypes.NOFIRE;
     this._index = i;
     this._scene = scene;
     this._sprite = scene.physics.add
-      .sprite(x, y, type + "-" + mcAnimTypes.IDLE)
+      .sprite(x, y, type + "-" + mcAnimTypes.IDLE + transMod)
       .setCollideWorldBounds(true)
       .setBounce(0.1)
       .setScale(2.55)
-      .setBodySize(30, 40, true)
+      .setBodySize(30, 45, true)
       .setDepth(300);
+    if (type === "iroh") this._sprite.setOffset(40, 19);
+    if (type === "jack") this._sprite.setOffset(85, 77);
 
     this._attackrect = scene.physics.add
       .sprite(500, 500, "attackrect")
@@ -63,8 +65,9 @@ export class Player<T extends Character> {
     playerMovementUpdate(this);
   }
 
-  play(key: McAnimTypes, ignoreIfPlaying?: boolean) {
-    const type = getCharacterType(this.character);
+  play(key: string, ignoreIfPlaying?: boolean) {
+    let type = getCharacterType(this.character);
+    if (this.character instanceof Iroh) type = this.character.preFix + type;
     this.sprite.anims.play(type + "-" + key, ignoreIfPlaying);
     // play("jack-idle") play("iroh-idle")
   }

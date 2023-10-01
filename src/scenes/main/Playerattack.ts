@@ -1,4 +1,5 @@
-import { Character, Goblin, Iroh } from "../../game/Karakter";
+import { time } from "console";
+import { Character, Goblin, Iroh, Jack } from "../../game/Karakter";
 import { Spell, SpellRange } from "../../game/spell";
 import {
   GoblinTookHit,
@@ -91,6 +92,28 @@ export function playerAttackListener(player: Player<Character>) {
       }
 
       if (spell) attack(player, spell, getAffectedMobs());
+      if (animation.key.includes(mcAnimTypes.TRANSFORM)) {
+        if (
+          player.character instanceof Iroh &&
+          !animation.key.includes("fire")
+        ) {
+          player.character.preFix = mcAnimTypes.FIRE;
+          player.character.state.ATK *= 2;
+          player.scene.time.addEvent({
+            delay: 5000,
+            callback: () => {
+              player.play(mcAnimTypes.TRANSFORM);
+              player.sprite.anims.stopAfterRepeat(0);
+              if (player.character instanceof Iroh)
+                player.character.preFix = "";
+              player.character.state.ATK /= 2;
+            },
+          });
+          if (player.character instanceof Jack) {
+            console.log("jack transform not implemented");
+          }
+        }
+      }
     }
   );
   player.sprite.on(

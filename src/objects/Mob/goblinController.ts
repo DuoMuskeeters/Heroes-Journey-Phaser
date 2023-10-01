@@ -29,7 +29,7 @@ export default class goblinController {
    * @returns Array of true if mob is hitting player and attack animation is at first frame
    */
   private isMobHitting = () => {
-    const atFrame = Number(this.goblin.sprite.anims.getFrameName()) === 0;
+    const atFrame = this.goblin.sprite.anims.currentFrame?.isLast;
 
     const isAttacking =
       this.goblin.sprite.anims.getName() === goblinAnimTypes.ATTACK;
@@ -63,7 +63,6 @@ export default class goblinController {
 
   private playersTouchingBomb() {
     const atFrame = Number(this.bomb?.anims.getFrameName()) === 6;
-
     return this.playerManager.map(
       ({ player }) =>
         this.goblin.scene.physics.overlap(player.sprite, this.bomb) && atFrame
@@ -241,24 +240,12 @@ export default class goblinController {
     const canSeePlayer = this.canSeePlayer();
     return this.playerManager.map(({ player }, i) => {
       const waitForUlti = !this.hasUltimate();
-      const mcOntHeLeft = this.goblin.sprite.body.x - player.sprite.body.x > 0;
-      let canHit = false;
+      const isOverlapping = this.goblin.scene.physics.overlap(
+        this.goblin.attackrect,
+        player.sprite
+      );
 
-      if (
-        mcOntHeLeft &&
-        player.sprite.body.center.x >= this.goblin.attackrect.getLeftCenter().x!
-      ) {
-        canHit = true;
-      }
-      if (
-        !mcOntHeLeft &&
-        player.sprite.body.center.x <=
-          this.goblin.attackrect.getRightCenter().x!
-      ) {
-        canHit = true;
-      }
-
-      return canHit && !this.OnStun() && waitForUlti && canSeePlayer[i];
+      return isOverlapping && !this.OnStun() && waitForUlti && canSeePlayer[i];
     });
   }
 

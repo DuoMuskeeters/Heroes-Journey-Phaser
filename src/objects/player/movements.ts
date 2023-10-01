@@ -7,7 +7,6 @@ import {
 import { Player } from ".";
 import { Character, Iroh, Jack } from "../../game/Karakter";
 import MainScene from "../../scenes/main/MainScene";
-
 const runonUpdate = (player: Player<Character>) => {
   player.play(mcAnimTypes.RUN, true);
   player.sprite.body.setVelocityX(dirVelocity[player.lastdirection] * 250);
@@ -19,7 +18,7 @@ const ıdleonUpdate = (player: Player<Character>) => {
 };
 const jumpandFallonupdate = (player: Player<Character>) => {
   player.play(mcAnimTypes.JUMP, true);
-  player.sprite.anims.stopAfterRepeat(1);
+  player.sprite.anims.stopAfterRepeat(0);
   player.sprite.body.setVelocityY(-900);
 };
 const heavyStrikeonUpdate = (player: Player<Jack | Iroh>) => {
@@ -69,6 +68,7 @@ export function playerMovementUpdate(player: Player<Character>) {
       D: scene.keyD.isDown,
       Space: scene.keySpace.isDown,
       Q: scene.keyQ,
+      E: scene.keyE,
     },
     1: {
       W: scene.keyUp.isDown,
@@ -76,6 +76,7 @@ export function playerMovementUpdate(player: Player<Character>) {
       D: scene.keyRight.isDown,
       Space: scene.keyEnter.isDown,
       Q: scene.keyP,
+      E: scene.keyO,
     },
   } as const;
   const pressed = keys[player.index as 0 | 1];
@@ -85,9 +86,11 @@ export function playerMovementUpdate(player: Player<Character>) {
   const A_isDOWN = pressed.A;
   const D_isDOWN = pressed.D;
   const justQ = Phaser.Input.Keyboard.JustDown(pressed.Q);
+  const justE = Phaser.Input.Keyboard.JustDown(pressed.E);
   // const mouse = scene.input.activePointer.leftButtonDown();
 
-  const isNotDown = !D_isDOWN && !W_isDOWN && !A_isDOWN && !Space_isD && !justQ;
+  const isNotDown =
+    !D_isDOWN && !W_isDOWN && !A_isDOWN && !Space_isD && !justQ && !justE;
 
   const RunisDown = D_isDOWN || A_isDOWN;
   const isanimplaying = player.sprite.anims.isPlaying;
@@ -97,11 +100,20 @@ export function playerMovementUpdate(player: Player<Character>) {
   const attack1Active = player.sprite.anims
     .getName()
     .includes(mcAnimTypes.ATTACK_1);
+  const onTransform = player.sprite.anims
+    .getName()
+    .includes(mcAnimTypes.TRANSFORM);
+  const transformActive =
+    player.character instanceof Iroh &&
+    player.character.preFix === mcAnimTypes.FIRE;
 
-  const cancelableQ = attackQActive && player.character.spellQ.cancelable
-  const cancelableA1 = attack1Active && player.character.basicAttack.cancelable
+  const cancelableQ =
+    (attackQActive && player.character.spellQ.cancelable) || !attackQActive;
+  const cancelableA1 =
+    (attack1Active && player.character.basicAttack.cancelable) ||
+    !attack1Active;
   const OnStun = player.sprite.anims.getName().includes(mcAnimTypes.TAKE_HIT);
-  const canMoVE = !OnStun && !attack1Active;
+  const canMoVE = !OnStun && !onTransform && cancelableA1 && cancelableQ;
 
   setAttackrect(player);
 
@@ -110,10 +122,12 @@ export function playerMovementUpdate(player: Player<Character>) {
   if (A_isDOWN && canMoVE) {
     player.lastdirection = direction.left;
     player.sprite.setFlipX(true);
+    if (player.character instanceof Iroh) player.sprite.setOffset(75, 19);
   }
   if (D_isDOWN && canMoVE) {
     player.lastdirection = direction.right;
     player.sprite.setFlipX(false);
+    if (player.character instanceof Iroh) player.sprite.setOffset(40, 19);
   }
 
   if (!player.sprite.body.onFloor()) {
@@ -128,18 +142,32 @@ export function playerMovementUpdate(player: Player<Character>) {
     return;
   }
   // can't idle while attackQactive
-  if ((canMoVE && isNotDown && !attackQActive) || !isanimplaying)
+  if (
+    (canMoVE && isNotDown && !attackQActive && !attack1Active) ||
+    !isanimplaying
+  )
     ıdleonUpdate(player);
   if (OnStun) return;
-  if (W_isDOWN && !attackQActive) jumpandFallonupdate(player);
-  if (RunisDown && !W_isDOWN && canMoVE) runonUpdate(player); //Can run while AttackQactive
-  if (Space_isD && canMoVE) attackonUpdate(player); //Can base attack while AttackQctive
+  if (W_isDOWN && canMoVE) jumpandFallonupdate(player);
+  if (RunisDown && !W_isDOWN && canMoVE) runonUpdate(player);
+  //Can run while AttackQactive
+  if (Space_isD && canMoVE && cancelableQ) attackonUpdate(player); //Can base attack while AttackQctive
 
   if (justQ) {
-    if (player.character instanceof Jack)
+    if (player.character instanceof Jack && cancelableA1)
       heavyStrikeonUpdate(player as Player<Jack>);
-    else if (player.character instanceof Iroh)
+    else if (player.character instanceof Iroh && cancelableA1 && !onTransform)
       heavyStrikeonUpdate(player as Player<Iroh>);
-    else throw new Error("unknown character type for Q attack");
+    // else throw new Error("unknown character type for Q attack");
+  }
+  if (justE) {
+    if (player.character instanceof Iroh && !transformActive) {
+      player.play(mcAnimTypes.TRANSFORM, true);
+      player.sprite.anims.stopAfterRepeat(0);
+      player.sprite.setVelocityX(0);
+    }
+    if (player.character instanceof Jack) {
+      console.log("jack E not implemented");
+    }
   }
 }

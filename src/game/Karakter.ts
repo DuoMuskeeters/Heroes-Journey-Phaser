@@ -159,12 +159,14 @@ export class Iroh extends Character {
   ATK1_MS = CONFIG.physics.arcade.debug ? 2 * 1000 : 1000;
   lastCombo: 0 | 1 | 2 = 0;
   lastBasicAttack: Date | null = null;
+  preFix = "";
 
   inComboTime() {
     return Date.now() - (this.lastBasicAttack?.getTime() ?? 0) < this.ATK1_MS;
   }
 
   basicAttack = new Spell("basic", SpellRange.SingleORNone, {
+    cancelable: false,
     damage: () => {
       const damage = this.state.ATK;
       return this.inComboTime() && this.lastCombo === 2
@@ -200,8 +202,10 @@ export class Jack extends Character {
   private spCost = CONFIG.physics.arcade.debug ? 5 : 50;
 
   basicAttack = new Spell("basic", SpellRange.Multiple, {
+    cancelable: false,
     damage: (rakipler) => rakipler.map((r) => this.state.ATK),
-    hit: (rakipler, damages) => rakipler.map((r, i) => r._takeDamage(damages[i])),
+    hit: (rakipler, damages) =>
+      rakipler.map((r, i) => r._takeDamage(damages[i])),
   });
   // basicAttack = new Spell("basic", SpellRange.SingleORNone, {
   //   damage: () => this.state.ATK,
@@ -209,6 +213,7 @@ export class Jack extends Character {
   // });
 
   spellQ = new Spell("heavy", SpellRange.Multiple, {
+    cancelable: false,
     has: () => (this.lastQ?.getTime() ?? 0) + this.standByTime < Date.now(),
     damage: (rakipler) => rakipler.map((r) => this.state.ATK * 3),
     hit: (rakipler, damages) => {

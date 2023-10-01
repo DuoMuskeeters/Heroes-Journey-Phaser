@@ -39,6 +39,7 @@ export default class MainScene extends Phaser.Scene {
   keyA!: Key;
   keyD!: Key;
   keyQ!: Key;
+  keyE!: Key;
 
   keyEnter!: Key;
   keyUp!: Key;
@@ -46,6 +47,7 @@ export default class MainScene extends Phaser.Scene {
   keyRight!: Key;
   keyi!: Key;
   keyP!: Key;
+  keyO!: Key;
   playerManager;
   friendlyFire = false;
 
@@ -159,11 +161,13 @@ export default class MainScene extends Phaser.Scene {
     this.keyA = this.input.keyboard?.addKey("A")!;
     this.keyD = this.input.keyboard?.addKey("D")!;
     this.keyQ = this.input.keyboard?.addKey("Q")!;
+    this.keyE = this.input.keyboard?.addKey("E")!;
 
     this.keyEnter = this.input.keyboard?.addKey("ENTER")!;
     this.keyUp = this.input.keyboard?.addKey("UP")!;
     this.keyLeft = this.input.keyboard?.addKey("LEFT")!;
     this.keyRight = this.input.keyboard?.addKey("RIGHT")!;
     this.keyP = this.input.keyboard?.addKey("P")!;
+    this.keyO = this.input.keyboard?.addKey("O")!;
   }
 }

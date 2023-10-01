@@ -12,166 +12,234 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
   const players = [
     {
       type: "iroh" as const,
-      ıdle: 7,
-      run: 7,
-      jump: 2,
-      fall: 2,
-      death: 10,
-      takehit: 3,
-      attack1: 3,
-      attack1_combo2: 3,
-      attack1_combo3: 4,
-      attack2: 15,
-    } as const,
+      ıdle: {
+        start: 0,
+        end: 7,
+      },
+      run: {
+        start: 16,
+        end: 23,
+      },
+      jump: {
+        start: 96,
+        end: 98,
+      },
+      fall: {
+        start: 128,
+        end: 130,
+      },
+      death: {
+        start: 384,
+        end: 395,
+      },
+      takehit: {
+        start: 368,
+        end: 372,
+      },
+      attack1: {
+        start: 160,
+        end: 163,
+      },
+      attack1_combo2: {
+        start: 176,
+        end: 179,
+      },
+      attack1_combo3: {
+        start: 192,
+        end: 195,
+      },
+      attack2: {
+        start: 304,
+        end: 319,
+      },
+      trasform: {
+        start: 320,
+        end: 327,
+      },
+    },
     {
       type: "jack" as const,
-      ıdle: 7,
-      run: 7,
-      jump: 2,
-      fall: 3,
-      attack1: 6,
-      attack2: 6,
-      death: 6,
-      takehit: 4,
+      ıdle: {
+        start: 32,
+        end: 38,
+      },
+      run: {
+        start: 48,
+        end: 55,
+      },
+      jump: {
+        start: 40,
+        end: 41,
+      },
+      fall: {
+        start: 24,
+        end: 25,
+      },
+      attack1: {
+        start: 0,
+        end: 5,
+      },
+      attack2: {
+        start: 8,
+        end: 13,
+      },
+      death: {
+        start: 16,
+        end: 21,
+      },
+      takehit: {
+        start: 56,
+        end: 59,
+      },
     } as const,
   ];
+  for (let idx = 0; idx < players.length + 1; idx++) {
+    const mc = idx === 0 || idx === 1 ? players[0] : players[1];
+    if (idx === 1 && players[0].trasform) players[0].trasform.end = 331;
 
-  players.forEach((mc) => {
-    scene.anims.create({
-      key: mc.type + "-" + mcAnimTypes.IDLE,
-      frames: scene.anims.generateFrameNumbers(
-        mc.type + "-" + mcAnimTypes.IDLE,
-        {
-          start: 0,
-          end: mc.ıdle,
-        }
-      ),
-      frameRate: 10,
-      repeat: -1,
-    });
+    const preFix = idx === 0 && mc.type === "iroh" ? mcAnimTypes.FIRE : "";
 
     scene.anims.create({
-      key: mc.type + "-" + mcAnimTypes.RUN,
-      frames: scene.anims.generateFrameNumbers(
-        mc.type + "-" + mcAnimTypes.RUN,
-        {
-          start: 0,
-          end: mc.run,
-        }
-      ),
+      key: preFix + mc.type + "-" + mcAnimTypes.IDLE,
+      frames: scene.anims.generateFrameNumbers(preFix + mc.type, {
+        start: mc.ıdle.start,
+        end: mc.ıdle.end,
+      }),
       frameRate: 10,
       repeat: -1,
     });
 
     scene.anims.create({
-      key: mc.type + "-" + mcAnimTypes.JUMP,
-      frames: scene.anims.generateFrameNumbers(
-        mc.type + "-" + mcAnimTypes.JUMP,
-        {
-          start: 0,
-          end: mc.jump,
-        }
-      ),
+      key: preFix + mc.type + "-" + mcAnimTypes.RUN,
+      frames: scene.anims.generateFrameNumbers(preFix + mc.type, {
+        start: mc.run.start,
+        end: mc.run.end,
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+
+    scene.anims.create({
+      key: preFix + mc.type + "-" + mcAnimTypes.JUMP,
+      frames: scene.anims.generateFrameNumbers(preFix + mc.type, {
+        start: mc.jump.start,
+        end: mc.jump.end,
+      }),
       frameRate: 10,
       repeat: -1,
     });
     scene.anims.create({
-      key: mc.type + "-" + mcAnimTypes.ATTACK_2,
-      frames: scene.anims.generateFrameNumbers(
-        mc.type + "-" + mcAnimTypes.ATTACK_2,
-        {
-          start: 0,
-          end: mc.attack2,
-        }
-      ),
+      key: preFix + mc.type + "-" + mcAnimTypes.ATTACK_2,
+      frames: scene.anims.generateFrameNumbers(preFix + mc.type, {
+        start: mc.attack2.start,
+        end: mc.attack2.end,
+      }),
       frameRate: 10,
       repeat: -1,
     });
     scene.anims.create({
-      key: mc.type + "-" + mcAnimTypes.ATTACK_1,
-      frames: scene.anims.generateFrameNumbers(
-        mc.type + "-" + mcAnimTypes.ATTACK_1,
-        {
-          start: 0,
-          end: mc.attack1,
-        }
-      ),
+      key: preFix + mc.type + "-" + mcAnimTypes.ATTACK_1,
+      frames: scene.anims.generateFrameNumbers(preFix + mc.type, {
+        start: mc.attack1.start,
+        end: mc.attack1.end,
+      }),
       frameRate: 10,
       repeat: -1,
     });
 
     if (mc.type === "iroh") {
       scene.anims.create({
-        key: mc.type + "-" + mcAnimTypes.ATTACK_1_COMBO2,
-        frames: scene.anims.generateFrameNumbers(
-          mc.type + "-" + mcAnimTypes.ATTACK_1_COMBO2,
-          {
-            start: 0,
-            end: mc.attack1_combo2,
-          }
-        ),
+        key: preFix + mc.type + "-" + mcAnimTypes.ATTACK_1_COMBO2,
+        frames: scene.anims.generateFrameNumbers(preFix + mc.type, {
+          start: mc.attack1_combo2.start,
+          end: mc.attack1_combo2.end,
+        }),
         frameRate: 10,
         repeat: -1,
       });
       scene.anims.create({
-        key: mc.type + "-" + mcAnimTypes.ATTACK_1_COMBO3,
-        frames: scene.anims.generateFrameNumbers(
-          mc.type + "-" + mcAnimTypes.ATTACK_1_COMBO3,
-          {
-            start: 0,
-            end: mc.attack1_combo3,
-          }
-        ),
+        key: preFix + mc.type + "-" + mcAnimTypes.ATTACK_1_COMBO3,
+        frames: scene.anims.generateFrameNumbers(preFix + mc.type, {
+          start: mc.attack1_combo3.start,
+          end: mc.attack1_combo3.end,
+        }),
+        frameRate: 10,
+        repeat: -1,
+      });
+
+      scene.anims.create({
+        key: preFix + mc.type + "-" + mcAnimTypes.TRANSFORM,
+        frames: scene.anims.generateFrameNumbers(preFix + mc.type, {
+          start: mc.trasform.start,
+          end: mc.trasform.end,
+        }),
         frameRate: 10,
         repeat: -1,
       });
     }
     scene.anims.create({
-      key: mc.type + "-" + mcAnimTypes.FALL,
-      frames: scene.anims.generateFrameNumbers(
-        mc.type + "-" + mcAnimTypes.FALL,
-        {
-          start: 0,
-          end: mc.fall,
-        }
-      ),
+      key: preFix + mc.type + "-" + mcAnimTypes.FALL,
+      frames: scene.anims.generateFrameNumbers(preFix + mc.type, {
+        start: mc.fall.start,
+        end: mc.fall.end,
+      }),
       frameRate: 10,
       repeat: -1,
     });
 
     scene.anims.create({
-      key: mc.type + "-" + mcAnimTypes.DEATH,
-      frames: scene.anims.generateFrameNumbers(
-        mc.type + "-" + mcAnimTypes.DEATH,
-        {
-          start: 0,
-          end: mc.death,
-        }
-      ),
+      key: preFix + mc.type + "-" + mcAnimTypes.DEATH,
+      frames: scene.anims.generateFrameNumbers(preFix + mc.type, {
+        start: mc.death.start,
+        end: mc.death.end,
+      }),
       frameRate: 10,
       repeat: -1,
     });
 
     scene.anims.create({
-      key: mc.type + "-" + mcAnimTypes.TAKE_HIT,
-      frames: scene.anims.generateFrameNumbers(
-        mc.type + "-" + mcAnimTypes.TAKE_HIT,
-        {
-          start: 0,
-          end: mc.takehit,
-        }
-      ),
+      key: preFix + mc.type + "-" + mcAnimTypes.TAKE_HIT,
+      frames: scene.anims.generateFrameNumbers(preFix + mc.type, {
+        start: mc.takehit.start,
+        end: mc.takehit.end,
+      }),
       frameRate: 4,
       repeat: -1,
     });
-  });
+  }
 }
 export function createGoblinAnims(scene: Phaser.Scene) {
+  const goblin = {
+    ıdle: {
+      start: 3,
+      end: 0,
+    },
+    run: {
+      start: 19,
+      end: 12,
+    },
+    attack1: {
+      start: 31,
+      end: 24,
+    },
+    attack2: {
+      start: 47,
+      end: 36,
+    },
+    death: {
+      start: 63,
+      end: 60,
+    },
+    takehit: {
+      start: 51,
+      end: 48,
+    },
+  } as const;
   scene.anims.create({
     key: goblinAnimTypes.ULTI,
-    frames: scene.anims.generateFrameNumbers(goblinAnimTypes.ULTI, {
-      start: 12,
-      end: 0,
+    frames: scene.anims.generateFrameNumbers("goblin", {
+      start: goblin.attack2.start,
+      end: goblin.attack2.end,
     }),
     frameRate: 10,
     repeat: -1,
@@ -179,9 +247,9 @@ export function createGoblinAnims(scene: Phaser.Scene) {
 
   scene.anims.create({
     key: goblinAnimTypes.IDLE,
-    frames: scene.anims.generateFrameNumbers(goblinAnimTypes.IDLE, {
-      start: 4,
-      end: 0,
+    frames: scene.anims.generateFrameNumbers("goblin", {
+      start: goblin.ıdle.start,
+      end: goblin.ıdle.end,
     }),
     frameRate: 8,
     repeat: -1,
@@ -189,9 +257,9 @@ export function createGoblinAnims(scene: Phaser.Scene) {
 
   scene.anims.create({
     key: goblinAnimTypes.TAKE_HIT,
-    frames: scene.anims.generateFrameNumbers(goblinAnimTypes.TAKE_HIT, {
-      start: 4,
-      end: 0,
+    frames: scene.anims.generateFrameNumbers("goblin", {
+      start: goblin.takehit.start,
+      end: goblin.takehit.end,
     }),
     frameRate: 10,
     repeat: -1,
@@ -199,9 +267,9 @@ export function createGoblinAnims(scene: Phaser.Scene) {
 
   scene.anims.create({
     key: goblinAnimTypes.DEATH,
-    frames: scene.anims.generateFrameNumbers(goblinAnimTypes.DEATH, {
-      start: 4,
-      end: 0,
+    frames: scene.anims.generateFrameNumbers("goblin", {
+      start: goblin.death.start,
+      end: goblin.death.end,
     }),
     frameRate: 8,
     repeat: -1,
@@ -209,9 +277,9 @@ export function createGoblinAnims(scene: Phaser.Scene) {
 
   scene.anims.create({
     key: goblinAnimTypes.RUN,
-    frames: scene.anims.generateFrameNumbers(goblinAnimTypes.RUN, {
-      start: 8,
-      end: 0,
+    frames: scene.anims.generateFrameNumbers("goblin", {
+      start: goblin.run.start,
+      end: goblin.run.end,
     }),
     frameRate: 7,
     repeat: -1,
@@ -219,9 +287,9 @@ export function createGoblinAnims(scene: Phaser.Scene) {
 
   scene.anims.create({
     key: goblinAnimTypes.ATTACK,
-    frames: scene.anims.generateFrameNumbers(goblinAnimTypes.ATTACK, {
-      start: 8,
-      end: 0,
+    frames: scene.anims.generateFrameNumbers("goblin", {
+      start: goblin.attack1.start,
+      end: goblin.attack1.end,
     }),
     frameRate: 6.6,
     repeat: -1,
