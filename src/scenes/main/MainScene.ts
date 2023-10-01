@@ -21,6 +21,7 @@ import {
   mcEvents,
   mobEvents,
   mobEventsTypes,
+  type Regenerated,
 } from "../../game/types";
 import { CONFIG } from "../../PhaserGame";
 import type goblinController from "../../objects/Mob/goblinController";
@@ -81,12 +82,24 @@ export default class MainScene extends Phaser.Scene {
 
     mcEvents.on(mcEventTypes.TOOK_HIT, (i: number, damage: number) => {
       console.log(
-        `player ${i} took hit damage: ${damage} after hp: ${this.playerManager[i].player.character.state.HP}`
+        `[MC TOOK_HIT] player ${i} took hit damage: ${damage} after hp: ${this.playerManager[i].player.character.state.HP}`
+      );
+    });
+
+    mcEvents.on(mcEventTypes.REGENERATED, (i: number, details: Regenerated) => {
+      console.debug(
+        `%c[MC REGENERATED]%c player ${i} regenerated: hp=${details.HP} sp=${details.SP}`,
+        "color: green",
+        "color: white"
       );
     });
 
     mcEvents.on(mcEventTypes.DIED, (i: number) => {
-      console.log(`player ${i} died`);
+      console.log(
+        `%c[MC DIED]%c player ${i} died`,
+        "color: red",
+        "color: white"
+      );
     });
 
     mobEvents.on(
@@ -95,16 +108,29 @@ export default class MainScene extends Phaser.Scene {
         const ctrl = this.mobController[id - 1];
         if (ctrl.goblin.id === id)
           console.log(
-            `goblin ${ctrl.goblin.name} took hit ${
+            `[TOOK_HIT] goblin ${ctrl.goblin.name} took hit ${
               details.stun ? "(STUN)" : "(NORMAL)"
             } damage: ${details.damage} after hp: ${ctrl.goblin.mob.state.HP}`
           );
       }
     );
 
+    mobEvents.on(
+      mobEventsTypes.REGENERATED,
+      (id: number, details: Regenerated) => {
+        const ctrl = this.mobController[id - 1];
+        if (ctrl.goblin.id === id)
+          console.debug(
+            `%c[REGENERATED]%c goblin ${ctrl.goblin.name} regenerated hp=${details.HP} sp=${details.SP}`,
+            "color: darkgreen",
+            "color: white"
+          );
+      }
+    );
+
     mobEvents.on(mobEventsTypes.DIED, (id: number) => {
       const ctrl = this.mobController[id - 1];
-      if (ctrl.goblin.id === id) console.log(`${ctrl.goblin.name} died`);
+      if (ctrl.goblin.id === id) console.log(`[DIED] ${ctrl.goblin.name} died`);
     });
     this.tilemap = this.make.tilemap({ key: "roadfile" });
 
@@ -123,17 +149,37 @@ export default class MainScene extends Phaser.Scene {
     );
     createMobs(this);
 
-    setInterval(() => {
-      if (this.scene.isPaused()) return;
-      this.playerManager.forEach(({ player }) => {
-        const { regenerate } = player.character.regeneration();
-        if (regenerate) regenerate();
-      });
-      this.mobController.forEach((controller) => {
-        const { regenerate } = controller.goblin.mob.regeneration();
-        if (regenerate) regenerate();
-      });
-    }, 1000);
+    this.time.addEvent({
+      delay: 1000,
+      callback: () => {
+        if (this.scene.isPaused()) return;
+        this.playerManager.forEach(({ player }) => {
+          if (player.character.regeneration.has()) {
+            const view = player.character.regeneration.view();
+            player.character.regeneration.do();
+
+            mcEvents.emit(
+              mcEventTypes.REGENERATED,
+              player.index,
+              view satisfies Regenerated
+            );
+          }
+        });
+        this.mobController.forEach((controller) => {
+          if (controller.goblin.mob.regeneration.has()) {
+            const view = controller.goblin.mob.regeneration.view();
+            controller.goblin.mob.regeneration.do();
+
+            mobEvents.emit(
+              mobEventsTypes.REGENERATED,
+              controller.goblin.id,
+              view satisfies Regenerated
+            );
+          }
+        });
+      },
+      loop: true,
+    });
 
     this.cameras.main.startFollow(this.player.sprite, false, 1, 0, -420, -160);
     this.player.play(mcAnimTypes.FALL, true);

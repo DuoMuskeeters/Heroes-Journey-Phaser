@@ -1,12 +1,12 @@
 import { CONFIG } from "../PhaserGame";
 import { type MobTier, mobStates } from "./mobStats";
 import { type BaseTypes } from "./playerStats";
-import { Spell, SpellRange } from "./spell";
+import { Passive, Spell, SpellRange } from "./spell";
 
 type Level = number;
 type XP = number;
 
-export class State implements BaseTypes {
+export class State {
   // AUTO GENERATED
   HP: number;
   SP: number;
@@ -57,6 +57,10 @@ export class Canlı {
   _takeDamage(damage: number) {
     return (this.state.HP = Math.max(0, this.state.HP - damage));
   }
+  _heal({ hp = 0, sp = 0 }) {
+    this.state.HP = Math.min(this.state.max_hp, this.state.HP + hp);
+    this.state.SP = Math.min(this.state.max_sp, this.state.SP + sp);
+  }
 
   constructor(name: string, state: State) {
     this.name = name;
@@ -104,25 +108,17 @@ export class Character extends Canlı {
       this.state.calculate_power();
     }
   }
-  regeneration() {
-    const reg = 0.025;
-    const HP_reg: number = this.state.max_hp * reg;
-    const SP_reg: number = this.state.max_sp * reg;
-    if (!this.isDead()) {
-      return {
-        HP_reg,
-        SP_reg,
-        regenerate: () => {
-          this.state.HP = Math.min(this.state.max_hp, this.state.HP + HP_reg);
-          this.state.SP = Math.min(this.state.max_sp, this.state.SP + SP_reg);
-        },
-      };
-    }
-    return {
-      HP_reg,
-      SP_reg,
-    };
-  }
+
+  private reg = 0.025;
+  regeneration = new Passive({
+    has: () => !this.isDead(),
+    view: () => {
+      const HP = this.state.max_hp * this.reg;
+      const SP = this.state.max_sp * this.reg;
+      return { HP, SP };
+    },
+    do: ({ HP, SP }) => this._heal({ hp: HP, sp: SP }),
+  });
 }
 
 export class Iroh extends Character {
@@ -206,7 +202,7 @@ export class Archer extends Character {
 
 export class MobCanlı extends Canlı {
   constructor(public tier: MobTier = 1, name: string, state?: State) {
-    super(name, state ?? mobStates.goblin[tier]);
+    super(name, state ?? new State(mobStates.goblin[tier]));
   }
 
   OnUltimate() {
@@ -217,23 +213,20 @@ export class MobCanlı extends Canlı {
     return false;
   }
 
-  regeneration() {
-    const hp_reg = this.state.Intelligence * 0.1;
-    const sp_reg = this.state.Intelligence * 0.2;
-    const HP_reg: number = this.state.HP * hp_reg;
-    const SP_reg: number = this.state.SP * sp_reg;
-    if (!this.isDead()) {
-      return {
-        HP_reg,
-        SP_reg,
-        regenerate: () => {
-          this.state.HP = Math.min(this.state.max_hp, this.state.HP + HP_reg);
-          this.state.SP = Math.min(this.state.max_sp, this.state.SP + sp_reg);
-        },
-      };
-    }
-    return { HP_reg, SP_reg };
-  }
+  private HP_Reg = 0.001;
+  private SP_Reg = 0.002;
+
+  regeneration = new Passive({
+    has: () => !this.isDead(),
+    view: () => {
+      const hp_reg = this.state.Intelligence * this.HP_Reg;
+      const sp_reg = this.state.Intelligence * this.SP_Reg;
+      const HP = this.state.max_hp * hp_reg;
+      const SP = this.state.max_sp * sp_reg;
+      return { HP, SP };
+    },
+    do: ({ HP, SP }) => this._heal({ hp: HP, sp: SP }),
+  });
 
   basicAttack = new Spell("basic", SpellRange.SingleORNone, {
     damage: () => this.state.ATK,

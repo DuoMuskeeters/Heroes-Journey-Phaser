@@ -5,6 +5,7 @@ export const eventTypes = {
 export const mcEventTypes = {
   BASIC_ATTACK_USED: "BASIC_ATTACK_USED",
   HEAVY_ATTACK_USED: "HEAVY_ATTACK_USED",
+  REGENERATED: "REGENERATED",
   TOOK_HIT: "TOOK_HIT",
   DIED: "DIED",
 } as const;
@@ -17,6 +18,7 @@ export const mobEventsTypes = {
   STARTED_RUNNING: "STARTED_RUNNING",
   ULTI: "ULTI",
   ATTACKING: "ATTACKING",
+  REGENERATED: "REGENERATED",
   IDLE: "IDLE",
 } as const;
 export type MobEventsTypes =
@@ -26,6 +28,11 @@ export type GoblinTookHit = {
   damage: number;
   stun: boolean;
   from: "jack" | "iroh" | "unknown";
+};
+
+export type Regenerated = {
+  HP: number;
+  SP: number;
 };
 
 export const gameEvents = new Phaser.Events.EventEmitter();

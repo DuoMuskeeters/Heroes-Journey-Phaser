@@ -66,3 +66,26 @@ export class Spell<R extends SpellRange> {
     this.cancelable = options.cancelable ?? false;
   }
 }
+
+type PassiveOptions<Data> = {
+  has: () => boolean;
+  view: () => Data;
+  do: (data: Data) => void;
+};
+
+export class Passive<Data> {
+  has: PassiveOptions<Data>["has"];
+  view: PassiveOptions<Data>["view"];
+  do: () => void;
+
+  constructor(options: PassiveOptions<Data>) {
+    this.has = options.has;
+    this.view = options.view;
+    this.do = () => {
+      const has = this.has();
+      if (!has) throw new Error("Passive için gerekli koşullar sağlanmadı.");
+      const view = this.view();
+      return options.do(view);
+    };
+  }
+}
