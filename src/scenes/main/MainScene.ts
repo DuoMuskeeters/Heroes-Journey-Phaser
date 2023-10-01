@@ -15,7 +15,7 @@ import { createAvatarFrame } from "../Ui/AvatarUi";
 import { Player } from "../../objects/player";
 import { Iroh, Jack } from "../../game/Karakter";
 import {
-  GoblinTookHit,
+  type GoblinTookHit,
   mcAnimTypes,
   mcEventTypes,
   mcEvents,
@@ -23,9 +23,8 @@ import {
   mobEventsTypes,
 } from "../../game/types";
 import { CONFIG } from "../../PhaserGame";
-import goblinController from "../../objects/Mob/goblinController";
-import { PlayerManager } from "../../objects/player/manager";
-import { mobStats } from "../../game/mobStats";
+import type goblinController from "../../objects/Mob/goblinController";
+import { PlayerManager, type PlayerUI } from "../../objects/player/manager";
 import { playerBaseStates } from "../../game/playerStats";
 
 type Key = Phaser.Input.Keyboard.Key;
@@ -73,8 +72,8 @@ export default class MainScene extends Phaser.Scene {
     const player = new Player(new Jack("jack", playerBaseStates.jack));
     this.playerManager = new PlayerManager();
     const player2 = new Player(new Iroh("iroh", playerBaseStates.iroh));
-    this.playerManager.push({ player, UI: {} as any });
-    this.playerManager.push({ player: player2, UI: {} as any });
+    this.playerManager.push({ player, UI: {} as PlayerUI });
+    this.playerManager.push({ player: player2, UI: {} as PlayerUI });
   }
 
   create() {
@@ -131,9 +130,7 @@ export default class MainScene extends Phaser.Scene {
         if (regenerate) regenerate();
       });
       this.mobController.forEach((controller) => {
-        const { regenerate } = controller.goblin.mob.regeneration(
-          mobStats.goblin.TIER_1.hp_reg
-        );
+        const { regenerate } = controller.goblin.mob.regeneration();
         if (regenerate) regenerate();
       });
     }, 1000);
@@ -156,18 +153,21 @@ export default class MainScene extends Phaser.Scene {
     });
   }
   Addkey() {
-    this.keySpace = this.input.keyboard?.addKey("SPACE")!;
-    this.keyW = this.input.keyboard?.addKey("W")!;
-    this.keyA = this.input.keyboard?.addKey("A")!;
-    this.keyD = this.input.keyboard?.addKey("D")!;
-    this.keyQ = this.input.keyboard?.addKey("Q")!;
-    this.keyE = this.input.keyboard?.addKey("E")!;
+    const keyboard = this.input.keyboard;
+    if (!keyboard) throw new Error("keyboard is not defined");
 
-    this.keyEnter = this.input.keyboard?.addKey("ENTER")!;
-    this.keyUp = this.input.keyboard?.addKey("UP")!;
-    this.keyLeft = this.input.keyboard?.addKey("LEFT")!;
-    this.keyRight = this.input.keyboard?.addKey("RIGHT")!;
-    this.keyP = this.input.keyboard?.addKey("P")!;
-    this.keyO = this.input.keyboard?.addKey("O")!;
+    this.keySpace = keyboard.addKey("SPACE");
+    this.keyW = keyboard.addKey("W");
+    this.keyA = keyboard.addKey("A");
+    this.keyD = keyboard.addKey("D");
+    this.keyQ = keyboard.addKey("Q");
+    this.keyE = keyboard.addKey("E");
+
+    this.keyEnter = keyboard.addKey("ENTER");
+    this.keyUp = keyboard.addKey("UP");
+    this.keyLeft = keyboard.addKey("LEFT");
+    this.keyRight = keyboard.addKey("RIGHT");
+    this.keyP = keyboard.addKey("P");
+    this.keyO = keyboard.addKey("O");
   }
 }

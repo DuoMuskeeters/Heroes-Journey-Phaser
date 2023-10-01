@@ -1,5 +1,5 @@
-import { Player } from ".";
-import { Character } from "../../game/Karakter";
+import { type Player } from ".";
+import { type Character } from "../../game/Karakter";
 import { mcEventTypes, mcEvents } from "../../game/types";
 
 export type PlayerUI = {

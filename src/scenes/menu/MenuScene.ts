@@ -6,7 +6,7 @@ import { mcAnimTypes } from "../../game/types/types";
 import { CONFIG } from "../../PhaserGame";
 import { Player } from "../../objects/player";
 import { Jack } from "../../game/Karakter";
-import { PlayerManager } from "../../objects/player/manager";
+import { PlayerManager, type PlayerUI } from "../../objects/player/manager";
 import { playerBaseStates } from "../../game/playerStats";
 
 export default class MenuScene extends Phaser.Scene {
@@ -29,7 +29,7 @@ export default class MenuScene extends Phaser.Scene {
     super("menu");
     const player = new Player(new Jack("jack", playerBaseStates.jack));
     this.playerManager = new PlayerManager();
-    this.playerManager.push({ player, UI: {} as any });
+    this.playerManager.push({ player, UI: {} as PlayerUI });
   }
 
   get player() {
@@ -103,7 +103,7 @@ export default class MenuScene extends Phaser.Scene {
     this.createIntro();
   }
 
-  update(time: number, delta: number): void {
+  update(_time: number, _delta: number): void {
     Backroundmovement(this);
     if (this.road !== undefined) {
       this.road.sprite.tilePositionX =

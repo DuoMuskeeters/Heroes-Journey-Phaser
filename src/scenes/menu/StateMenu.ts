@@ -1,6 +1,6 @@
 import { CONFIG } from "../../PhaserGame";
-import { Player } from "../../objects/player";
-import { Character } from "../../game/Karakter";
+import { type Player } from "../../objects/player";
+import { type Character } from "../../game/Karakter";
 
 export default class statemenu {
   scene!: Phaser.Scene;

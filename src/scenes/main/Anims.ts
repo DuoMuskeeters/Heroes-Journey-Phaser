@@ -1,8 +1,10 @@
-import { Character } from "../../game/Karakter";
+import { type Character } from "../../game/Karakter";
+import { type MobType } from "../../game/mobStats";
+import { type PlayerType } from "../../game/playerStats";
 import { goblinAnimTypes, mcAnimTypes } from "../../game/types/types";
-import { Player } from "../../objects/player";
-import MenuScene from "../menu/MenuScene";
-import MainScene from "./MainScene";
+import { type Player } from "../../objects/player";
+import type MenuScene from "../menu/MenuScene";
+import type MainScene from "./MainScene";
 export function loadAnimations(scene: MainScene | MenuScene) {
   createPlayeranims(scene);
   createGoblinAnims(scene);
@@ -12,96 +14,49 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
   const players = [
     {
       type: "iroh" as const,
-      ıdle: {
-        start: 0,
-        end: 7,
-      },
-      run: {
-        start: 16,
-        end: 23,
-      },
-      jump: {
-        start: 96,
-        end: 98,
-      },
-      fall: {
-        start: 128,
-        end: 130,
-      },
-      death: {
-        start: 384,
-        end: 395,
-      },
-      takehit: {
-        start: 368,
-        end: 372,
-      },
-      attack1: {
-        start: 160,
-        end: 163,
-      },
-      attack1_combo2: {
-        start: 176,
-        end: 179,
-      },
-      attack1_combo3: {
-        start: 192,
-        end: 195,
-      },
-      attack2: {
-        start: 304,
-        end: 319,
-      },
-      trasform: {
-        start: 320,
-        end: 327,
-      },
+      ıdle: { start: 0, end: 7 },
+      run: { start: 16, end: 23 },
+      jump: { start: 96, end: 98 },
+      fall: { start: 128, end: 130 },
+      death: { start: 384, end: 395 },
+      takehit: { start: 368, end: 372 },
+      attack1: { start: 160, end: 163 },
+      attack1_combo2: { start: 176, end: 179 },
+      attack1_combo3: { start: 192, end: 195 },
+      attack2: { start: 304, end: 319 },
+      trasform: { start: 320, end: 331 },
+    },
+    {
+      type: "fireiroh" as const,
+      ıdle: { start: 0, end: 7 },
+      run: { start: 16, end: 23 },
+      jump: { start: 96, end: 98 },
+      fall: { start: 128, end: 130 },
+      death: { start: 384, end: 395 },
+      takehit: { start: 368, end: 372 },
+      attack1: { start: 160, end: 163 },
+      attack1_combo2: { start: 176, end: 179 },
+      attack1_combo3: { start: 192, end: 195 },
+      attack2: { start: 304, end: 319 },
+      trasform: { start: 320, end: 327 }, // fireiroh has different transform anim
     },
     {
       type: "jack" as const,
-      ıdle: {
-        start: 32,
-        end: 38,
-      },
-      run: {
-        start: 48,
-        end: 55,
-      },
-      jump: {
-        start: 40,
-        end: 41,
-      },
-      fall: {
-        start: 24,
-        end: 25,
-      },
-      attack1: {
-        start: 0,
-        end: 5,
-      },
-      attack2: {
-        start: 8,
-        end: 13,
-      },
-      death: {
-        start: 16,
-        end: 21,
-      },
-      takehit: {
-        start: 56,
-        end: 59,
-      },
+      ıdle: { start: 32, end: 38 },
+      run: { start: 48, end: 55 },
+      jump: { start: 40, end: 41 },
+      fall: { start: 24, end: 25 },
+      attack1: { start: 0, end: 5 },
+      attack2: { start: 8, end: 13 },
+      death: { start: 16, end: 21 },
+      takehit: { start: 56, end: 59 },
     } as const,
-  ];
-  for (let idx = 0; idx < players.length + 1; idx++) {
-    const mc = idx === 0 || idx === 1 ? players[0] : players[1];
-    if (idx === 1 && players[0].trasform) players[0].trasform.end = 331;
+  ] satisfies (Record<string, unknown> & { type: PlayerType | "fireiroh" })[];
 
-    const preFix = idx === 0 && mc.type === "iroh" ? mcAnimTypes.FIRE : "";
-
+  for (const mc of players) {
     scene.anims.create({
-      key: preFix + mc.type + "-" + mcAnimTypes.IDLE,
-      frames: scene.anims.generateFrameNumbers(preFix + mc.type, {
+      key: mc.type + "-" + mcAnimTypes.IDLE,
+      frames: scene.anims.generateFrameNumbers(mc.type, {
         start: mc.ıdle.start,
         end: mc.ıdle.end,
       }),
@@ -110,8 +65,8 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
     });
 
     scene.anims.create({
-      key: preFix + mc.type + "-" + mcAnimTypes.RUN,
-      frames: scene.anims.generateFrameNumbers(preFix + mc.type, {
+      key: mc.type + "-" + mcAnimTypes.RUN,
+      frames: scene.anims.generateFrameNumbers(mc.type, {
         start: mc.run.start,
         end: mc.run.end,
       }),
@@ -120,8 +75,8 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
     });
 
     scene.anims.create({
-      key: preFix + mc.type + "-" + mcAnimTypes.JUMP,
-      frames: scene.anims.generateFrameNumbers(preFix + mc.type, {
+      key: mc.type + "-" + mcAnimTypes.JUMP,
+      frames: scene.anims.generateFrameNumbers(mc.type, {
         start: mc.jump.start,
         end: mc.jump.end,
       }),
@@ -129,8 +84,8 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
       repeat: -1,
     });
     scene.anims.create({
-      key: preFix + mc.type + "-" + mcAnimTypes.ATTACK_2,
-      frames: scene.anims.generateFrameNumbers(preFix + mc.type, {
+      key: mc.type + "-" + mcAnimTypes.ATTACK_2,
+      frames: scene.anims.generateFrameNumbers(mc.type, {
         start: mc.attack2.start,
         end: mc.attack2.end,
       }),
@@ -138,8 +93,8 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
       repeat: -1,
     });
     scene.anims.create({
-      key: preFix + mc.type + "-" + mcAnimTypes.ATTACK_1,
-      frames: scene.anims.generateFrameNumbers(preFix + mc.type, {
+      key: mc.type + "-" + mcAnimTypes.ATTACK_1,
+      frames: scene.anims.generateFrameNumbers(mc.type, {
         start: mc.attack1.start,
         end: mc.attack1.end,
       }),
@@ -147,10 +102,10 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
       repeat: -1,
     });
 
-    if (mc.type === "iroh") {
+    if (mc.type === "iroh" || mc.type === "fireiroh") {
       scene.anims.create({
-        key: preFix + mc.type + "-" + mcAnimTypes.ATTACK_1_COMBO2,
-        frames: scene.anims.generateFrameNumbers(preFix + mc.type, {
+        key: mc.type + "-" + mcAnimTypes.ATTACK_1_COMBO2,
+        frames: scene.anims.generateFrameNumbers(mc.type, {
           start: mc.attack1_combo2.start,
           end: mc.attack1_combo2.end,
         }),
@@ -158,8 +113,8 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
         repeat: -1,
       });
       scene.anims.create({
-        key: preFix + mc.type + "-" + mcAnimTypes.ATTACK_1_COMBO3,
-        frames: scene.anims.generateFrameNumbers(preFix + mc.type, {
+        key: mc.type + "-" + mcAnimTypes.ATTACK_1_COMBO3,
+        frames: scene.anims.generateFrameNumbers(mc.type, {
           start: mc.attack1_combo3.start,
           end: mc.attack1_combo3.end,
         }),
@@ -168,8 +123,8 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
       });
 
       scene.anims.create({
-        key: preFix + mc.type + "-" + mcAnimTypes.TRANSFORM,
-        frames: scene.anims.generateFrameNumbers(preFix + mc.type, {
+        key: mc.type + "-" + mcAnimTypes.TRANSFORM,
+        frames: scene.anims.generateFrameNumbers(mc.type, {
           start: mc.trasform.start,
           end: mc.trasform.end,
         }),
@@ -178,8 +133,8 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
       });
     }
     scene.anims.create({
-      key: preFix + mc.type + "-" + mcAnimTypes.FALL,
-      frames: scene.anims.generateFrameNumbers(preFix + mc.type, {
+      key: mc.type + "-" + mcAnimTypes.FALL,
+      frames: scene.anims.generateFrameNumbers(mc.type, {
         start: mc.fall.start,
         end: mc.fall.end,
       }),
@@ -188,8 +143,8 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
     });
 
     scene.anims.create({
-      key: preFix + mc.type + "-" + mcAnimTypes.DEATH,
-      frames: scene.anims.generateFrameNumbers(preFix + mc.type, {
+      key: mc.type + "-" + mcAnimTypes.DEATH,
+      frames: scene.anims.generateFrameNumbers(mc.type, {
         start: mc.death.start,
         end: mc.death.end,
       }),
@@ -198,8 +153,8 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
     });
 
     scene.anims.create({
-      key: preFix + mc.type + "-" + mcAnimTypes.TAKE_HIT,
-      frames: scene.anims.generateFrameNumbers(preFix + mc.type, {
+      key: mc.type + "-" + mcAnimTypes.TAKE_HIT,
+      frames: scene.anims.generateFrameNumbers(mc.type, {
         start: mc.takehit.start,
         end: mc.takehit.end,
       }),
@@ -210,30 +165,13 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
 }
 export function createGoblinAnims(scene: Phaser.Scene) {
   const goblin = {
-    ıdle: {
-      start: 3,
-      end: 0,
-    },
-    run: {
-      start: 19,
-      end: 12,
-    },
-    attack1: {
-      start: 31,
-      end: 24,
-    },
-    attack2: {
-      start: 47,
-      end: 36,
-    },
-    death: {
-      start: 63,
-      end: 60,
-    },
-    takehit: {
-      start: 51,
-      end: 48,
-    },
+    type: "goblin" as const satisfies MobType,
+    ıdle: { start: 3, end: 0 },
+    run: { start: 19, end: 12 },
+    attack1: { start: 31, end: 24 },
+    attack2: { start: 47, end: 36 },
+    death: { start: 63, end: 60 },
+    takehit: { start: 51, end: 48 },
   } as const;
   scene.anims.create({
     key: goblinAnimTypes.ULTI,

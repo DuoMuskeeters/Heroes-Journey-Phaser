@@ -1,76 +1,49 @@
 import { CONFIG } from "../PhaserGame";
-import { baseTypes } from "./playerStats";
+import { type MobTier, mobStates } from "./mobStats";
+import { type BaseTypes } from "./playerStats";
 import { Spell, SpellRange } from "./spell";
 
-export const defaultState = {
-  HP: 200,
-  max_hp: 200,
-  max_sp: 100,
-  SP: 100,
-  ATK: 20,
-  ATKRATE: 1,
-} satisfies Partial<State>;
+type Level = number;
+type XP = number;
 
-export class State {
+export class State implements BaseTypes {
+  // AUTO GENERATED
   HP: number;
+  SP: number;
   max_hp: number;
   max_sp: number;
-  SP: number;
   ATK: number;
   ATKRATE: number;
+  // END AUTO GENERATED
+
   Strength: number;
   Agility: number;
   Intelligence: number;
   Constitution: number;
 
-  constructor({
-    HP,
-    max_hp,
-    max_sp,
-    SP,
-    ATK,
-    ATKRATE,
-    Strength,
-    Agility,
-    Intelligence,
-    Constitution,
-  }: {
-    HP: number;
-    max_hp: number;
-    max_sp: number;
-    SP: number;
-    ATK: number;
-    ATKRATE: number;
-    Strength: number;
-    Agility: number;
-    Intelligence: number;
-    Constitution: number;
-  }) {
-    this.HP = HP;
-    this.max_hp = max_hp;
-    this.max_sp = max_sp;
-    this.SP = SP;
-    this.ATK = ATK;
-    this.ATKRATE = ATKRATE;
+  constructor({ Strength, Agility, Intelligence, Constitution }: BaseTypes) {
     this.Strength = Strength;
     this.Agility = Agility;
     this.Intelligence = Intelligence;
     this.Constitution = Constitution;
+
+    // dummy initialize
+    this.max_hp = 0;
+    this.max_sp = 0;
+    this.ATK = 0;
+    this.ATKRATE = 0;
+    // end dummy initialize
+    this.calculate_power();
+
+    this.HP = this.max_hp;
+    this.SP = this.max_sp;
   }
+
   calculate_power() {
     this.max_hp = this.Constitution * 8;
     this.max_sp = this.Intelligence * 4;
     this.ATK = this.Strength * 0.8;
     this.ATKRATE = this.Agility * 0.004;
-    this.HP = this.max_hp;
-    this.SP = this.max_sp;
-  }
-
-  static fromBaseTypes(baseTypes: baseTypes) {
-    return new this({
-      ...defaultState,
-      ...baseTypes,
-    });
   }
 }
 
@@ -88,31 +61,28 @@ export class Canlı {
   constructor(name: string, state: State) {
     this.name = name;
     this.state = state;
-    this.calculate_power();
   }
   isDead = () => Math.floor(this.state.HP) === 0;
-  calculate_power() {
-    this.state.calculate_power();
-  }
 }
 
 export class Character extends Canlı {
-  exp: number;
-  level: number;
+  exp: XP;
+  level: Level;
   stat_point: number;
+  prefix = "";
 
-  spellQ: Spell<any> = new Spell("heavy", SpellRange.SingleORNone, {
+  spellQ: Spell<SpellRange> = new Spell("heavy", SpellRange.SingleORNone, {
     has: () => false,
     damage: () => 0,
     hit: () => undefined,
   });
 
-  basicAttack: Spell<any> = new Spell("basic", SpellRange.SingleORNone, {
+  basicAttack: Spell<SpellRange> = new Spell("basic", SpellRange.SingleORNone, {
     damage: () => this.state.ATK,
     hit: (rakip, damage) => rakip?._takeDamage(damage),
   });
 
-  constructor(name: string, state: State, exp: number = 0, level: number = 1) {
+  constructor(name: string, state: State, exp: XP = 0, level: Level = 1) {
     super(name, state);
     this.exp = exp;
     this.level = level;
@@ -120,7 +90,7 @@ export class Character extends Canlı {
   }
 
   level_up() {
-    const requirement_exp: number = level_exp(this.level);
+    const requirement_exp: XP = level_exp(this.level);
     while (this.exp > requirement_exp) {
       this.level += 1;
       this.exp = this.exp - requirement_exp;
@@ -131,7 +101,7 @@ export class Character extends Canlı {
     if (this.stat_point > 0) {
       this.state[stat] += 1;
       this.stat_point -= 1;
-      this.calculate_power();
+      this.state.calculate_power();
     }
   }
   regeneration() {
@@ -159,14 +129,19 @@ export class Iroh extends Character {
   ATK1_MS = CONFIG.physics.arcade.debug ? 2 * 1000 : 1000;
   lastCombo: 0 | 1 | 2 = 0;
   lastBasicAttack: Date | null = null;
-  preFix = "";
+  prefix: "" | "fire" = "";
 
   inComboTime() {
     return Date.now() - (this.lastBasicAttack?.getTime() ?? 0) < this.ATK1_MS;
   }
 
+  transform(mode?: "fire" | "") {
+    mode = mode ?? (this.prefix === "fire" ? "" : "fire");
+    this.prefix = mode;
+    this.state.ATK *= mode === "fire" ? 2 : 0.5;
+  }
+
   basicAttack = new Spell("basic", SpellRange.SingleORNone, {
-    cancelable: false,
     damage: () => {
       const damage = this.state.ATK;
       return this.inComboTime() && this.lastCombo === 2
@@ -188,7 +163,7 @@ export class Iroh extends Character {
   spellQ = new Spell("heavy", SpellRange.Multiple, {
     cancelable: true,
     has: () => this.state.SP >= this.QcostSP,
-    damage: (rakipler) => rakipler.map((r) => this.state.ATK / 6),
+    damage: (rakipler) => rakipler.map(() => this.state.ATK / 6),
     hit: (rakipler, damages) => {
       this.state.SP = Math.max(this.state.SP - this.QcostSP, 0);
       return rakipler.map((rakip, i) => rakip._takeDamage(damages[i]));
@@ -202,8 +177,7 @@ export class Jack extends Character {
   private spCost = CONFIG.physics.arcade.debug ? 5 : 50;
 
   basicAttack = new Spell("basic", SpellRange.Multiple, {
-    cancelable: false,
-    damage: (rakipler) => rakipler.map((r) => this.state.ATK),
+    damage: (rakipler) => rakipler.map(() => this.state.ATK),
     hit: (rakipler, damages) =>
       rakipler.map((r, i) => r._takeDamage(damages[i])),
   });
@@ -213,9 +187,8 @@ export class Jack extends Character {
   // });
 
   spellQ = new Spell("heavy", SpellRange.Multiple, {
-    cancelable: false,
     has: () => (this.lastQ?.getTime() ?? 0) + this.standByTime < Date.now(),
-    damage: (rakipler) => rakipler.map((r) => this.state.ATK * 3),
+    damage: (rakipler) => rakipler.map(() => this.state.ATK * 3),
     hit: (rakipler, damages) => {
       this.lastQ = new Date();
       this.state.SP = Math.max(this.state.SP - this.spCost, 0);
@@ -232,14 +205,8 @@ export class Archer extends Character {
 }
 
 export class MobCanlı extends Canlı {
-  constructor(name: string, state: State, public tier: 1 | 2 | 3 | 4 = 1) {
-    super(name, state);
-  }
-
-  calculate_power() {
-    super.calculate_power();
-    this.state.max_sp = 100;
-    this.state.SP = 0;
+  constructor(public tier: MobTier = 1, name: string, state?: State) {
+    super(name, state ?? mobStates.goblin[tier]);
   }
 
   OnUltimate() {
@@ -250,9 +217,9 @@ export class MobCanlı extends Canlı {
     return false;
   }
 
-  regeneration(hp_reg: number) {
-    const sp_reg = this.state.Intelligence * 0.002;
-    const SP_reg_value = sp_reg * 100;
+  regeneration() {
+    const hp_reg = this.state.Intelligence * 0.1;
+    const sp_reg = this.state.Intelligence * 0.2;
     const HP_reg: number = this.state.HP * hp_reg;
     const SP_reg: number = this.state.SP * sp_reg;
     if (!this.isDead()) {
@@ -261,17 +228,11 @@ export class MobCanlı extends Canlı {
         SP_reg,
         regenerate: () => {
           this.state.HP = Math.min(this.state.max_hp, this.state.HP + HP_reg);
-          this.state.SP = Math.min(
-            this.state.max_sp,
-            this.state.SP + SP_reg_value
-          );
+          this.state.SP = Math.min(this.state.max_sp, this.state.SP + sp_reg);
         },
       };
     }
-    return {
-      HP_reg,
-      SP_reg,
-    };
+    return { HP_reg, SP_reg };
   }
 
   basicAttack = new Spell("basic", SpellRange.SingleORNone, {
@@ -287,7 +248,7 @@ export class MobCanlı extends Canlı {
 
 export class Goblin extends MobCanlı {
   spellQ = new Spell("heavy", SpellRange.Multiple, {
-    damage: (rakipler) => rakipler.map((r) => this.state.ATK * 3),
+    damage: (rakipler) => rakipler.map(() => this.state.ATK * 3),
     has: () => this.state.SP === this.state.max_sp,
     onUse: () => (this.state.SP = 0),
     hit: (rakipler, damages) =>
@@ -296,11 +257,7 @@ export class Goblin extends MobCanlı {
 }
 
 // random mob eksik
-export function level_exp(
-  level: number,
-  n1: number = 1.2,
-  base_exp: number = 100
-): number {
+export function level_exp(level: Level, n1 = 1.2, base_exp: XP = 100): XP {
   n1 = n1 + 0.002 * level;
   let requirement_exp = base_exp * n1 ** level;
   requirement_exp = Math.round(requirement_exp / 5) * 5;
@@ -308,10 +265,10 @@ export function level_exp(
 }
 
 export function mob_exp_kazancı(
-  mob_level: number,
+  mob_level: Level,
   n1 = 1.2,
-  base_exp = 50
-): number {
+  base_exp: XP = 50
+): XP {
   let mob_exp = base_exp * n1 ** mob_level;
   mob_exp = Math.round(mob_exp / 5) * 5;
   return mob_exp;

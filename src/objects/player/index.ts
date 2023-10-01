@@ -1,10 +1,6 @@
-import { Character, Iroh, Jack } from "../../game/Karakter";
+import { type Character, Iroh, Jack } from "../../game/Karakter";
 import { mcEventTypes, mcEvents } from "../../game/types/events";
-import {
-  type Direction,
-  direction,
-  mcAnimTypes,
-} from "../../game/types/types";
+import { type Direction, direction, mcAnimTypes } from "../../game/types/types";
 import { playerAttackListener } from "../../scenes/main/Playerattack";
 import { getOrThrow } from "../utils";
 import { killCharacter, playerMovementUpdate } from "./movements";
@@ -31,7 +27,7 @@ export class Player<T extends Character> {
     this._index = i;
     this._scene = scene;
     this._sprite = scene.physics.add
-      .sprite(x, y, type + "-" + mcAnimTypes.IDLE )
+      .sprite(x, y, type + "-" + mcAnimTypes.IDLE)
       .setCollideWorldBounds(true)
       .setBounce(0.1)
       .setScale(2.55)
@@ -51,7 +47,7 @@ export class Player<T extends Character> {
     console.log(`player ${this.index} created in scene`, scene.scene.key);
   }
 
-  onTookHit(damage: number) {
+  onTookHit(_damage: number) {
     if (this.character.isDead()) mcEvents.emit(mcEventTypes.DIED, this.index);
   }
 
@@ -59,15 +55,16 @@ export class Player<T extends Character> {
     killCharacter(this);
   }
 
-  update(time: number, delta: number) {
+  update(_time: number, _delta: number) {
     playerMovementUpdate(this);
   }
 
   play(key: string, ignoreIfPlaying?: boolean) {
-    let type = getCharacterType(this.character);
-    if (this.character instanceof Iroh) type = this.character.preFix + type;
-    this.sprite.anims.play(type + "-" + key, ignoreIfPlaying);
-    // play("jack-idle") play("iroh-idle")
+    const type = getCharacterType(this.character);
+    const prefix = this.character.prefix;
+
+    this.sprite.anims.play(prefix + type + "-" + key, ignoreIfPlaying);
+    // play("jack-idle") play("iroh-idle") play("fireiroh-idle")
   }
 
   get index() {

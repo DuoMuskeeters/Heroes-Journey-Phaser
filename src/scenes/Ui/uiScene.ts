@@ -1,9 +1,9 @@
 import statemenu from "../menu/StateMenu";
 import heroesJourneyMap from "./Map";
-import HeroesJourneyMap from "./Map";
+import type HeroesJourneyMap from "./Map";
 import { mcEventTypes, mcEvents } from "../../game/types/events";
 import PhaserGame from "../../PhaserGame";
-import MainScene from "../main/MainScene";
+import type MainScene from "../main/MainScene";
 
 export class UiScene extends Phaser.Scene {
   statemenu!: statemenu;
@@ -75,7 +75,7 @@ export class UiScene extends Phaser.Scene {
       if (this.statemenu.isOpen && isMc) this.statemenu.hide();
     });
   }
-  update(time: number, delta: number): void {
+  update(_time: number, _delta: number): void {
     this.statemenu.update();
   }
 }

@@ -1,11 +1,11 @@
 import {
   direction,
   dirVelocity,
-  McAnimTypes,
+  type McAnimTypes,
   mcAnimTypes,
 } from "../../game/types";
-import { Player } from ".";
-import { Character, Iroh, Jack } from "../../game/Karakter";
+import { type Player } from ".";
+import { type Character, Iroh, Jack } from "../../game/Karakter";
 import MainScene from "../../scenes/main/MainScene";
 const runonUpdate = (player: Player<Character>) => {
   player.play(mcAnimTypes.RUN, true);
@@ -104,8 +104,7 @@ export function playerMovementUpdate(player: Player<Character>) {
     .getName()
     .includes(mcAnimTypes.TRANSFORM);
   const transformActive =
-    player.character instanceof Iroh &&
-    player.character.preFix === mcAnimTypes.FIRE;
+    player.character instanceof Iroh && player.character.prefix === "fire";
 
   const cancelableQ =
     (attackQActive && player.character.spellQ.cancelable) || !attackQActive;

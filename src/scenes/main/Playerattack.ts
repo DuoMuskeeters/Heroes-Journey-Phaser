@@ -1,16 +1,16 @@
-import { Character, Goblin, Iroh, Jack } from "../../game/Karakter";
-import { Spell, SpellRange } from "../../game/spell";
+import { type Character, type Goblin, Iroh, Jack } from "../../game/Karakter";
+import { type Spell, SpellRange } from "../../game/spell";
 import {
-  GoblinTookHit,
+  type GoblinTookHit,
   mobEvents,
   mobEventsTypes,
   mcEventTypes,
   mcEvents,
 } from "../../game/types/events";
 import { mcAnimTypes } from "../../game/types/types";
-import { Mob } from "../../objects/Mob";
-import goblinController from "../../objects/Mob/goblinController";
-import { Player, getCharacterType } from "../../objects/player";
+import { type Mob } from "../../objects/Mob";
+import type goblinController from "../../objects/Mob/goblinController";
+import { type Player, getCharacterType } from "../../objects/player";
 import MainScene from "./MainScene";
 
 type GoblinEmit = { goblin: Mob<Goblin>; damage: number };
@@ -37,7 +37,7 @@ function emit(
 
 function attack(
   player: Player<Character>,
-  s: Spell<any>,
+  s: Spell<SpellRange>,
   ctrl: goblinController[]
 ) {
   const emits: GoblinEmit[] = [];
@@ -81,7 +81,7 @@ export function playerAttackListener(player: Player<Character>) {
   player.sprite.on(
     Phaser.Animations.Events.ANIMATION_STOP,
     (animation: Phaser.Animations.Animation) => {
-      let spell: Spell<any> | undefined;
+      let spell: Spell<SpellRange> | undefined;
 
       if (animation.key.includes(mcAnimTypes.ATTACK_1))
         spell = player.character.basicAttack;
@@ -96,7 +96,7 @@ export function playerAttackListener(player: Player<Character>) {
           player.character instanceof Iroh &&
           !animation.key.includes("fire")
         ) {
-          player.character.preFix = mcAnimTypes.FIRE;
+          player.character.prefix = "fire";
           player.character.state.ATK *= 2;
           player.scene.time.addEvent({
             delay: 5000,
@@ -104,12 +104,12 @@ export function playerAttackListener(player: Player<Character>) {
               player.play(mcAnimTypes.TRANSFORM);
               player.sprite.anims.stopAfterRepeat(0);
               if (player.character instanceof Iroh)
-                player.character.preFix = "";
+                player.character.prefix = "";
               player.character.state.ATK /= 2;
             },
           });
           if (player.character instanceof Jack) {
-            console.log("jack transform not implemented");
+            throw new Error("jack transform not implemented");
           }
         }
       }

@@ -1,7 +1,7 @@
 import PhaserGame from "../../PhaserGame";
 
 import {
-  GoblinTookHit,
+  type GoblinTookHit,
   mobEvents,
   mobEventsTypes,
   mcEventTypes,
@@ -11,15 +11,15 @@ import { createGoblinBomb } from "../../scenes/main/Anims";
 import { goblinHealtbar, goblinspbar } from "../../scenes/Ui/Components";
 import {
   direction,
-  GoblinAnimTypes,
+  type GoblinAnimTypes,
   goblinAnimTypes,
   mcAnimTypes,
 } from "../../game/types/types";
-import { createCollider } from "../../scenes/main/TileGround";
-import { Character, Goblin } from "../../game/Karakter";
-import { Mob } from ".";
-import { PlayerManager } from "../player/manager";
-import MainScene from "../../scenes/main/MainScene";
+import { createRoadCollider } from "../../scenes/main/TileGround";
+import { type Character, type Goblin } from "../../game/Karakter";
+import { type Mob } from ".";
+import { type PlayerManager } from "../player/manager";
+import type MainScene from "../../scenes/main/MainScene";
 
 export default class goblinController {
   private ıdletime = 0;
@@ -141,7 +141,7 @@ export default class goblinController {
           this.bomb = createGoblinBomb(goblin.scene, player);
           // TODO: remove this line
           const mainscene = PhaserGame.scene.keys.mainscene as MainScene;
-          createCollider(mainscene, this.bomb);
+          createRoadCollider(mainscene, this.bomb);
 
           this.bomb?.anims.play(goblinAnimTypes.BOMB, true);
           this.bomb?.anims.stopAfterRepeat(0);
@@ -199,7 +199,10 @@ export default class goblinController {
 
     this.bomb?.on(
       Phaser.Animations.Events.ANIMATION_UPDATE,
-      (anim: any, frame: Phaser.Animations.AnimationFrame) => {
+      (
+        _anim: Phaser.Animations.Animation,
+        _frame: Phaser.Animations.AnimationFrame
+      ) => {
         const areTouchingBomb = this.playersTouchingBomb();
         const characters: Character[] = [];
 
@@ -299,7 +302,7 @@ export default class goblinController {
     this.mobPlay(goblinAnimTypes.IDLE);
   }
 
-  private runOnUpdate(dt: number) {
+  private runOnUpdate(_dt: number) {
     if (this.goblin.sprite.body.onWall()) {
       this.goblin.sprite.setVelocityY(-300);
     }
@@ -311,7 +314,7 @@ export default class goblinController {
     this.mobPlay(goblinAnimTypes.RUN);
   }
 
-  private attackOnUpdate(dt: number) {
+  private attackOnUpdate(_dt: number) {
     if (this.goblin.mob.isDead()) return;
     const leftorRight = this.leftoRight();
     this.goblin.sprite.setVelocityX(leftorRight.velocity.ıdle);

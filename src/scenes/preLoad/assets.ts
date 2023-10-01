@@ -1,7 +1,7 @@
 import { CONFIG } from "../../PhaserGame";
-import MainScene from "../main/MainScene";
-import MenuScene from "../menu/MenuScene";
-import LoadScene from "./Load";
+import type MainScene from "../main/MainScene";
+import type MenuScene from "../menu/MenuScene";
+import type LoadScene from "./Load";
 
 export function preloadAssets(scene: LoadScene) {
   scene.load.pack("jack", "jack-package.json");

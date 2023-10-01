@@ -1,4 +1,4 @@
-import { Canlı } from "./Karakter";
+import { type Canlı } from "./Karakter";
 
 type HP = number;
 
@@ -6,17 +6,16 @@ export enum SpellRange {
   Single,
   Multiple,
   SingleORNone,
-  SingleORNone2,
 }
 
 type ExtractSpell<
   Type,
-  Spell extends SpellRange
-> = Spell extends SpellRange.Single
+  Range extends SpellRange
+> = Range extends SpellRange.Single
   ? Type
-  : Spell extends SpellRange.Multiple
+  : Range extends SpellRange.Multiple
   ? Type[]
-  : Spell extends SpellRange.SingleORNone
+  : Range extends SpellRange.SingleORNone
   ? Type | undefined
   : never;
 
@@ -63,7 +62,7 @@ export class Spell<R extends SpellRange> {
       return options.hit(canlı, damage);
     };
     this.has = options.has ?? (() => true);
-    this.onUse = options.onUse ?? (() => {});
+    this.onUse = options.onUse ?? (() => ({}));
     this.cancelable = options.cancelable ?? false;
   }
 }
