@@ -25,7 +25,6 @@ export const mcAnimTypes = {
   JUMP: "jump",
   FALL: "fall",
   FIRE: "fire",
-  NOFIRE: "nofire",
   TRANSFORM:"transform",
 } as const;
 

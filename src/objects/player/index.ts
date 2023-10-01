@@ -3,7 +3,6 @@ import { mcEventTypes, mcEvents } from "../../game/types/events";
 import {
   type Direction,
   direction,
-  McAnimTypes,
   mcAnimTypes,
 } from "../../game/types/types";
 import { playerAttackListener } from "../../scenes/main/Playerattack";
@@ -29,11 +28,10 @@ export class Player<T extends Character> {
 
   create(scene: Phaser.Scene, x: number, y: number, i: number) {
     const type = getCharacterType(this.character);
-    const transMod = type === "jack" ? "" : "-" + mcAnimTypes.NOFIRE;
     this._index = i;
     this._scene = scene;
     this._sprite = scene.physics.add
-      .sprite(x, y, type + "-" + mcAnimTypes.IDLE + transMod)
+      .sprite(x, y, type + "-" + mcAnimTypes.IDLE )
       .setCollideWorldBounds(true)
       .setBounce(0.1)
       .setScale(2.55)

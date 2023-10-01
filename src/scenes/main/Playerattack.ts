@@ -1,4 +1,3 @@
-import { time } from "console";
 import { Character, Goblin, Iroh, Jack } from "../../game/Karakter";
 import { Spell, SpellRange } from "../../game/spell";
 import {
