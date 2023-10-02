@@ -121,10 +121,10 @@ export function UI_updatePlayersHP(scene: MainScene) {
     if (i !== 0) {
       UI.hpBar
         .setScale(3, 3)
-        .setPosition(UI.frameLayer.x + 110, UI.frameLayer.y + 50);
+        .setPosition(UI.frameLayer.x - 35, UI.frameLayer.y + 50);
 
       UIhpText.setPosition(
-        UI.hpBar.getRightCenter(UI.hpBar).x - 25,
+        UI.hpBar.getRightCenter(UI.hpBar).x + 120,
         UI.hpBar.getRightCenter(UI.hpBar).y - 10
       )
         .setScrollFactor(1)
@@ -143,10 +143,10 @@ export function UI_updatePlayersSP(scene: MainScene) {
     if (i !== 0) {
       UI.spBar
         .setScale(2.1, 3)
-        .setPosition(UI.frameLayer.x + 95, UI.frameLayer.y + 75);
+        .setPosition(UI.frameLayer.x - 10, UI.frameLayer.y + 75);
 
       UIspText.setPosition(
-        UI.spBar.getRightCenter(UI.spBar).x - 10,
+        UI.spBar.getRightCenter(UI.spBar).x + 90,
         UI.spBar.getRightCenter(UI.spBar).y - 6
       )
         .setScrollFactor(1)

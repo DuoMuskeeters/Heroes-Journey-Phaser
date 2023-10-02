@@ -33,7 +33,7 @@ export class Player<T extends Character> {
       .setScale(2.55)
       .setBodySize(30, 45, true)
       .setDepth(300);
-    if (type === "iroh") this._sprite.setOffset(40, 19);
+    if (type === "iroh") this._sprite.setOffset(56, 19);
     if (type === "jack") this._sprite.setOffset(85, 77);
 
     this._attackrect = scene.physics.add

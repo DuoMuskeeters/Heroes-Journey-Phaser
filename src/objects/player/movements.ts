@@ -121,12 +121,10 @@ export function playerMovementUpdate(player: Player<Character>) {
   if (A_isDOWN && canMoVE) {
     player.lastdirection = direction.left;
     player.sprite.setFlipX(true);
-    if (player.character instanceof Iroh) player.sprite.setOffset(75, 19);
   }
   if (D_isDOWN && canMoVE) {
     player.lastdirection = direction.right;
     player.sprite.setFlipX(false);
-    if (player.character instanceof Iroh) player.sprite.setOffset(40, 19);
   }
 
   if (!player.sprite.body.onFloor()) {
@@ -169,4 +167,5 @@ export function playerMovementUpdate(player: Player<Character>) {
       console.log("jack E not implemented");
     }
   }
+
 }
