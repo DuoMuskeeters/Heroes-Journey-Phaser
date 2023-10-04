@@ -10,53 +10,53 @@ export function loadAnimations(scene: MainScene | MenuScene) {
   createGoblinAnims(scene);
 }
 
-export function createPlayeranims(scene: MainScene | MenuScene) {
-  const irohatkRate = scene.playerManager[1].player.character.state.ATKRATE;
-  const players = [
-    {
-      type: "iroh" as const,
-      ıdle: { start: 0, end: 7 },
-      run: { start: 16, end: 23 },
-      jump: { start: 96, end: 98 },
-      fall: { start: 128, end: 130 },
-      death: { start: 384, end: 395 },
-      takehit: { start: 368, end: 372 },
-      attack1: { start: 160, end: 163 },
-      attack1_combo2: { start: 176, end: 179 },
-      attack1_combo3: { start: 192, end: 195 },
-      attack2: { start: 304, end: 319 },
-      trasform: { start: 320, end: 331 },
-      atkRate: irohatkRate * 4,
-    },
-    {
-      type: "fireiroh" as const,
-      ıdle: { start: 0, end: 7 },
-      run: { start: 16, end: 23 },
-      jump: { start: 96, end: 98 },
-      fall: { start: 128, end: 130 },
-      death: { start: 384, end: 395 },
-      takehit: { start: 368, end: 372 },
-      attack1: { start: 160, end: 163 },
-      attack1_combo2: { start: 176, end: 179 },
-      attack1_combo3: { start: 192, end: 195 },
-      attack2: { start: 304, end: 319 },
-      trasform: { start: 320, end: 327 }, // fireiroh has different transform anim
-      atkRate: irohatkRate * 5,
-    },
-    {
-      type: "jack" as const,
-      ıdle: { start: 32, end: 38 },
-      run: { start: 48, end: 55 },
-      jump: { start: 40, end: 41 },
-      fall: { start: 24, end: 25 },
-      attack1: { start: 0, end: 5 },
-      attack2: { start: 8, end: 13 },
-      death: { start: 16, end: 21 },
-      takehit: { start: 56, end: 59 },
-      atkRate: scene.playerManager[0].player.character.state.ATKRATE * 6,
-    } as const,
-  ] satisfies (Record<string, unknown> & { type: PlayerType | "fireiroh" })[];
+export const IROH_ATTACK1_FRAME_COUNT = 4;
+export const FIRE_IROH_ATTACK1_FRAME_COUNT = IROH_ATTACK1_FRAME_COUNT;
+export const JACK_ATTACK1_FRAME_COUNT = 6;
 
+const players = [
+  {
+    type: "iroh" as const,
+    ıdle: { start: 0, end: 7 },
+    run: { start: 16, end: 23 },
+    jump: { start: 96, end: 98 },
+    fall: { start: 128, end: 130 },
+    death: { start: 384, end: 395 },
+    takehit: { start: 368, end: 372 },
+    attack1: { start: 160, end: 163 }, // IROH_ATTACK1_FRAME_COUNT
+    attack1_combo2: { start: 176, end: 179 },
+    attack1_combo3: { start: 192, end: 195 },
+    attack2: { start: 304, end: 319 },
+    trasform: { start: 320, end: 331 },
+  },
+  {
+    type: "fireiroh" as const,
+    ıdle: { start: 0, end: 7 },
+    run: { start: 16, end: 23 },
+    jump: { start: 96, end: 98 },
+    fall: { start: 128, end: 130 },
+    death: { start: 384, end: 395 },
+    takehit: { start: 368, end: 372 },
+    attack1: { start: 160, end: 163 }, // FIRE_IROH_ATTACK1_FRAME_COUNT
+    attack1_combo2: { start: 176, end: 179 },
+    attack1_combo3: { start: 192, end: 195 },
+    attack2: { start: 304, end: 319 },
+    trasform: { start: 320, end: 327 }, // fireiroh has different transform anim
+  },
+  {
+    type: "jack" as const,
+    ıdle: { start: 32, end: 38 },
+    run: { start: 48, end: 55 },
+    jump: { start: 40, end: 41 },
+    fall: { start: 24, end: 25 },
+    attack1: { start: 0, end: 5 }, // JACK_ATTACK1_FRAME_COUNT
+    attack2: { start: 8, end: 13 },
+    death: { start: 16, end: 21 },
+    takehit: { start: 56, end: 59 },
+  } as const,
+] satisfies (Record<string, unknown> & { type: PlayerType | "fireiroh" })[];
+
+export function createPlayeranims(scene: MainScene | MenuScene) {
   for (const mc of players) {
     scene.anims.create({
       key: mc.type + "-" + mcAnimTypes.IDLE,
@@ -102,7 +102,7 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
         start: mc.attack1.start,
         end: mc.attack1.end,
       }),
-      frameRate: mc.atkRate,
+      frameRate: 10,
       repeat: -1,
     });
 
@@ -113,7 +113,7 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
           start: mc.attack1_combo2.start,
           end: mc.attack1_combo2.end,
         }),
-        frameRate: mc.atkRate,
+        frameRate: 10,
         repeat: -1,
       });
       scene.anims.create({
@@ -122,7 +122,7 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
           start: mc.attack1_combo3.start,
           end: mc.attack1_combo3.end,
         }),
-        frameRate: mc.atkRate,
+        frameRate: 10,
         repeat: -1,
       });
 

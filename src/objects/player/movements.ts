@@ -7,6 +7,10 @@ import {
 import { type Player } from ".";
 import { type Character, Iroh, Jack } from "../../game/Karakter";
 import MainScene from "../../scenes/main/MainScene";
+import {
+  IROH_ATTACK1_FRAME_COUNT,
+  JACK_ATTACK1_FRAME_COUNT,
+} from "../../scenes/main/Anims";
 const runonUpdate = (player: Player<Character>) => {
   player.play(mcAnimTypes.RUN, true);
   player.sprite.body.setVelocityX(dirVelocity[player.lastdirection] * 250);
@@ -30,7 +34,10 @@ const heavyStrikeonUpdate = (player: Player<Jack | Iroh>) => {
 };
 const attackonUpdate = (player: Player<Character>) => {
   let anim: McAnimTypes = mcAnimTypes.ATTACK_1;
+  let frameRate: number = 1;
+
   if (player.character instanceof Iroh) {
+    frameRate = player.character.state.ATKRATE * IROH_ATTACK1_FRAME_COUNT;
     const { lastCombo } = player.character;
 
     if (player.character.inComboTime())
@@ -40,7 +47,15 @@ const attackonUpdate = (player: Player<Character>) => {
           : lastCombo === 1
           ? mcAnimTypes.ATTACK_1_COMBO2
           : mcAnimTypes.ATTACK_1;
-  }
+  } else if (player.character instanceof Jack) {
+    frameRate = player.character.state.ATKRATE * JACK_ATTACK1_FRAME_COUNT;
+  } else throw new Error("unknown character type for attack");
+
+  const animation = player.sprite.anims.animationManager.get(
+    player.animKey(anim)
+  ); // TODO: this is global for Jake or Iroh, make a clone
+  
+  animation.frameRate = frameRate;
   player.play(anim, true);
   player.sprite.anims.stopAfterRepeat(0);
   player.sprite.body.setVelocityX(0);
@@ -167,5 +182,4 @@ export function playerMovementUpdate(player: Player<Character>) {
       console.log("jack E not implemented");
     }
   }
-
 }

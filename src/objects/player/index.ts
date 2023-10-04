@@ -59,11 +59,14 @@ export class Player<T extends Character> {
     playerMovementUpdate(this);
   }
 
-  play(key: string, ignoreIfPlaying?: boolean) {
+  animKey(key: string) {
     const type = getCharacterType(this.character);
     const prefix = this.character.prefix;
+    return prefix + type + "-" + key;
+  }
 
-    this.sprite.anims.play(prefix + type + "-" + key, ignoreIfPlaying);
+  play(key: string, ignoreIfPlaying?: boolean) {
+    this.sprite.anims.play(this.animKey(key), ignoreIfPlaying);
     // play("jack-idle") play("iroh-idle") play("fireiroh-idle")
   }
 
