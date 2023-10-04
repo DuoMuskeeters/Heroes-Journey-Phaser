@@ -43,7 +43,7 @@ export class State {
     this.max_hp = this.Constitution * 8;
     this.max_sp = this.Intelligence * 4;
     this.ATK = this.Strength * 0.8;
-    this.ATKRATE = this.Agility * 0.04;
+    this.ATKRATE = this.Agility * 0.08;
   }
 }
 
@@ -131,10 +131,13 @@ export class Iroh extends Character {
     return Date.now() - (this.lastBasicAttack?.getTime() ?? 0) < this.ATK1_MS;
   }
 
-  transform(mode?: "fire" | "") {
-    mode = mode ?? (this.prefix === "fire" ? "" : "fire");
+  transform() {
+    const mode = this.prefix === "fire" ? "" : "fire";
     this.prefix = mode;
-    this.state.ATK *= mode === "fire" ? 2 : 0.5;
+    this.state.calculate_power(); // always get the recent stats (fire iroh may have got increased stats recently)
+    if (mode === "fire") {
+      this.state.ATK *= 2;
+    }
   }
 
   basicAttack = new Spell("basic", SpellRange.SingleORNone, {

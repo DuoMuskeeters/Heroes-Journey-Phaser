@@ -96,14 +96,14 @@ export function playerAttackListener(player: Player<Character>) {
           player.character instanceof Iroh &&
           !animation.key.includes("fire")
         ) {
-          player.character.prefix = "fire";
+          player.character.transform();
           player.scene.time.addEvent({
             delay: 5000,
             callback: () => {
               player.play(mcAnimTypes.TRANSFORM);
               player.sprite.anims.stopAfterRepeat(0);
               if (player.character instanceof Iroh)
-                player.character.prefix = "";
+                player.character.transform();
             },
           });
           if (player.character instanceof Jack) {
