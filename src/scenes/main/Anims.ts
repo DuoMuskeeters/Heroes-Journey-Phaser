@@ -11,6 +11,7 @@ export function loadAnimations(scene: MainScene | MenuScene) {
 }
 
 export function createPlayeranims(scene: MainScene | MenuScene) {
+  const irohatkRate = scene.playerManager[1].player.character.state.ATKRATE;
   const players = [
     {
       type: "iroh" as const,
@@ -25,6 +26,7 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
       attack1_combo3: { start: 192, end: 195 },
       attack2: { start: 304, end: 319 },
       trasform: { start: 320, end: 331 },
+      atkRate: irohatkRate * 4,
     },
     {
       type: "fireiroh" as const,
@@ -39,6 +41,7 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
       attack1_combo3: { start: 192, end: 195 },
       attack2: { start: 304, end: 319 },
       trasform: { start: 320, end: 327 }, // fireiroh has different transform anim
+      atkRate: irohatkRate * 5,
     },
     {
       type: "jack" as const,
@@ -50,6 +53,7 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
       attack2: { start: 8, end: 13 },
       death: { start: 16, end: 21 },
       takehit: { start: 56, end: 59 },
+      atkRate: scene.playerManager[0].player.character.state.ATKRATE * 6,
     } as const,
   ] satisfies (Record<string, unknown> & { type: PlayerType | "fireiroh" })[];
 
@@ -98,7 +102,7 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
         start: mc.attack1.start,
         end: mc.attack1.end,
       }),
-      frameRate: 10,
+      frameRate: mc.atkRate,
       repeat: -1,
     });
 
@@ -109,7 +113,7 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
           start: mc.attack1_combo2.start,
           end: mc.attack1_combo2.end,
         }),
-        frameRate: 10,
+        frameRate: mc.atkRate,
         repeat: -1,
       });
       scene.anims.create({
@@ -118,7 +122,7 @@ export function createPlayeranims(scene: MainScene | MenuScene) {
           start: mc.attack1_combo3.start,
           end: mc.attack1_combo3.end,
         }),
-        frameRate: 10,
+        frameRate: mc.atkRate,
         repeat: -1,
       });
 
