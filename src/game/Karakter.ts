@@ -43,7 +43,7 @@ export class State {
     this.max_hp = this.Constitution * 8;
     this.max_sp = this.Intelligence * 4;
     this.ATK = this.Strength * 0.8;
-    this.ATKRATE = this.Agility * 0.004;
+    this.ATKRATE = this.Agility * 0.04;
   }
 }
 
