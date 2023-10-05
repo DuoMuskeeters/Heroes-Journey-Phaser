@@ -2,13 +2,13 @@ import Phaser from "phaser";
 import { createBackground } from "../preLoad/assets";
 import { loadAnimations } from "./Anims";
 import {
-  UI_createPlayers,
+  UI_createPlayer,
   UI_updateOtherPlayers,
   UI_updatePlayersHP,
   UI_updatePlayersSP,
 } from "../Ui/Components";
 import { Backroundmovement } from "./GameMovement";
-import { createground } from "./TileGround";
+import { createRoadCollider, createground } from "./TileGround";
 import { createMob as createMobs } from "./CreateMob";
 import { createAvatarFrame } from "../Ui/AvatarUi";
 
@@ -22,17 +22,34 @@ import {
   mobEvents,
   mobEventsTypes,
   type Regenerated,
+  PressingKeys,
 } from "../../game/types";
 import { CONFIG } from "../../PhaserGame";
 import type goblinController from "../../objects/Mob/goblinController";
 import { PlayerManager, type PlayerUI } from "../../objects/player/manager";
 import { playerBaseStates } from "../../game/playerStats";
+import { Client, Room } from "colyseus.js";
+import { MapSchema, Schema, type } from "@colyseus/schema";
+import { getOrThrow } from "../../objects/utils";
 
 type Key = Phaser.Input.Keyboard.Key;
+
+class PlayerState extends Schema {
+  @type("boolean") connected: boolean;
+  @type("string") name: string;
+  @type("string") sessionId: string;
+}
+
+class RoomState extends Schema {
+  @type({ map: PlayerState }) players = new MapSchema<PlayerState>();
+}
 
 export default class MainScene extends Phaser.Scene {
   frontroad!: Phaser.Tilemaps.TilemapLayer;
   backroad!: Phaser.Tilemaps.TilemapLayer;
+
+  client = new Client("ws://localhost:2567");
+  _room?: Room<RoomState>;
 
   keySpace!: Key;
   keyW!: Key;
@@ -48,8 +65,16 @@ export default class MainScene extends Phaser.Scene {
   keyi!: Key;
   keyP!: Key;
   keyO!: Key;
-  playerManager;
+  playerManager: PlayerManager;
   friendlyFire = false;
+
+  get room(): Room<RoomState> {
+    return getOrThrow(this._room, "Room");
+  }
+
+  set room(room: Room) {
+    this._room = room;
+  }
 
   get player() {
     return this.playerManager.mainPlayer().player;
@@ -72,12 +97,48 @@ export default class MainScene extends Phaser.Scene {
     super("mainscene");
     const player = new Player(new Jack("jack", playerBaseStates.jack));
     this.playerManager = new PlayerManager();
-    const player2 = new Player(new Iroh("iroh", playerBaseStates.iroh));
     this.playerManager.push({ player, UI: {} as PlayerUI });
-    this.playerManager.push({ player: player2, UI: {} as PlayerUI });
   }
 
-  create() {
+  onConnectionReady() {
+    mcEvents.on(mcEventTypes.MOVED, (i: number, keys: PressingKeys) => {
+      if (i !== this.player.index) return;
+      this.room.send("player-move", { ...keys });
+    });
+
+    this.room.state.players.onAdd(({ name }, sessionId) => {
+      if (sessionId === this.room.sessionId) return;
+      console.log("A player has joined! Their unique session id is", sessionId);
+      const player = new Player(new Jack(sessionId, playerBaseStates.jack));
+      const i = this.playerManager.length;
+      player.create(this, 300, 0, i);
+      this.playerManager.push({ player, UI: {} as PlayerUI });
+      createAvatarFrame(this, this.playerManager[i]);
+      UI_createPlayer(this, this.playerManager[i]);
+      createRoadCollider(this, this.playerManager[i].player.sprite);
+    });
+
+    this.room.state.players.onRemove((_player, sessionId) => {
+      console.log("A player has joined! Their unique session id is", sessionId);
+    });
+
+    this.room.onMessage(
+      "player-move",
+      ([sessionId, message]: [string, PressingKeys]) => {
+        console.log("player-move, from: ", sessionId, message);
+        const { player } = this.playerManager.find(
+          ({ player }) => player.character.name === sessionId
+        );
+        if (!player) {
+          console.error(`player ${sessionId} not found`);
+          return;
+        }
+        player.pressingKeys = message;
+      }
+    );
+  }
+
+  async create() {
     this.playerManager.create(this, 300, 0);
 
     mcEvents.on(mcEventTypes.TOOK_HIT, (i: number, damage: number) => {
@@ -136,17 +197,15 @@ export default class MainScene extends Phaser.Scene {
 
     this.Addkey();
     createBackground(this);
-    createAvatarFrame(this);
     loadAnimations(this);
     createground(this);
-    UI_createPlayers(this);
+    this.playerManager.forEach((player) => {
+      createRoadCollider(this, player.player.sprite);
+      createAvatarFrame(this, player);
+      UI_createPlayer(this, player);
+    });
 
     // this.frontroad.setCollisionByExclusion([-1], true);
-
-    this.physics.add.collider(
-      this.playerManager.map(({ player }) => player.sprite),
-      [this.frontroad, this.backroad]
-    );
     createMobs(this);
 
     this.time.addEvent({
@@ -181,6 +240,18 @@ export default class MainScene extends Phaser.Scene {
       loop: true,
     });
 
+    try {
+      this.room = await this.client.joinOrCreate("relay", {
+        name: this.player.character.name,
+      });
+      console.log(
+        `Joined as ${this.room.sessionId} index: ${this.player.index}`
+      );
+      this.onConnectionReady();
+    } catch (error) {
+      console.error(error);
+    }
+
     this.cameras.main.startFollow(this.player.sprite, false, 1, 0, -420, -160);
     this.player.play(mcAnimTypes.FALL, true);
     this.player.sprite.anims.stopAfterRepeat(2);
@@ -197,6 +268,15 @@ export default class MainScene extends Phaser.Scene {
     this.mobController.forEach((mobCcontroller) => {
       if (mobCcontroller.goblin.sprite.body) mobCcontroller.update(delta);
     });
+
+    this.player.pressingKeys = {
+      W: this.keyW.isDown,
+      A: this.keyA.isDown,
+      D: this.keyD.isDown,
+      Space: this.keySpace.isDown,
+      Q: Phaser.Input.Keyboard.JustDown(this.keyQ),
+      E: Phaser.Input.Keyboard.JustDown(this.keyE),
+    };
   }
   Addkey() {
     const keyboard = this.input.keyboard;

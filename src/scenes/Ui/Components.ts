@@ -5,58 +5,60 @@ import { type PlayerManager } from "../../objects/player/manager";
 
 import type Phaser from "phaser";
 
-export function UI_createPlayers(scene: MainScene) {
-  scene.playerManager.forEach(({ player, UI }, i) => {
-    const isscroolFactor = i === 0 ? 0 : 1;
+export function UI_createPlayer(
+  scene: MainScene,
+  playerItem: PlayerManager[number]
+) {
+  const { player, UI } = playerItem;
+  const isscroolFactor = player.index === 0 ? 0 : 1;
 
-    const Center = UI.frameLayer.getCenter<Phaser.Tilemaps.TilemapLayer>();
-    const LeftCenterX =
-      UI.frameLayer.getLeftCenter<Phaser.Tilemaps.TilemapLayer>().x;
-    const BottomCenterY =
-      UI.frameLayer.getBottomCenter<Phaser.Tilemaps.TilemapLayer>().y;
+  const Center = UI.frameLayer.getCenter<Phaser.Tilemaps.TilemapLayer>();
+  const LeftCenterX =
+    UI.frameLayer.getLeftCenter<Phaser.Tilemaps.TilemapLayer>().x;
+  const BottomCenterY =
+    UI.frameLayer.getBottomCenter<Phaser.Tilemaps.TilemapLayer>().y;
 
-    UI.hpBar = scene.add
-      .sprite(LeftCenterX + 270, Center.y + 3, `hpBar`)
-      .setScale(5.5, 7)
-      .setDepth(5)
-      .setScrollFactor(isscroolFactor);
-    UI.spBar = scene.add
-      .sprite(LeftCenterX + 227, BottomCenterY - 25, `spBar-${isscroolFactor}`)
-      .setScale(3.1, 5)
-      .setDepth(4)
-      .setScrollFactor(isscroolFactor);
-    UI.hptext = scene.add
-      .text(
-        UI.hpBar.getCenter(UI.hpBar).x - 15,
-        UI.hpBar.getCenter(UI.hpBar).y - 7,
-        `${player.character.state.HP}`
-      )
-      .setStyle({
-        fontSize: "22px Arial",
-        align: "center",
-      })
-      .setFontFamily("URW Chancery L, cursive")
-      .setFontStyle("bold")
-      .setScrollFactor(isscroolFactor)
-      .setScale(0.8)
-      .setDepth(500);
+  UI.hpBar = scene.add
+    .sprite(LeftCenterX + 270, Center.y + 3, `hpBar`)
+    .setScale(5.5, 7)
+    .setDepth(5)
+    .setScrollFactor(isscroolFactor);
+  UI.spBar = scene.add
+    .sprite(LeftCenterX + 227, BottomCenterY - 25, `spBar-${isscroolFactor}`)
+    .setScale(3.1, 5)
+    .setDepth(4)
+    .setScrollFactor(isscroolFactor);
+  UI.hptext = scene.add
+    .text(
+      UI.hpBar.getCenter(UI.hpBar).x - 15,
+      UI.hpBar.getCenter(UI.hpBar).y - 7,
+      `${player.character.state.HP}`
+    )
+    .setStyle({
+      fontSize: "22px Arial",
+      align: "center",
+    })
+    .setFontFamily("URW Chancery L, cursive")
+    .setFontStyle("bold")
+    .setScrollFactor(isscroolFactor)
+    .setScale(0.8)
+    .setDepth(500);
 
-    UI.sptext = scene.add
-      .text(
-        UI.spBar.getCenter(UI.spBar).x - 10,
-        UI.spBar.getCenter(UI.spBar).y - 8,
-        `${player.character.state.SP}`
-      )
-      .setStyle({
-        fontSize: "22px Arial",
-        align: "center",
-      })
-      .setFontFamily("URW Chancery L, cursive")
-      .setFontStyle("bold")
-      .setScrollFactor(isscroolFactor)
-      .setScale(0.8)
-      .setDepth(500);
-  });
+  UI.sptext = scene.add
+    .text(
+      UI.spBar.getCenter(UI.spBar).x - 10,
+      UI.spBar.getCenter(UI.spBar).y - 8,
+      `${player.character.state.SP}`
+    )
+    .setStyle({
+      fontSize: "22px Arial",
+      align: "center",
+    })
+    .setFontFamily("URW Chancery L, cursive")
+    .setFontStyle("bold")
+    .setScrollFactor(isscroolFactor)
+    .setScale(0.8)
+    .setDepth(500);
 }
 const UI_updateHP = (
   scene: MainScene,

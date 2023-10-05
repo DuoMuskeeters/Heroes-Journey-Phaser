@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@colyseus/schema": "^2.0.16",
+    "colyseus.js": "^0.15.14",
     "eslint": "^8.50.0",
     "eslint-plugin-react": "^7.33.2",
     "phaser": "^3.60.0",

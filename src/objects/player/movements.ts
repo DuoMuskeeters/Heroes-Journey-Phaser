@@ -3,6 +3,9 @@ import {
   dirVelocity,
   type McAnimTypes,
   mcAnimTypes,
+  mcEvents,
+  mcEventTypes,
+  PressingKeys,
 } from "../../game/types";
 import { type Player } from ".";
 import { type Character, Iroh, Jack } from "../../game/Karakter";
@@ -54,7 +57,7 @@ const attackonUpdate = (player: Player<Character>) => {
   const animation = player.sprite.anims.animationManager.get(
     player.animKey(anim)
   ); // TODO: this is global for Jake or Iroh, make a clone
-  
+
   animation.frameRate = frameRate;
   player.play(anim, true);
   player.sprite.anims.stopAfterRepeat(0);
@@ -76,36 +79,21 @@ export function killCharacter(player: Player<Character>) {
 export function playerMovementUpdate(player: Player<Character>) {
   const scene = player.scene;
   if (!(scene instanceof MainScene)) return;
-  const keys = {
-    0: {
-      W: scene.keyW.isDown,
-      A: scene.keyA.isDown,
-      D: scene.keyD.isDown,
-      Space: scene.keySpace.isDown,
-      Q: scene.keyQ,
-      E: scene.keyE,
-    },
-    1: {
-      W: scene.keyUp.isDown,
-      A: scene.keyLeft.isDown,
-      D: scene.keyRight.isDown,
-      Space: scene.keyEnter.isDown,
-      Q: scene.keyP,
-      E: scene.keyO,
-    },
-  } as const;
-  const pressed = keys[player.index as 0 | 1];
 
-  const Space_isD = pressed.Space;
-  const W_isDOWN = pressed.W;
-  const A_isDOWN = pressed.A;
-  const D_isDOWN = pressed.D;
-  const justQ = Phaser.Input.Keyboard.JustDown(pressed.Q);
-  const justE = Phaser.Input.Keyboard.JustDown(pressed.E);
+  const Space_isD = player.pressingKeys.Space;
+  const W_isDOWN = player.pressingKeys.W;
+  const A_isDOWN = player.pressingKeys.A;
+  const D_isDOWN = player.pressingKeys.D;
+  const justQ = player.pressingKeys.Q;
+  const justE = player.pressingKeys.E;
   // const mouse = scene.input.activePointer.leftButtonDown();
 
   const isNotDown =
     !D_isDOWN && !W_isDOWN && !A_isDOWN && !Space_isD && !justQ && !justE;
+
+  mcEvents.emit(mcEventTypes.MOVED, player.index, {
+    ...player.pressingKeys,
+  } satisfies PressingKeys);
 
   const RunisDown = D_isDOWN || A_isDOWN;
   const isanimplaying = player.sprite.anims.isPlaying;

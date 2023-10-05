@@ -1,5 +1,5 @@
 import { type Character, Iroh, Jack } from "../../game/Karakter";
-import { mcEventTypes, mcEvents } from "../../game/types/events";
+import { PressingKeys, mcEventTypes, mcEvents } from "../../game/types/events";
 import { type Direction, direction, mcAnimTypes } from "../../game/types/types";
 import { playerAttackListener } from "../../scenes/main/Playerattack";
 import { getOrThrow } from "../utils";
@@ -19,6 +19,14 @@ export class Player<T extends Character> {
   private _sprite?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   private _attackrect?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   public lastdirection: Direction = direction.right;
+  public pressingKeys: PressingKeys = {
+    W: false,
+    A: false,
+    D: false,
+    E: false,
+    Q: false,
+    Space: false,
+  };
 
   constructor(public character: T) {}
 
