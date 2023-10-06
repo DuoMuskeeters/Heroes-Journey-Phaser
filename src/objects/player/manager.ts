@@ -34,6 +34,19 @@ export class PlayerManager extends Array<{
   update(time: number, delta: number) {
     this.forEach(({ player }) => player.update(time, delta));
   }
+  removePlayer(i: number) {
+    this[i].player.destroy();
+    const UI = this[i].UI;
+    UI.hpBar.destroy();
+    UI.spBar.destroy();
+    UI.hptext.destroy();
+    UI.sptext.destroy();
+    UI.frameLayer.destroy();
+    UI.playerindexText.destroy();
+    UI.playerleveltext.destroy();
+
+    this.splice(i, 1);
+  }
   destroy() {
     mcEvents.removeAllListeners();
   }

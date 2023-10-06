@@ -78,6 +78,11 @@ export class Player<T extends Character> {
     // play("jack-idle") play("iroh-idle") play("fireiroh-idle")
   }
 
+  destroy() {
+    this.sprite.destroy();
+    this.attackrect.destroy();
+  }
+
   get index() {
     return getOrThrow(this._index, "Index");
   }

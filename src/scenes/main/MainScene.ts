@@ -108,7 +108,7 @@ export default class MainScene extends Phaser.Scene {
 
     this.room.state.players.onAdd(({ name }, sessionId) => {
       if (sessionId === this.room.sessionId) return;
-      console.log("A player has joined! Their unique session id is", sessionId);
+      console.log("A player has joined! sid:", sessionId);
       const player = new Player(new Jack(sessionId, playerBaseStates.jack));
       const i = this.playerManager.length;
       player.create(this, 300, 0, i);
@@ -119,7 +119,22 @@ export default class MainScene extends Phaser.Scene {
     });
 
     this.room.state.players.onRemove((_player, sessionId) => {
-      console.log("A player has joined! Their unique session id is", sessionId);
+      console.log("A player has left! sid:", sessionId);
+      const player = this.playerManager.find(
+        ({ player }) => player.character.name === sessionId
+      );
+      const i = this.playerManager.indexOf(player);
+      if (!player || i === -1) {
+        console.error(`player ${sessionId} not found`);
+        return;
+      }
+
+      this.playerManager.removePlayer(i);
+    });
+
+    this.room.state.players.onChange((player, sessionId) => {
+      if (player && !player.connected)
+        console.log("player disconnected", sessionId);
     });
 
     this.room.onMessage(
