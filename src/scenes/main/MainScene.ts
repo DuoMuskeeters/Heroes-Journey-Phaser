@@ -48,7 +48,7 @@ export default class MainScene extends Phaser.Scene {
   frontroad!: Phaser.Tilemaps.TilemapLayer;
   backroad!: Phaser.Tilemaps.TilemapLayer;
 
-  client = new Client("ws://localhost:2567");
+  client = new Client("wss://8g65m5j4-2567.euw.devtunnels.ms/");
   _room?: Room<RoomState>;
 
   keySpace!: Key;
@@ -118,6 +118,13 @@ export default class MainScene extends Phaser.Scene {
       createRoadCollider(this, this.playerManager[i].player.sprite);
     });
 
+    this.room.state.players.onChange((player, sessionId) => {
+      if (!player) return;
+
+      if (player.connected) console.log("player connected", sessionId);
+      else console.log("player disconnected", sessionId);
+    });
+
     this.room.state.players.onRemove((_player, sessionId) => {
       console.log("A player has left! sid:", sessionId);
       const player = this.playerManager.find(
@@ -132,15 +139,9 @@ export default class MainScene extends Phaser.Scene {
       this.playerManager.removePlayer(i);
     });
 
-    this.room.state.players.onChange((player, sessionId) => {
-      if (player && !player.connected)
-        console.log("player disconnected", sessionId);
-    });
-
     this.room.onMessage(
       "player-move",
       ([sessionId, message]: [string, PressingKeys]) => {
-        console.log("player-move, from: ", sessionId, message);
         const { player } = this.playerManager.find(
           ({ player }) => player.character.name === sessionId
         );
