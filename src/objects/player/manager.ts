@@ -22,6 +22,11 @@ export class PlayerManager extends Array<{
       this[i].player.onTookHit(damage)
     );
   }
+  findByName(name: string) {
+    const item = this.find(({ player }) => player.character.name === name);
+    if (!item) throw new Error(`PlayerManager: player ${name} not found`);
+    return item;
+  }
   mainPlayer() {
     if (this.length === 0)
       throw new Error("PlayerManager: No player is added yet");

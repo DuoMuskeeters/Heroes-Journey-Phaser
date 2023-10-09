@@ -121,11 +121,11 @@ export function playerMovementUpdate(player: Player<Character>) {
 
   if (player.character.isDead()) return;
 
-  if (A_isDOWN && canMoVE) {
+  if ((A_isDOWN && canMoVE) || player.lastdirection === direction.left) {
     player.lastdirection = direction.left;
     player.sprite.setFlipX(true);
   }
-  if (D_isDOWN && canMoVE) {
+  if ((D_isDOWN && canMoVE) || player.lastdirection === direction.right) {
     player.lastdirection = direction.right;
     player.sprite.setFlipX(false);
   }

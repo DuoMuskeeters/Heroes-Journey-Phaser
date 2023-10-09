@@ -13,7 +13,7 @@ import { createMob as createMobs } from "./CreateMob";
 import { createAvatarFrame } from "../Ui/AvatarUi";
 
 import { Player } from "../../objects/player";
-import { Jack } from "../../game/Karakter";
+import { Iroh, Jack } from "../../game/Karakter";
 import {
   type GoblinTookHit,
   mcAnimTypes,
@@ -31,6 +31,8 @@ import { playerBaseStates } from "../../game/playerStats";
 import { Client, Room } from "colyseus.js";
 import { getOrThrow } from "../../objects/utils";
 import type { RelayState } from "../../server/rooms/schema/RelayRoomState";
+import { command } from "../../client/utils";
+import { Move } from "../../server/rooms/relay_room/commands";
 
 type Key = Phaser.Input.Keyboard.Key;
 
@@ -91,7 +93,7 @@ export default class MainScene extends Phaser.Scene {
 
   constructor() {
     super("mainscene");
-    const player = new Player(new Jack("jack", playerBaseStates.jack));
+    const player = new Player(new Iroh("jack", playerBaseStates.jack));
     this.playerManager = new PlayerManager();
     this.playerManager.push({ player, UI: {} as PlayerUI });
   }
@@ -99,19 +101,33 @@ export default class MainScene extends Phaser.Scene {
   onConnectionReady() {
     mcEvents.on(mcEventTypes.MOVED, (i: number, keys: PressingKeys) => {
       if (i !== this.player.index) return;
-      this.room.send("player-move", { ...keys });
+      this.room.send(
+        ...command(new Move(), {
+          x: this.player.sprite.x,
+          y: this.player.sprite.y,
+          dir: this.player.lastdirection,
+        })
+      );
     });
 
     this.room.onStateChange((state) => {
       console.log("----------------------------------");
       console.log("onStateChange", state);
       state.players.forEach((player, sessionId) => {
-        console.log("player", sessionId, "is connected", player.connected);
+        console.log(
+          "player",
+          sessionId,
+          "is connected",
+          player.connected,
+          "x, y",
+          player.x,
+          player.y
+        );
       });
       console.log("----------------------------------");
     });
 
-    this.room.state.players.onAdd(({ name }, sessionId) => {
+    this.room.state.players.onAdd((serverPlayer, sessionId) => {
       if (sessionId === this.room.sessionId) return;
       console.log("A player has joined! sid:", sessionId);
       const player = new Player(new Jack(sessionId, playerBaseStates.jack));
@@ -121,6 +137,38 @@ export default class MainScene extends Phaser.Scene {
       createAvatarFrame(this, this.playerManager[i]);
       UI_createPlayer(this, this.playerManager[i]);
       createRoadCollider(this, this.playerManager[i].player.sprite);
+
+      serverPlayer.listen("dir", (value) => {
+        console.log("[MOVE(DIR)] player", sessionId, "dir changed to", value);
+        const item = this.playerManager.findByName(sessionId);
+        item.player.lastdirection = value;
+      });
+      serverPlayer.listen("x", (value) => {
+        const x = this.playerManager[i].player.sprite.x;
+        const newX = value;
+
+        this.tweens.add({
+          targets: this.playerManager[i].player.sprite,
+          x: newX,
+          duration: 100,
+          ease: "Linear",
+        });
+
+        console.log("[MOVE(X)] player", sessionId, "x changed to", value);
+        const item = this.playerManager.findByName(sessionId);
+        // item.player.sprite.x = value;
+      });
+      serverPlayer.listen("y", (newY) => {
+        const { player } = this.playerManager.findByName(sessionId);
+
+        player.newY = newY;
+        player.sprite.y = Phaser.Math.Linear(player.sprite.y, player.newY, 0.1);
+        player.pressingKeys.W = player.sprite.y - player.newY > 0;
+
+        console.log("[MOVE(Y)] player", sessionId, "y changed to", newY);
+        const item = this.playerManager.findByName(sessionId);
+        // item.player.sprite.y = value;
+      });
     });
 
     this.room.state.players.onChange((player, sessionId) => {
@@ -282,6 +330,8 @@ export default class MainScene extends Phaser.Scene {
       if (!connected) {
         this.room = await this.client.joinOrCreate("relay", {
           name: this.player.character.name,
+          x: this.player.sprite.x,
+          y: this.player.sprite.y,
         });
         connected = true;
       }

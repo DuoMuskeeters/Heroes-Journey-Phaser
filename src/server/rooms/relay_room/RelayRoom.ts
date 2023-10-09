@@ -1,6 +1,6 @@
 import { Client, Room } from "colyseus";
 import { RelayState } from "../schema/RelayRoomState";
-import { ConnectPlayer } from "./commands";
+import { COMMANDS, ConnectPlayer } from "./commands";
 import { Dispatcher } from "@colyseus/command";
 
 /**
@@ -38,16 +38,34 @@ export class RelayRoom extends Room<RelayState> {
     this.onMessage("*", (client, type, message) => {
       this.broadcast(type, [client.sessionId, message], { except: client });
     });
+
+    /**
+     * Commands are executed by the 1 payload type
+     */
+    this.onMessage(1, (client, data) => {
+      const Command = COMMANDS.find((c) => c.name === data.command);
+      if (!Command) throw new Error(`command ${data.command} not found`);
+      const command = new Command();
+      command.client = client;
+      this.dispatcher.dispatch(command, data.payload);
+    });
   }
 
   public onJoin(
     client: Client,
-    options: Partial<{ authId: string; name: string }> = {}
+    options: Partial<{
+      name: string;
+      x: number;
+      y: number;
+    }> = {}
   ) {
     const command = new ConnectPlayer();
     command.client = client;
 
-    this.dispatcher.dispatch(command);
+    this.dispatcher.dispatch(command, {
+      x: options.x ?? 0,
+      y: options.y ?? 0,
+    });
   }
 
   async onLeave(client: Client, consented: boolean) {

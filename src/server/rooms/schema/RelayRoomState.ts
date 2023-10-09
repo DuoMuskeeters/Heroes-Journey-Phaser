@@ -1,6 +1,7 @@
 import { MapSchema, Schema, filter, type } from "@colyseus/schema";
 import { Client } from "colyseus";
 import { Canlı } from "./MyRoomState";
+import { Direction, direction } from "../../../game/types/types";
 
 function inSameGuild(client: Client, value: boolean, root: RelayState) {
   return true;
@@ -33,7 +34,10 @@ export class Player extends Schema {
     sessionId: string,
     name: string,
     inventory: Inventory,
-    character: Canlı
+    character: Canlı,
+    x: number,
+    y: number,
+    dir: Direction = direction.right
   ) {
     super();
     this.sessionId = sessionId;
@@ -41,6 +45,9 @@ export class Player extends Schema {
     this.inventory = inventory;
     this.character = character;
     this.connected = true;
+    this.x = x;
+    this.y = y;
+    this.dir = dir;
   }
 
   @filter(inSameGuild) @type("boolean") connected: boolean;
@@ -48,6 +55,9 @@ export class Player extends Schema {
   @type("string") sessionId: string;
   @type(Canlı) character: Canlı;
   @type(Inventory) inventory: Inventory;
+  @type("number") x: number;
+  @type("number") y: number;
+  @type("string") dir: Direction;
 }
 
 export class RelayState extends Schema {
