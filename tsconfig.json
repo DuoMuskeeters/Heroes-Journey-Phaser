@@ -15,7 +15,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "experimentalDecorators": true,
     "useDefineForClassFields": false
   },

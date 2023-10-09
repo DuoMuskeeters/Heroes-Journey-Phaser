@@ -34,10 +34,16 @@ import { getOrThrow } from "../../objects/utils";
 
 type Key = Phaser.Input.Keyboard.Key;
 
+const reconnectionToken = {
+  get: () => localStorage.getItem("reconnectionToken"),
+  set: (id: string) => localStorage.setItem("reconnectionToken", id),
+  delete: () => localStorage.removeItem("reconnectionToken"),
+};
+
 class PlayerState extends Schema {
-  @type("boolean") connected: boolean;
-  @type("string") name: string;
-  @type("string") sessionId: string;
+  @type("boolean") connected!: boolean;
+  @type("string") name!: string;
+  @type("string") sessionId!: string;
 }
 
 class RoomState extends Schema {
@@ -48,7 +54,7 @@ export default class MainScene extends Phaser.Scene {
   frontroad!: Phaser.Tilemaps.TilemapLayer;
   backroad!: Phaser.Tilemaps.TilemapLayer;
 
-  client = new Client("wss://8g65m5j4-2567.euw.devtunnels.ms/");
+  client = new Client("ws://localhost:2567");
   _room?: Room<RoomState>;
 
   keySpace!: Key;
@@ -106,6 +112,15 @@ export default class MainScene extends Phaser.Scene {
       this.room.send("player-move", { ...keys });
     });
 
+    this.room.onStateChange((state) => {
+      console.log("----------------------------------");
+      console.log("onStateChange", state);
+      state.players.forEach((player, sessionId) => {
+        console.log("player", sessionId, "is connected", player.connected);
+      });
+      console.log("----------------------------------");
+    });
+
     this.room.state.players.onAdd(({ name }, sessionId) => {
       if (sessionId === this.room.sessionId) return;
       console.log("A player has joined! sid:", sessionId);
@@ -125,13 +140,17 @@ export default class MainScene extends Phaser.Scene {
       else console.log("player disconnected", sessionId);
     });
 
+    this.room.onError((code, message) => {
+      console.error("[Server Error: %d] %s", code, message);
+    });
+
     this.room.state.players.onRemove((_player, sessionId) => {
       console.log("A player has left! sid:", sessionId);
       const player = this.playerManager.find(
         ({ player }) => player.character.name === sessionId
       );
-      const i = this.playerManager.indexOf(player);
-      if (!player || i === -1) {
+      const i = !player ? -1 : this.playerManager.indexOf(player);
+      if (i === -1) {
         console.error(`player ${sessionId} not found`);
         return;
       }
@@ -142,14 +161,14 @@ export default class MainScene extends Phaser.Scene {
     this.room.onMessage(
       "player-move",
       ([sessionId, message]: [string, PressingKeys]) => {
-        const { player } = this.playerManager.find(
+        const item = this.playerManager.find(
           ({ player }) => player.character.name === sessionId
         );
-        if (!player) {
+        if (!item) {
           console.error(`player ${sessionId} not found`);
           return;
         }
-        player.pressingKeys = message;
+        item.player.pressingKeys = message;
       }
     );
   }
@@ -257,17 +276,36 @@ export default class MainScene extends Phaser.Scene {
     });
 
     try {
-      this.room = await this.client.joinOrCreate("relay", {
-        name: this.player.character.name,
-      });
+      let connected = false;
+      const reconnect = reconnectionToken.get();
+      reconnectionToken.delete();
+
+      if (reconnect) {
+        try {
+          this.room = await this.client.reconnect(reconnect);
+          connected = true;
+        } catch (error) {
+          // reconnection failed
+        }
+      }
+
+      if (!connected) {
+        this.room = await this.client.joinOrCreate("relay", {
+          name: this.player.character.name,
+        });
+        connected = true;
+      }
+
+      if (!connected) throw new Error("room connection failed");
+
       console.log(
         `Joined as ${this.room.sessionId} index: ${this.player.index}`
       );
+      reconnectionToken.set(this.room.reconnectionToken);
       this.onConnectionReady();
     } catch (error) {
       console.error(error);
     }
-
     this.cameras.main.startFollow(this.player.sprite, false, 1, 0, -420, -160);
     this.player.play(mcAnimTypes.FALL, true);
     this.player.sprite.anims.stopAfterRepeat(2);
