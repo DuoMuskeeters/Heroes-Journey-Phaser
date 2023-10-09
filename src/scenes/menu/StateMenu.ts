@@ -1,6 +1,6 @@
 import { CONFIG } from "../../PhaserGame";
-import { Player } from "../../objects/player";
-import { Character } from "../../game/Karakter";
+import { type Player } from "../../objects/player";
+import { type Character } from "../../game/Karakter";
 
 export default class statemenu {
   scene!: Phaser.Scene;
@@ -42,14 +42,14 @@ export default class statemenu {
       .text(
         -270,
         -390,
-        `Name:   Jack    Level:   ${this.character.state.Level}\n
+        `Name:   Jack    Level:   ${this.character.level}\n
 Job: Samurai    MAX HP:   ${this.character.state.max_hp}`
       )
       .setFontFamily("Bradley Hand, cursive")
       .setFontStyle("bold")
       .setScale(1.1, 1.1);
     this.remaininpoints = scene.add
-      .text(-50, -150, `Remaining Points:  ${this.character.state.stat_point}`)
+      .text(-50, -150, `Remaining Points:  ${this.character.stat_point}`)
       .setOrigin(1, 0);
     const Strenght = scene.add.image(-200, -260, "plus");
     const Strenghttext = scene.add.text(
@@ -84,14 +84,14 @@ Job: Samurai    MAX HP:   ${this.character.state.max_hp}`
 
     buttons.forEach((button) => {
       button.image.setInteractive().on(Phaser.Input.Events.POINTER_UP, () => {
-        if (this.character.state.stat_point > 0) {
+        if (this.character.stat_point > 0) {
           // button type -> "Agility"
           this.character.increase(button.type);
           button.text.setText(
             `${button.type}: ${this.character.state[button.type]}`
           );
           this.remaininpoints.setText(
-            `Remaining Points :  ${this.character.state.stat_point}`
+            `Remaining Points :  ${this.character.stat_point}`
           );
         }
       });
@@ -150,10 +150,10 @@ Job: Samurai    MAX HP:   ${this.character.state.max_hp}`
   }
   update() {
     this.remaininpoints.setText(
-      `Remaining Points :  ${this.character.state.stat_point}`
+      `Remaining Points :  ${this.character.stat_point}`
     );
     this.jacktext.setText(
-      `Name: Jack    Level: ${this.character.state.Level}
+      `Name: Jack    Level: ${this.character.level}
 
 Job: Samurai  MAX HP: ${this.character.state.max_hp}`
     );

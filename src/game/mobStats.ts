@@ -1,32 +1,33 @@
-const STATS = {
+import { type BaseTypes } from "./playerStats";
+
+export type MobType = "goblin";
+export type MobTier = 1 | 2 | 3 | 4;
+
+export const mobStates = {
   goblin: {
-    TIER_1: {
-      HP: 100,
-      ATK: 2,
-      REG: 0.25,
+    1: {
+      Strength: 15,
+      Agility: 25,
+      Intelligence: 25,
+      Constitution: 60,
     },
-    TIER_2: {
-      HP: 200,
-      ATK: 2.5,
-      REG: 0.25,
+    2: {
+      Strength: 25,
+      Agility: 25,
+      Intelligence: 25,
+      Constitution: 60,
+    },
+    3: {
+      Strength: 35,
+      Agility: 25,
+      Intelligence: 25,
+      Constitution: 60,
+    },
+    4: {
+      Strength: 45,
+      Agility: 25,
+      Intelligence: 25,
+      Constitution: 60,
     },
   },
-  skeleton: {
-    TIER_1: {
-      HP: 100,
-      ATK: 2,
-      REG: 0.25,
-    },
-    TIER_2: {
-      HP: 200,
-      ATK: 2.5,
-      REG: 0.25,
-    },
-  },
-};
-
-type MobType = keyof typeof STATS;
-
-export class MobNew {
-  constructor(public type: MobType, public tier: 1 | 2 | 3 | 4) {}
-}
+} satisfies Record<MobType, Record<MobTier, BaseTypes>>;

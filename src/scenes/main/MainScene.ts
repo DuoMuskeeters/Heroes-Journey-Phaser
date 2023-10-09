@@ -15,16 +15,18 @@ import { createAvatarFrame } from "../Ui/AvatarUi";
 import { Player } from "../../objects/player";
 import { Iroh, Jack } from "../../game/Karakter";
 import {
-  GoblinTookHit,
+  type GoblinTookHit,
   mcAnimTypes,
   mcEventTypes,
   mcEvents,
   mobEvents,
   mobEventsTypes,
+  type Regenerated,
 } from "../../game/types";
 import { CONFIG } from "../../PhaserGame";
-import goblinController from "../../objects/Mob/goblinController";
-import { PlayerManager } from "../../objects/player/manager";
+import type goblinController from "../../objects/Mob/goblinController";
+import { PlayerManager, type PlayerUI } from "../../objects/player/manager";
+import { playerBaseStates } from "../../game/playerStats";
 
 type Key = Phaser.Input.Keyboard.Key;
 
@@ -37,6 +39,7 @@ export default class MainScene extends Phaser.Scene {
   keyA!: Key;
   keyD!: Key;
   keyQ!: Key;
+  keyE!: Key;
 
   keyEnter!: Key;
   keyUp!: Key;
@@ -44,6 +47,7 @@ export default class MainScene extends Phaser.Scene {
   keyRight!: Key;
   keyi!: Key;
   keyP!: Key;
+  keyO!: Key;
   playerManager;
   friendlyFire = false;
 
@@ -66,11 +70,11 @@ export default class MainScene extends Phaser.Scene {
 
   constructor() {
     super("mainscene");
-    const player = new Player(new Jack());
+    const player = new Player(new Jack("jack", playerBaseStates.jack));
     this.playerManager = new PlayerManager();
-    const player2 = new Player(new Iroh());
-    this.playerManager.push({ player, UI: {} as any });
-    this.playerManager.push({ player: player2, UI: {} as any });
+    const player2 = new Player(new Iroh("iroh", playerBaseStates.iroh));
+    this.playerManager.push({ player, UI: {} as PlayerUI });
+    this.playerManager.push({ player: player2, UI: {} as PlayerUI });
   }
 
   create() {
@@ -78,12 +82,24 @@ export default class MainScene extends Phaser.Scene {
 
     mcEvents.on(mcEventTypes.TOOK_HIT, (i: number, damage: number) => {
       console.log(
-        `player ${i} took hit damage: ${damage} after hp: ${this.playerManager[i].player.character.state.HP}`
+        `[MC TOOK_HIT] player ${i} took hit damage: ${damage} after hp: ${this.playerManager[i].player.character.state.HP}`
+      );
+    });
+
+    mcEvents.on(mcEventTypes.REGENERATED, (i: number, details: Regenerated) => {
+      console.debug(
+        `%c[MC REGENERATED]%c player ${i} regenerated: hp=${details.HP} sp=${details.SP}`,
+        "color: green",
+        "color: white"
       );
     });
 
     mcEvents.on(mcEventTypes.DIED, (i: number) => {
-      console.log(`player ${i} died`);
+      console.log(
+        `%c[MC DIED]%c player ${i} died`,
+        "color: red",
+        "color: white"
+      );
     });
 
     mobEvents.on(
@@ -92,16 +108,29 @@ export default class MainScene extends Phaser.Scene {
         const ctrl = this.mobController[id - 1];
         if (ctrl.goblin.id === id)
           console.log(
-            `goblin ${ctrl.goblin.name} took hit ${
+            `[TOOK_HIT] goblin ${ctrl.goblin.name} took hit ${
               details.stun ? "(STUN)" : "(NORMAL)"
             } damage: ${details.damage} after hp: ${ctrl.goblin.mob.state.HP}`
           );
       }
     );
 
+    mobEvents.on(
+      mobEventsTypes.REGENERATED,
+      (id: number, details: Regenerated) => {
+        const ctrl = this.mobController[id - 1];
+        if (ctrl.goblin.id === id)
+          console.debug(
+            `%c[REGENERATED]%c goblin ${ctrl.goblin.name} regenerated hp=${details.HP} sp=${details.SP}`,
+            "color: darkgreen",
+            "color: white"
+          );
+      }
+    );
+
     mobEvents.on(mobEventsTypes.DIED, (id: number) => {
       const ctrl = this.mobController[id - 1];
-      if (ctrl.goblin.id === id) console.log(`${ctrl.goblin.name} died`);
+      if (ctrl.goblin.id === id) console.log(`[DIED] ${ctrl.goblin.name} died`);
     });
     this.tilemap = this.make.tilemap({ key: "roadfile" });
 
@@ -120,15 +149,37 @@ export default class MainScene extends Phaser.Scene {
     );
     createMobs(this);
 
-    setInterval(() => {
-      if (this.scene.isPaused()) return;
-      this.playerManager.forEach(({ player }) =>
-        player.character.regeneration()
-      );
-      this.mobController.forEach((controller) => {
-        controller.goblin.mob.regeneration();
-      });
-    }, 1000);
+    this.time.addEvent({
+      delay: 1000,
+      callback: () => {
+        if (this.scene.isPaused()) return;
+        this.playerManager.forEach(({ player }) => {
+          if (player.character.regeneration.has()) {
+            const view = player.character.regeneration.view();
+            player.character.regeneration.do();
+
+            mcEvents.emit(
+              mcEventTypes.REGENERATED,
+              player.index,
+              view satisfies Regenerated
+            );
+          }
+        });
+        this.mobController.forEach((controller) => {
+          if (controller.goblin.mob.regeneration.has()) {
+            const view = controller.goblin.mob.regeneration.view();
+            controller.goblin.mob.regeneration.do();
+
+            mobEvents.emit(
+              mobEventsTypes.REGENERATED,
+              controller.goblin.id,
+              view satisfies Regenerated
+            );
+          }
+        });
+      },
+      loop: true,
+    });
 
     this.cameras.main.startFollow(this.player.sprite, false, 1, 0, -420, -160);
     this.player.play(mcAnimTypes.FALL, true);
@@ -148,16 +199,21 @@ export default class MainScene extends Phaser.Scene {
     });
   }
   Addkey() {
-    this.keySpace = this.input.keyboard?.addKey("SPACE")!;
-    this.keyW = this.input.keyboard?.addKey("W")!;
-    this.keyA = this.input.keyboard?.addKey("A")!;
-    this.keyD = this.input.keyboard?.addKey("D")!;
-    this.keyQ = this.input.keyboard?.addKey("Q")!;
+    const keyboard = this.input.keyboard;
+    if (!keyboard) throw new Error("keyboard is not defined");
 
-    this.keyEnter = this.input.keyboard?.addKey("ENTER")!;
-    this.keyUp = this.input.keyboard?.addKey("UP")!;
-    this.keyLeft = this.input.keyboard?.addKey("LEFT")!;
-    this.keyRight = this.input.keyboard?.addKey("RIGHT")!;
-    this.keyP = this.input.keyboard?.addKey("P")!;
+    this.keySpace = keyboard.addKey("SPACE");
+    this.keyW = keyboard.addKey("W");
+    this.keyA = keyboard.addKey("A");
+    this.keyD = keyboard.addKey("D");
+    this.keyQ = keyboard.addKey("Q");
+    this.keyE = keyboard.addKey("E");
+
+    this.keyEnter = keyboard.addKey("ENTER");
+    this.keyUp = keyboard.addKey("UP");
+    this.keyLeft = keyboard.addKey("LEFT");
+    this.keyRight = keyboard.addKey("RIGHT");
+    this.keyP = keyboard.addKey("P");
+    this.keyO = keyboard.addKey("O");
   }
 }

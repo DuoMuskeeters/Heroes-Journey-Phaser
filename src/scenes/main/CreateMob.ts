@@ -1,16 +1,24 @@
-import { Giant, create_giant } from "../../game/Karakter";
+import { Goblin } from "../../game/Karakter";
 import { goblinAnimTypes } from "../../game/types/types";
 import { Mob } from "../../objects/Mob";
-import MainScene from "./MainScene";
-import { createCollider } from "./TileGround";
+import type MainScene from "./MainScene";
+import { createRoadCollider } from "./TileGround";
 import goblinController from "../../objects/Mob/goblinController";
+import { type MobType, type MobTier } from "../../game/mobStats";
+
+type Property = {
+  name: string;
+  type: "int";
+  value: number;
+};
 
 export function createMob(scene: MainScene) {
-  scene.tilemap.getObjectLayer("goblin")?.objects.forEach((objData) => {
+  scene.tilemap.getObjectLayer("goblin" satisfies MobType)?.objects.forEach((objData) => {
     const { x = 0, y = 0, name, id } = objData;
-    const { value } = objData.properties[0];
 
-    const newGoblin = new Mob(new Giant(create_giant(value).state));
+    const tier = (objData.properties as Property[])[0].value as MobTier;
+
+    const newGoblin = new Mob(new Goblin(tier, name));
     newGoblin.create(
       scene,
       x,
@@ -21,8 +29,8 @@ export function createMob(scene: MainScene) {
       220,
       110,
       2.55,
-      30,
-      46
+      32,
+      36
     );
     const healtbar = scene.add.graphics();
     const spbar = scene.add.graphics();
@@ -36,7 +44,7 @@ export function createMob(scene: MainScene) {
       .setFontFamily('Georgia, "Goudy Bookletter 1911", Times, serif')
       .setFontStyle("bold");
 
-    createCollider(scene, newGoblin.sprite);
+    createRoadCollider(scene, newGoblin.sprite);
 
     scene.mobController.push(
       new goblinController(newGoblin, scene.playerManager, {

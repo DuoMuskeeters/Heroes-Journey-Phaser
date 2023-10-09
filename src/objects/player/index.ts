@@ -1,11 +1,6 @@
-import { Character, Iroh, Jack } from "../../game/Karakter";
+import { type Character, Iroh, Jack } from "../../game/Karakter";
 import { mcEventTypes, mcEvents } from "../../game/types/events";
-import {
-  type Direction,
-  direction,
-  McAnimTypes,
-  mcAnimTypes,
-} from "../../game/types/types";
+import { type Direction, direction, mcAnimTypes } from "../../game/types/types";
 import { playerAttackListener } from "../../scenes/main/Playerattack";
 import { getOrThrow } from "../utils";
 import { killCharacter, playerMovementUpdate } from "./movements";
@@ -29,7 +24,6 @@ export class Player<T extends Character> {
 
   create(scene: Phaser.Scene, x: number, y: number, i: number) {
     const type = getCharacterType(this.character);
-
     this._index = i;
     this._scene = scene;
     this._sprite = scene.physics.add
@@ -37,8 +31,10 @@ export class Player<T extends Character> {
       .setCollideWorldBounds(true)
       .setBounce(0.1)
       .setScale(2.55)
-      .setBodySize(30, 40, true)
+      .setBodySize(30, 45, true)
       .setDepth(300);
+    if (type === "iroh") this._sprite.setOffset(56, 19);
+    if (type === "jack") this._sprite.setOffset(85, 77);
 
     this._attackrect = scene.physics.add
       .sprite(500, 500, "attackrect")
@@ -51,7 +47,7 @@ export class Player<T extends Character> {
     console.log(`player ${this.index} created in scene`, scene.scene.key);
   }
 
-  onTookHit(damage: number) {
+  onTookHit(_damage: number) {
     if (this.character.isDead()) mcEvents.emit(mcEventTypes.DIED, this.index);
   }
 
@@ -59,14 +55,19 @@ export class Player<T extends Character> {
     killCharacter(this);
   }
 
-  update(time: number, delta: number) {
+  update(_time: number, _delta: number) {
     playerMovementUpdate(this);
   }
 
-  play(key: McAnimTypes, ignoreIfPlaying?: boolean) {
+  animKey(key: string) {
     const type = getCharacterType(this.character);
-    this.sprite.anims.play(type + "-" + key, ignoreIfPlaying);
-    // play("jack-idle") play("iroh-idle")
+    const prefix = this.character.prefix;
+    return prefix + type + "-" + key;
+  }
+
+  play(key: string, ignoreIfPlaying?: boolean) {
+    this.sprite.anims.play(this.animKey(key), ignoreIfPlaying);
+    // play("jack-idle") play("iroh-idle") play("fireiroh-idle")
   }
 
   get index() {

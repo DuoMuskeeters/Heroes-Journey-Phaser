@@ -1,94 +1,55 @@
 import { CONFIG } from "../PhaserGame";
+import { type MobTier, mobStates } from "./mobStats";
+import { type BaseTypes } from "./playerStats";
+import { Passive, Spell, SpellRange } from "./spell";
+
+type Level = number;
+type XP = number;
 
 export class State {
-  name: string;
-  Level: number;
-  stat_point: number;
+  // AUTO GENERATED
   HP: number;
+  SP: number;
   max_hp: number;
   max_sp: number;
-  SP: number;
   ATK: number;
   ATKRATE: number;
-  HP_reg: number;
-  Armor: number;
-  SP_reg: number;
-  m_resist: number;
+  // END AUTO GENERATED
+
   Strength: number;
   Agility: number;
   Intelligence: number;
   Constitution: number;
 
-  constructor({
-    name, //+
-    Level,
-    stat_point,
-    HP, //+
-    max_hp, //+
-    max_sp, //+
-    SP, //+
-    ATK, //+
-    ATKRATE, //+
-    HP_reg, //+
-    Armor, //+
-    SP_reg, //+
-    m_resist, //**/
-    Strength,
-    Agility,
-    Intelligence,
-    Constitution,
-  }: {
-    name: string;
-    Level: number;
-    stat_point: number;
-    HP: number;
-    max_hp: number;
-    max_sp: number;
-    SP: number;
-    ATK: number;
-    ATKRATE: number;
-    HP_reg: number;
-    Armor: number;
-    SP_reg: number;
-    m_resist: number;
-    Strength: number;
-    Agility: number;
-    Intelligence: number;
-    Constitution: number;
-  }) {
-    this.name = name;
-    this.Level = Level;
-    this.stat_point = stat_point;
-    this.HP = HP;
-    this.max_hp = max_hp;
-    this.max_sp = max_sp;
-    this.SP = SP;
-    this.ATK = ATK;
-    this.ATKRATE = ATKRATE;
-    this.HP_reg = HP_reg;
-    this.Armor = Armor;
-    this.SP_reg = SP_reg;
-    this.m_resist = m_resist;
+  constructor({ Strength, Agility, Intelligence, Constitution }: BaseTypes) {
     this.Strength = Strength;
     this.Agility = Agility;
     this.Intelligence = Intelligence;
     this.Constitution = Constitution;
+
+    // dummy initialize
+    this.max_hp = 0;
+    this.max_sp = 0;
+    this.ATK = 0;
+    this.ATKRATE = 0;
+    // end dummy initialize
+    this.calculate_power();
+
+    this.HP = this.max_hp;
+    this.SP = this.max_sp;
   }
+
   calculate_power() {
-    this.max_hp = 100 + this.Constitution * 10;
-    this.HP_reg = 5 + this.Constitution * 0.1;
-    this.Armor = this.Constitution / (this.Constitution + 100);
-    this.max_sp = 50 + this.Intelligence * 5;
-    this.SP_reg = 2.5 + this.Intelligence * 0.05;
-    this.m_resist = this.Constitution / (this.Constitution + 100);
-    this.ATK = 30 + this.Strength * 2;
-    this.ATKRATE = 1 + this.Agility * 0.008;
+    this.max_hp = this.Constitution * 8;
+    this.max_sp = this.Intelligence * 4;
+    this.ATK = this.Strength * 0.8;
+    this.ATKRATE = this.Agility * 0.08;
   }
 }
 
 export class Canlı {
+  name: string;
   state: State;
-
   /**
    * @internal use only
    * take damage until 0 HP
@@ -96,231 +57,146 @@ export class Canlı {
   _takeDamage(damage: number) {
     return (this.state.HP = Math.max(0, this.state.HP - damage));
   }
+  _heal({ hp = 0, sp = 0 }) {
+    this.state.HP = Math.min(this.state.max_hp, this.state.HP + hp);
+    this.state.SP = Math.min(this.state.max_sp, this.state.SP + sp);
+  }
 
-  constructor(state?: State) {
-    this.state = state ?? create_state("Canlı");
-    this.calculate_power();
+  constructor(name: string, state: State) {
+    this.name = name;
+    this.state = state;
   }
   isDead = () => Math.floor(this.state.HP) === 0;
-
-  /**
-   * known as ATTACK_1 for all Canlı
-   * @note should be overwritten for each exotic Canlı if needed
-   *
-   * @example const { damage, hit } = this.basicAttak(rakip);
-   * console.log(damage);
-   * const lastHp = hit(rakip);
-   *
-   */
-  basicAttack(rakip?: Canlı) {
-    const damage = (1 - (rakip?.state.Armor ?? 0)) * this.state.ATK;
-    return {
-      damage,
-      hit: () => rakip?._takeDamage(damage) ?? 0,
-    };
-  }
-  regeneration() {
-    if (!this.isDead()) {
-      const HP_reg = (this.state.HP_reg * this.state.max_hp) / 100;
-      const SP_reg = (this.state.SP_reg * this.state.max_sp) / 50;
-      this.state.HP = Math.min(this.state.max_hp, this.state.HP + HP_reg);
-      this.state.SP = Math.min(this.state.max_sp, this.state.SP + SP_reg);
-    }
-  }
-  regenerationNew() {
-    if (!this.isDead()) {
-      const HP_reg = (this.state.HP_reg * this.state.max_hp) / 100;
-      const SP_reg = (this.state.SP_reg * this.state.max_sp) / 50;
-      return {
-        HP_reg,
-        SP_reg,
-        regenerate: () => {
-          this.state.HP = Math.min(this.state.max_hp, this.state.HP + HP_reg);
-          this.state.SP = Math.min(this.state.max_sp, this.state.SP + SP_reg);
-        },
-      };
-    }
-  }
-  calculate_power() {
-    this.state.calculate_power();
-  }
 }
 
 export class Character extends Canlı {
-  exp: number;
+  exp: XP;
+  level: Level;
+  stat_point: number;
+  prefix = "";
 
-  constructor(state?: State, exp: number = 0) {
-    super(state);
+  spellQ: Spell<SpellRange> = new Spell("heavy", SpellRange.SingleORNone, {
+    has: () => false,
+    damage: () => 0,
+    hit: () => undefined,
+  });
+
+  basicAttack: Spell<SpellRange> = new Spell("basic", SpellRange.SingleORNone, {
+    damage: () => this.state.ATK,
+    hit: (rakip, damage) => rakip?._takeDamage(damage),
+  });
+
+  constructor(name: string, state: State, exp: XP = 0, level: Level = 1) {
+    super(name, state);
     this.exp = exp;
+    this.level = level;
+    this.stat_point = level * 5;
   }
 
   level_up() {
-    const requirement_exp: number = level(this.state.Level);
+    const requirement_exp: XP = level_exp(this.level);
     while (this.exp > requirement_exp) {
-      this.state.Level += 1;
+      this.level += 1;
       this.exp = this.exp - requirement_exp;
-      this.state.stat_point += 5;
+      this.stat_point += 5;
     }
   }
   increase(stat: "Strength" | "Agility" | "Intelligence" | "Constitution") {
-    if (this.state.stat_point > 0) {
+    if (this.stat_point > 0) {
       this.state[stat] += 1;
-      this.state.stat_point -= 1;
-      this.calculate_power();
+      this.stat_point -= 1;
+      this.state.calculate_power();
     }
   }
-}
 
-function create_state(username: string, Level: number = 1): State {
-  const Strength = 10;
-  const Agility = 10;
-  const Intelligence = 10;
-  const Constitution = 10;
-  const HP = 100 + Constitution * 10;
-  const max_hp = HP;
-  const HP_reg = 5 + Constitution * 0.1;
-  const Armor = Constitution / (Constitution + 100);
-  const SP = 50 + Intelligence * 5;
-  const max_sp = SP;
-  const SP_reg = 2.5 + Intelligence * 0.05;
-  const m_resist = Constitution / (Constitution + 100);
-  const ATK = 30 + Strength * 2;
-  const ATKRATE = 1 + Agility * 0.008;
-
-  const character_state: State = new State({
-    name: username,
-    Level,
-    stat_point: 5 * Level,
-    HP,
-    max_hp,
-    max_sp,
-    SP,
-    ATK,
-    ATKRATE,
-    HP_reg,
-    Armor,
-    SP_reg,
-    m_resist,
-    Strength,
-    Agility,
-    Intelligence,
-    Constitution,
+  private reg = 0.025;
+  regeneration = new Passive({
+    has: () => !this.isDead(),
+    view: () => {
+      const HP = this.state.max_hp * this.reg;
+      const SP = this.state.max_sp * this.reg;
+      return { HP, SP };
+    },
+    do: ({ HP, SP }) => this._heal({ hp: HP, sp: SP }),
   });
-
-  return new State(character_state);
 }
 
 export class Iroh extends Character {
-  ATK1_MS = 2 * 1000;
+  ATK1_MS = CONFIG.physics.arcade.debug ? 2 * 1000 : 1000;
   lastCombo: 0 | 1 | 2 = 0;
   lastBasicAttack: Date | null = null;
+  prefix: "" | "fire" = "";
 
   inComboTime() {
     return Date.now() - (this.lastBasicAttack?.getTime() ?? 0) < this.ATK1_MS;
   }
 
-  basicAttack_ = {
-    damage: this.basicAttackDamage,
-    hit: this.basicAttackHit,
-  };
-
-  basicAttackDamage(rakip?: Canlı) {
-    const basic = super.basicAttack(rakip);
-    return this.inComboTime() && this.lastCombo === 2
-      ? basic.damage * 2
-      : basic.damage;
-  }
-
-  basicAttackHit(rakip?: Canlı) {
-    const basic = super.basicAttack(rakip);
-    switch (this.lastCombo) {
-      case 0:
-      case 1: {
-        if (this.inComboTime()) {
-          this.lastCombo += 1;
-        } else {
-          this.lastCombo = 1;
-        }
-        this.lastBasicAttack = new Date();
-        return rakip?._takeDamage(basic.damage) ?? 0;
-      }
-
-      case 2: {
-        this.lastCombo = 0;
-        if (this.inComboTime()) {
-          this.lastBasicAttack = new Date();
-          return rakip?._takeDamage(basic.damage * 2) ?? 0;
-        }
-
-        this.lastBasicAttack = new Date();
-        return rakip?._takeDamage(basic.damage) ?? 0;
-      }
-
-      default:
-        throw new Error("Combo sayısı 0, 1 veya 2 olmalıdır.");
+  transform() {
+    const mode = this.prefix === "fire" ? "" : "fire";
+    this.prefix = mode;
+    this.state.calculate_power(); // always get the recent stats (fire iroh may have got increased stats recently)
+    if (mode === "fire") {
+      this.state.ATK *= 2;
     }
   }
-  heavyAttack(chunk: number = 12) {
-    const damage = (this.state.ATK * 2) / chunk;
-    const spCost = damage / 2;
 
-    if (this.state.SP >= spCost)
-      return {
-        damage,
-        hit: (rakipler: Canlı[]) => {
-          if (this.state.SP < spCost)
-            throw new Error("Ulti için gerekli koşullar sağlanmadı.");
-          this.state.SP = Math.max(this.state.SP - spCost, 0);
-          return rakipler.map(
-            (rakip) => (rakip.state.HP = Math.max(rakip.state.HP - damage, 0))
-          );
-        },
-      };
+  basicAttack = new Spell("basic", SpellRange.SingleORNone, {
+    damage: () => {
+      const damage = this.state.ATK;
+      return this.inComboTime() && this.lastCombo === 2
+        ? damage * 0.4
+        : damage * 0.3;
+    },
+    hit: (rakip, damage) => {
+      if (this.lastCombo === 2) this.lastCombo = 0;
+      else if (this.inComboTime()) this.lastCombo += 1;
+      else this.lastCombo = 1;
 
-    return {
-      damage,
-    };
-  }
+      this.lastBasicAttack = new Date();
+      return rakip?._takeDamage(damage);
+    },
+  });
+
+  private QcostSP = 4.16;
+
+  spellQ = new Spell("heavy", SpellRange.Multiple, {
+    cancelable: true,
+    has: () => this.state.SP >= this.QcostSP,
+    damage: (rakipler) => rakipler.map(() => this.state.ATK / 6),
+    hit: (rakipler, damages) => {
+      this.state.SP = Math.max(this.state.SP - this.QcostSP, 0);
+      return rakipler.map((rakip, i) => rakip._takeDamage(damages[i]));
+    },
+  });
 }
 
 export class Jack extends Character {
-  private lastHeavyStrike: Date | null = null;
-  heavyAttack() {
-    const halfSP = CONFIG.physics.arcade.debug ? 5 : this.state.max_sp / 2;
-    const damage = this.state.ATK * 2;
-    const standByTime = CONFIG.physics.arcade.debug ? 100 : 5 * 1000;
+  private lastQ: Date | null = null;
+  private standByTime = CONFIG.physics.arcade.debug ? 100 : 5 * 1000;
+  private spCost = CONFIG.physics.arcade.debug ? 5 : 50;
 
-    const hasUlti = () =>
-      (this.lastHeavyStrike?.getTime() ?? 0) + standByTime < Date.now();
+  basicAttack = new Spell("basic", SpellRange.Multiple, {
+    damage: (rakipler) => rakipler.map(() => this.state.ATK),
+    hit: (rakipler, damages) =>
+      rakipler.map((r, i) => r._takeDamage(damages[i])),
+  });
+  // basicAttack = new Spell("basic", SpellRange.SingleORNone, {
+  //   damage: () => this.state.ATK,
+  //   hit: (rakip, damage) => rakip?._takeDamage(damage),
+  // });
 
-    if (this.state.SP >= halfSP && hasUlti())
-      return {
-        damage,
-        standByTime,
-        lastHeavyStrike: this.lastHeavyStrike,
-        hit: (rakipler: Canlı[]) => {
-          if (this.state.SP < halfSP || !hasUlti())
-            throw new Error("Ulti için gerekli koşullar sağlanmadı.");
-          this.lastHeavyStrike = new Date();
-          this.state.SP = Math.max(this.state.SP - halfSP, 0);
-          return rakipler.map(
-            (rakip) => (rakip.state.HP = Math.max(rakip.state.HP - damage, 0))
-          );
-        },
-      };
-
-    return {
-      damage,
-      standByTime,
-      lastHeavyStrike: this.lastHeavyStrike,
-    };
-  }
-  vitality_boost() {
-    this.state.HP = this.state.max_hp * 0.35 + this.state.HP;
-    this.state.SP = this.state.max_sp * 0.35 + this.state.SP;
-    this.state.HP = Math.min(this.state.HP, this.state.max_hp);
-    this.state.SP = Math.min(this.state.SP, this.state.max_sp);
-  }
+  spellQ = new Spell("heavy", SpellRange.Multiple, {
+    has: () => (this.lastQ?.getTime() ?? 0) + this.standByTime < Date.now(),
+    damage: (rakipler) => rakipler.map(() => this.state.ATK * 3),
+    hit: (rakipler, damages) => {
+      this.lastQ = new Date();
+      this.state.SP = Math.max(this.state.SP - this.spCost, 0);
+      return rakipler.map(
+        (rakip, i) =>
+          (rakip.state.HP = Math.max(rakip.state.HP - damages[i], 0))
+      );
+    },
+  });
 }
 
 export class Archer extends Character {
@@ -328,12 +204,10 @@ export class Archer extends Character {
 }
 
 export class MobCanlı extends Canlı {
-  calculate_power() {
-    super.calculate_power();
-    this.state.max_sp = 150 - this.state.Intelligence * 0.5;
-    this.state.SP = 0;
-    this.state.SP_reg = 10 + this.state.Intelligence * 0.5;
+  constructor(public tier: MobTier = 1, name: string, state?: State) {
+    super(name, state ?? new State(mobStates.goblin[tier]));
   }
+
   OnUltimate() {
     if (this.state.SP === this.state.max_sp) {
       this.state.SP -= this.state.max_sp;
@@ -341,189 +215,45 @@ export class MobCanlı extends Canlı {
     }
     return false;
   }
-  regeneration() {
-    if (!this.isDead()) {
-      const HP_reg = (this.state.HP_reg * this.state.max_hp) / 100;
-      const SP_reg = (this.state.SP_reg * this.state.max_sp) / 200;
-      this.state.HP = Math.min(this.state.max_hp, this.state.HP + HP_reg);
-      this.state.SP = Math.min(this.state.max_sp, this.state.SP + SP_reg);
-    }
-  }
-  regenerationNew() {
-    const reg = super.regenerationNew();
-    if (reg) {
-      const SP_reg = reg.SP_reg / 4;
 
-      return {
-        HP_reg: reg.HP_reg,
-        SP_reg,
-        regenerate: () => {
-          this.state.HP = Math.min(
-            this.state.max_hp,
-            this.state.HP + reg.HP_reg
-          );
-          this.state.SP = Math.min(this.state.max_sp, this.state.SP + SP_reg);
-        },
-      };
-    }
-  }
-  basicAttack(rakip: Canlı) {
-    if (!(rakip instanceof Character)) {
-      throw new Error("NOTE: şu anda mob sadece karaktere vurabilir.");
-    }
+  private HP_Reg = 0.001;
+  private SP_Reg = 0.002;
 
-    return super.basicAttack(rakip);
-  }
-}
-
-export class Giant extends MobCanlı {
-  hasUlti = () => this.state.SP === this.state.max_sp;
-  giant_skill() {
-    const damage = this.state.ATK * 3;
-    return {
-      damage,
-      consumeSP: () => (this.state.SP = 0),
-      hit: (rakipler: Canlı[]) =>
-        rakipler.map(
-          (rakip) => (rakip.state.HP = Math.max(rakip.state.HP - damage, 0))
-        ),
-    };
-  }
-}
-export function create_giant(Level: number): Giant {
-  const name = `${Level} Level Giant`;
-  let stat_point = Level * 5;
-  let stat_turn: number = 2;
-  let Strength = 10;
-  let Agility = 2;
-  let Intelligence = 10;
-  let Constitution = 20;
-
-  const HP = 100 + Constitution * 10;
-  const max_hp = HP;
-  const HP_reg = 5 + Constitution * 0.1;
-  const Armor = Constitution / (Constitution + 100);
-  const max_sp = 105 - Intelligence * 0.5;
-  const SP = 0;
-  const SP_reg = 10 + Intelligence * 0.5;
-  const m_resist = Constitution / (Constitution + 100);
-  const ATK = 30 + Strength * 2;
-  const ATKRATE = 1 + Agility * 0.008;
-
-  while (stat_point > 0) {
-    if (stat_turn === 0) {
-      Strength += 1;
-      stat_turn += 2;
-    } else {
-      Constitution += 1;
-      stat_turn -= 1;
-    }
-    stat_point -= 1;
-  }
-
-  let giant_state: State = new State({
-    name,
-    Level,
-    stat_point,
-    HP,
-    max_hp,
-    max_sp,
-    SP,
-    ATK,
-    ATKRATE,
-    HP_reg,
-    Armor,
-    SP_reg,
-    m_resist,
-    Strength,
-    Agility,
-    Intelligence,
-    Constitution,
+  regeneration = new Passive({
+    has: () => !this.isDead(),
+    view: () => {
+      const hp_reg = this.state.Intelligence * this.HP_Reg;
+      const sp_reg = this.state.Intelligence * this.SP_Reg;
+      const HP = this.state.max_hp * hp_reg;
+      const SP = this.state.max_sp * sp_reg;
+      return { HP, SP };
+    },
+    do: ({ HP, SP }) => this._heal({ hp: HP, sp: SP }),
   });
 
-  const giant = new Giant(giant_state);
-  giant.calculate_power();
+  basicAttack = new Spell("basic", SpellRange.SingleORNone, {
+    damage: () => this.state.ATK,
+    hit: (rakip, damage) => {
+      if (!(rakip instanceof Character))
+        throw new Error("NOTE: şu anda mob sadece karaktere vurabilir.");
 
-  return giant;
-}
-
-export class Bird extends MobCanlı {
-  calculate_bird_skill() {
-    return this.state.Agility * 1.5 + this.state.ATK * 1.5;
-  }
-  bird_skill() {
-    this.state.Agility = this.state.Agility * 1.5;
-    this.state.ATK = this.state.ATK * 1.5;
-    console.log(
-      `${this.state.name} ın gıderek agresıfleşiyor.\n${this.state.name})ın saldırı hızı ve gucu arttı.`
-    );
-  }
-}
-export function create_bird(Level: number): Bird {
-  const name = `${Level} Level Bird`;
-  let stat_point = Level * 5;
-  let stat_turn: number = 3;
-  let Strength = 5;
-  let Agility = 20;
-  let Intelligence = 10;
-  let Constitution = 5;
-
-  const HP = 100 + Constitution * 10;
-  const max_hp = HP;
-  const HP_reg = 5 + Constitution * 0.1;
-  const Armor = Constitution / (Constitution + 100);
-  const max_sp = 150 - Intelligence * 0.5;
-  const SP = 0;
-  const SP_reg = 10 + Intelligence * 0.5;
-  const m_resist = Constitution / (Constitution + 100);
-  const ATK = 30 + Strength * 2;
-  const ATKRATE = 1 + Agility * 0.008;
-
-  while (stat_point > 0) {
-    if (stat_turn === 0) {
-      Constitution += 1;
-      stat_turn += 3;
-    }
-    if (stat_turn === 1) {
-      Strength += 1;
-      stat_turn -= 1;
-    } else {
-      Agility += 1;
-      stat_turn -= 1;
-    }
-    stat_point -= 1;
-  }
-  let bird_state: State = new State({
-    name,
-    Level,
-    stat_point,
-    HP,
-    max_hp,
-    max_sp,
-    SP,
-    ATK,
-    ATKRATE,
-    HP_reg,
-    Armor,
-    SP_reg,
-    m_resist,
-    Strength,
-    Agility,
-    Intelligence,
-    Constitution,
+      return rakip?._takeDamage(damage);
+    },
   });
-
-  const bird = new Bird(bird_state);
-  bird.calculate_power();
-
-  return bird;
 }
+
+export class Goblin extends MobCanlı {
+  spellQ = new Spell("heavy", SpellRange.Multiple, {
+    damage: (rakipler) => rakipler.map(() => this.state.ATK * 3),
+    has: () => this.state.SP === this.state.max_sp,
+    onUse: () => (this.state.SP = 0),
+    hit: (rakipler, damages) =>
+      rakipler.map((rakip, i) => rakip._takeDamage(damages[i])),
+  });
+}
+
 // random mob eksik
-export function level(
-  level: number,
-  n1: number = 1.2,
-  base_exp: number = 100
-): number {
+export function level_exp(level: Level, n1 = 1.2, base_exp: XP = 100): XP {
   n1 = n1 + 0.002 * level;
   let requirement_exp = base_exp * n1 ** level;
   requirement_exp = Math.round(requirement_exp / 5) * 5;
@@ -531,10 +261,10 @@ export function level(
 }
 
 export function mob_exp_kazancı(
-  mob_level: number,
+  mob_level: Level,
   n1 = 1.2,
-  base_exp = 50
-): number {
+  base_exp: XP = 50
+): XP {
   let mob_exp = base_exp * n1 ** mob_level;
   mob_exp = Math.round(mob_exp / 5) * 5;
   return mob_exp;

@@ -2,79 +2,15 @@
   "section1": {
     "files": [
       {
-        "url": "jack/Idle.png",
+        "url": "jack/Jack.png",
         "type": "spritesheet",
-        "key": "jack-idle",
-        "frameConfig": {
-          "frameWidth": 200,
-          "frameHeight": 200
-        }
-      },
-      {
-        "url": "jack/Run.png",
-        "type": "spritesheet",
-        "key": "jack-run",
-        "frameConfig": {
-          "frameWidth": 200,
-          "frameHeight": 200
-        }
-      },
-
-      {
-        "url": "jack/take-hit.png",
-        "type": "spritesheet",
-        "key": "jack-take-hit",
-        "frameConfig": {
-          "frameWidth": 200,
-          "frameHeight": 200
-        }
-      },
-      {
-        "url": "jack/Jump.png",
-        "type": "spritesheet",
-        "key": "jack-jump",
-        "frameConfig": {
-          "frameWidth": 200,
-          "frameHeight": 200
-        }
-      },
-      {
-        "url": "jack/Attack1.png",
-        "type": "spritesheet",
-        "key": "jack-attack1",
-        "frameConfig": {
-          "frameWidth": 200,
-          "frameHeight": 200
-        }
-      },
-      {
-        "url": "jack/Fall.png",
-        "type": "spritesheet",
-        "key": "jack-fall",
-        "frameConfig": {
-          "frameWidth": 200,
-          "frameHeight": 200
-        }
-      },
-      {
-        "url": "jack/Attack2.png",
-        "type": "spritesheet",
-        "key": "jack-attack2",
-        "frameConfig": {
-          "frameWidth": 200,
-          "frameHeight": 200
-        }
-      },
-      {
-        "url": "jack/Death.png",
-        "type": "spritesheet",
-        "key": "jack-death",
+        "key": "jack",
         "frameConfig": {
           "frameWidth": 200,
           "frameHeight": 200
         }
       }
-    ]
+        ]
   },
   "meta": {
     "generated": "1401380327373",

@@ -1,33 +1,34 @@
-import MainScene from "../main/MainScene";
-import goblinController from "../../objects/Mob/goblinController";
+import type MainScene from "../main/MainScene";
+import type goblinController from "../../objects/Mob/goblinController";
 import { createBar } from "../main/Anims";
-import { PlayerManager } from "../../objects/player/manager";
+import { type PlayerManager } from "../../objects/player/manager";
+
+import type Phaser from "phaser";
 
 export function UI_createPlayers(scene: MainScene) {
   scene.playerManager.forEach(({ player, UI }, i) => {
     const isscroolFactor = i === 0 ? 0 : 1;
+
+    const Center = UI.frameLayer.getCenter<Phaser.Tilemaps.TilemapLayer>();
+    const LeftCenterX =
+      UI.frameLayer.getLeftCenter<Phaser.Tilemaps.TilemapLayer>().x;
+    const BottomCenterY =
+      UI.frameLayer.getBottomCenter<Phaser.Tilemaps.TilemapLayer>().y;
+
     UI.hpBar = scene.add
-      .sprite(
-        UI.frameLayer.getLeftCenter().x! + 270,
-        UI.frameLayer.getCenter().y! + 3,
-        `hpBar`
-      )
+      .sprite(LeftCenterX + 270, Center.y + 3, `hpBar`)
       .setScale(5.5, 7)
       .setDepth(5)
       .setScrollFactor(isscroolFactor);
     UI.spBar = scene.add
-      .sprite(
-        UI.frameLayer.getLeftCenter().x! + 227,
-        UI.frameLayer.getBottomCenter().y! - 25,
-        `spBar-${isscroolFactor}`
-      )
+      .sprite(LeftCenterX + 227, BottomCenterY - 25, `spBar-${isscroolFactor}`)
       .setScale(3.1, 5)
       .setDepth(4)
       .setScrollFactor(isscroolFactor);
     UI.hptext = scene.add
       .text(
-        UI.hpBar.getCenter().x! - 15,
-        UI.hpBar.getCenter().y! - 7,
+        UI.hpBar.getCenter(UI.hpBar).x - 15,
+        UI.hpBar.getCenter(UI.hpBar).y - 7,
         `${player.character.state.HP}`
       )
       .setStyle({
@@ -42,8 +43,8 @@ export function UI_createPlayers(scene: MainScene) {
 
     UI.sptext = scene.add
       .text(
-        UI.spBar.getCenter().x! - 10,
-        UI.spBar.getCenter().y! - 8,
+        UI.spBar.getCenter(UI.spBar).x - 10,
+        UI.spBar.getCenter(UI.spBar).y - 8,
         `${player.character.state.SP}`
       )
       .setStyle({
@@ -120,11 +121,11 @@ export function UI_updatePlayersHP(scene: MainScene) {
     if (i !== 0) {
       UI.hpBar
         .setScale(3, 3)
-        .setPosition(UI.frameLayer.x + 110, UI.frameLayer.y + 50);
+        .setPosition(UI.frameLayer.x - 35, UI.frameLayer.y + 50);
 
       UIhpText.setPosition(
-        UI.hpBar.getRightCenter().x! - 25,
-        UI.hpBar.getRightCenter().y! - 10
+        UI.hpBar.getRightCenter(UI.hpBar).x + 120,
+        UI.hpBar.getRightCenter(UI.hpBar).y - 10
       )
         .setScrollFactor(1)
         .setScale(0.7);
@@ -142,11 +143,11 @@ export function UI_updatePlayersSP(scene: MainScene) {
     if (i !== 0) {
       UI.spBar
         .setScale(2.1, 3)
-        .setPosition(UI.frameLayer.x + 95, UI.frameLayer.y + 75);
+        .setPosition(UI.frameLayer.x - 10, UI.frameLayer.y + 75);
 
       UIspText.setPosition(
-        UI.spBar.getRightCenter().x! - 10,
-        UI.spBar.getRightCenter().y! - 6
+        UI.spBar.getRightCenter(UI.spBar).x + 90,
+        UI.spBar.getRightCenter(UI.spBar).y - 6
       )
         .setScrollFactor(1)
         .setScale(0.7);
@@ -164,7 +165,7 @@ export function goblinHealtbar(controller: goblinController) {
   UI.hptitle
     .setText(
       `${goblin.name}: (${
-        state.Level
+        goblin.mob.tier
       })\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t${Math.round(state.HP)}`
     )
     .setPosition(goblin.sprite.x - 70, goblin.sprite.y - 72)

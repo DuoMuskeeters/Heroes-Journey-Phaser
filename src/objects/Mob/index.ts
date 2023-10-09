@@ -1,12 +1,10 @@
-import { MobCanlı } from "../../game/Karakter";
+import { type MobCanlı } from "../../game/Karakter";
 import {
   type Direction,
   direction,
-  GoblinAnimTypes,
-  GoblinTookHit,
-  mobEvents,
-  mobEventsTypes,
+  type GoblinAnimTypes,
 } from "../../game/types";
+import { getOrThrow } from "../utils";
 
 export class Mob<T extends MobCanlı> {
   private _scene?: Phaser.Scene;
@@ -14,7 +12,7 @@ export class Mob<T extends MobCanlı> {
   private _attackrect?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   public lastdirection: Direction = direction.right;
   public id?: number;
-  public name?: string;
+  public name = "";
 
   constructor(public mob: T) {}
 
@@ -40,30 +38,25 @@ export class Mob<T extends MobCanlı> {
       .setCollideWorldBounds(true)
       .setBounce(0)
       .setDepth(100)
-      .setScale(scaleSize);
+      .setScale(scaleSize)
+      .setOffset(60, 65);
     this._attackrect = scene.physics.add.sprite(x, y, `$${name}-attackrect`);
 
     (this._attackrect.body as Phaser.Physics.Arcade.Body).allowGravity = false;
     this.attackrect.setDisplaySize(Rectx, Recty).setDepth(0).setVisible(false);
   }
 
-  update(time: number, delta: number) {}
+  // update(time: number, delta: number) {}
 
   get scene() {
-    if (!this._scene)
-      throw new Error("Scene is not defined, call create first");
-    return this._scene;
+    return getOrThrow(this._scene, "Scene");
   }
 
   get sprite() {
-    if (!this._sprite)
-      throw new Error("Sprite is not defined, call create first");
-    return this._sprite;
+    return getOrThrow(this._sprite, "Sprite");
   }
 
   get attackrect() {
-    if (!this._attackrect)
-      throw new Error("Attackrect is not defined, call create first");
-    return this._attackrect;
+    return getOrThrow(this._attackrect, "Attackrect");
   }
 }
