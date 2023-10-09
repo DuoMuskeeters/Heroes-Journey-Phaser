@@ -1,52 +1,7 @@
-import { MapSchema, Schema, filter, type } from "@colyseus/schema";
 import { Client, Room } from "colyseus";
-
-// TOOD: x, y -> position
-
-function inSameGuild(client: Client, value: boolean, root: RelayState) {
-  return true;
-}
-
-function hiddenInventoryQuantity(
-  this: Inventory,
-  client: Client,
-  value: number,
-  root: RelayState
-) {
-  return client.sessionId === this.sessionId;
-}
-
-class Inventory extends Schema {
-  constructor(sessionId: string, name: "gold" | "silver", quantity: number) {
-    super();
-    this.sessionId = sessionId;
-    this.name = name;
-    this.quantity = quantity;
-  }
-
-  @type("string") sessionId: string;
-  @type("string") name: "gold" | "silver";
-  @filter(hiddenInventoryQuantity) @type("number") quantity: number;
-}
-
-class Player extends Schema {
-  constructor(sessionId: string, name: string, inventory: Inventory) {
-    super();
-    this.sessionId = sessionId;
-    this.name = name;
-    this.inventory = inventory;
-    this.connected = true;
-  }
-
-  @filter(inSameGuild) @type("boolean") connected: boolean;
-  @type("string") name: string;
-  @type("string") sessionId: string;
-  @type(Inventory) inventory: Inventory;
-}
-
-class RelayState extends Schema {
-  @type({ map: Player }) public players = new MapSchema<Player>();
-}
+import { RelayState } from "../schema/RelayRoomState";
+import { ConnectPlayer } from "./commands";
+import { Dispatcher } from "@colyseus/command";
 
 /**
  * client.joinOrCreate("relayroom", {
@@ -57,6 +12,7 @@ class RelayState extends Schema {
 
 export class RelayRoom extends Room<RelayState> {
   public allowReconnectionTime: number = 5;
+  public dispatcher = new Dispatcher(this);
 
   public onCreate(
     options: Partial<{
@@ -88,13 +44,10 @@ export class RelayRoom extends Room<RelayState> {
     client: Client,
     options: Partial<{ authId: string; name: string }> = {}
   ) {
-    const player = new Player(
-      client.sessionId,
-      options.name ?? "",
-      new Inventory(client.sessionId, "gold", 100)
-    );
+    const command = new ConnectPlayer();
+    command.client = client;
 
-    this.state.players.set(client.sessionId, player);
+    this.dispatcher.dispatch(command);
   }
 
   async onLeave(client: Client, consented: boolean) {

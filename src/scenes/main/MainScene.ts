@@ -13,7 +13,7 @@ import { createMob as createMobs } from "./CreateMob";
 import { createAvatarFrame } from "../Ui/AvatarUi";
 
 import { Player } from "../../objects/player";
-import { Iroh, Jack } from "../../game/Karakter";
+import { Jack } from "../../game/Karakter";
 import {
   type GoblinTookHit,
   mcAnimTypes,
@@ -29,8 +29,8 @@ import type goblinController from "../../objects/Mob/goblinController";
 import { PlayerManager, type PlayerUI } from "../../objects/player/manager";
 import { playerBaseStates } from "../../game/playerStats";
 import { Client, Room } from "colyseus.js";
-import { MapSchema, Schema, type } from "@colyseus/schema";
 import { getOrThrow } from "../../objects/utils";
+import type { RelayState } from "../../server/rooms/schema/RelayRoomState";
 
 type Key = Phaser.Input.Keyboard.Key;
 
@@ -40,22 +40,12 @@ const reconnectionToken = {
   delete: () => localStorage.removeItem("reconnectionToken"),
 };
 
-class PlayerState extends Schema {
-  @type("boolean") connected!: boolean;
-  @type("string") name!: string;
-  @type("string") sessionId!: string;
-}
-
-class RoomState extends Schema {
-  @type({ map: PlayerState }) players = new MapSchema<PlayerState>();
-}
-
 export default class MainScene extends Phaser.Scene {
   frontroad!: Phaser.Tilemaps.TilemapLayer;
   backroad!: Phaser.Tilemaps.TilemapLayer;
 
   client = new Client("ws://localhost:2567");
-  _room?: Room<RoomState>;
+  _room?: Room<RelayState>;
 
   keySpace!: Key;
   keyW!: Key;
@@ -74,7 +64,7 @@ export default class MainScene extends Phaser.Scene {
   playerManager: PlayerManager;
   friendlyFire = false;
 
-  get room(): Room<RoomState> {
+  get room(): Room<RelayState> {
     return getOrThrow(this._room, "Room");
   }
 

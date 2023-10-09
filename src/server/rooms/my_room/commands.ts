@@ -1,8 +1,8 @@
 import { Command } from "@colyseus/command";
-import { MyRoom } from "./my_room/MyRoom";
+import { MyRoom } from "./MyRoom";
 import { z } from "zod";
 import { Client } from "colyseus";
-import { Canlı, CanlıState } from "./schema/MyRoomState";
+import { Canlı, CanlıState } from "../schema/MyRoomState";
 
 const SessionId = z.string().min(1).max(32);
 

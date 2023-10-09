@@ -1,7 +1,7 @@
 import { Room, Client } from "@colyseus/core";
 import { MyRoomState } from "../schema/MyRoomState";
 import { Dispatcher } from "@colyseus/command";
-import { COMMANDS, ConnectPlayer } from "../commands";
+import { COMMANDS, ConnectPlayer } from "./commands";
 
 export class MyRoom extends Room<MyRoomState> {
   dispatcher = new Dispatcher(this);

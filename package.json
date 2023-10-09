@@ -3,22 +3,33 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@colyseus/command": "^0.2.1",
+    "@colyseus/core": "^0.15.8",
+    "@colyseus/monitor": "^0.15.1",
+    "@colyseus/playground": "^0.15.5",
     "@colyseus/schema": "^2.0.16",
+    "@colyseus/tools": "^0.15.21",
+    "colyseus": "^0.15.9",
     "colyseus.js": "^0.15.14",
     "eslint": "^8.50.0",
     "eslint-plugin-react": "^7.33.2",
     "phaser": "^3.60.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "typescript": "^5.2.2"
+    "tsx": "^3.13.0",
+    "typescript": "^5.2.2",
+    "zod": "^3.22.4"
   },
   "scripts": {
     "dev": "vite",
-    "start": "vite",
+    "start": "pnpm run \"/^start:.*/\"",
+    "start:client": "vite",
+    "start:server": "tsx watch src/server/index.ts",
     "build": "vite build",
     "serve": "vite preview"
   },
   "devDependencies": {
+    "@types/express": "^4.17.18",
     "@types/node": "^16.7.13",
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.9",
