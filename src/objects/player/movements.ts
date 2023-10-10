@@ -16,7 +16,8 @@ import {
 } from "../../scenes/main/Anims";
 const runonUpdate = (player: Player<Character>) => {
   player.play(mcAnimTypes.RUN, true);
-  player.sprite.body.setVelocityX(dirVelocity[player.lastdirection] * 250);
+  if (player.index === 0)
+    player.sprite.body.setVelocityX(dirVelocity[player.lastdirection] * 250);
 };
 
 const ıdleonUpdate = (player: Player<Character>) => {
@@ -26,7 +27,7 @@ const ıdleonUpdate = (player: Player<Character>) => {
 const jumpandFallonupdate = (player: Player<Character>) => {
   player.play(mcAnimTypes.JUMP, true);
   player.sprite.anims.stopAfterRepeat(0);
-  player.sprite.body.setVelocityY(-900);
+  if (player.index === 0) player.sprite.body.setVelocityY(-900);
 };
 const heavyStrikeonUpdate = (player: Player<Jack | Iroh>) => {
   if (player.character.spellQ.has()) {
@@ -108,7 +109,7 @@ export function playerMovementUpdate(player: Player<Character>) {
     .includes(mcAnimTypes.TRANSFORM);
   const transformActive =
     player.character instanceof Iroh && player.character.prefix === "fire";
-
+  const jumpActive = player.sprite.anims.getName().includes(mcAnimTypes.JUMP);
   const cancelableQ =
     (attackQActive && player.character.spellQ.cancelable) || !attackQActive;
   const cancelableA1 =
@@ -121,26 +122,17 @@ export function playerMovementUpdate(player: Player<Character>) {
 
   if (player.character.isDead()) return;
 
-  if ((A_isDOWN && canMoVE) || player.lastdirection === direction.left) {
+  if (A_isDOWN && canMoVE) {
     player.lastdirection = direction.left;
     player.sprite.setFlipX(true);
   }
-  if ((D_isDOWN && canMoVE) || player.lastdirection === direction.right) {
+  if (D_isDOWN && canMoVE) {
     player.lastdirection = direction.right;
     player.sprite.setFlipX(false);
   }
 
-  if (!player.sprite.body.onFloor()) {
-    player.sprite.body.setVelocityX(
-      RunisDown ? dirVelocity[player.lastdirection] * 250 : 0
-    );
+  if (!player.sprite.body.onFloor()) return;
 
-    if (!isanimplaying) {
-      player.play(mcAnimTypes.FALL, true);
-      player.sprite.anims.stopAfterRepeat(0);
-    }
-    return;
-  }
   // can't idle while attackQactive
   if (
     (canMoVE && isNotDown && !attackQActive && !attack1Active) ||
@@ -149,7 +141,7 @@ export function playerMovementUpdate(player: Player<Character>) {
     ıdleonUpdate(player);
   if (OnStun) return;
   if (W_isDOWN && canMoVE) jumpandFallonupdate(player);
-  if (RunisDown && !W_isDOWN && canMoVE) runonUpdate(player);
+  else if (RunisDown && canMoVE) runonUpdate(player);
   //Can run while AttackQactive
   if (Space_isD && canMoVE && cancelableQ) attackonUpdate(player); //Can base attack while AttackQctive
 

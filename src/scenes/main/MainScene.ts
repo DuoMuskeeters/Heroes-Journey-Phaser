@@ -130,7 +130,7 @@ export default class MainScene extends Phaser.Scene {
     this.room.state.players.onAdd((serverPlayer, sessionId) => {
       if (sessionId === this.room.sessionId) return;
       console.log("A player has joined! sid:", sessionId);
-      const player = new Player(new Jack(sessionId, playerBaseStates.jack));
+      const player = new Player(new Iroh(sessionId, playerBaseStates.jack));
       const i = this.playerManager.length;
       player.create(this, 300, 0, i);
       this.playerManager.push({ player, UI: {} as PlayerUI });
@@ -143,27 +143,45 @@ export default class MainScene extends Phaser.Scene {
         const item = this.playerManager.findByName(sessionId);
         item.player.lastdirection = value;
       });
-      serverPlayer.listen("x", (value) => {
-        const x = this.playerManager[i].player.sprite.x;
-        const newX = value;
-
-        this.tweens.add({
-          targets: this.playerManager[i].player.sprite,
-          x: newX,
-          duration: 100,
-          ease: "Linear",
-        });
-
-        console.log("[MOVE(X)] player", sessionId, "x changed to", value);
-        const item = this.playerManager.findByName(sessionId);
-        // item.player.sprite.x = value;
-      });
       serverPlayer.listen("y", (newY) => {
         const { player } = this.playerManager.findByName(sessionId);
 
-        player.newY = newY;
-        player.sprite.y = Phaser.Math.Linear(player.sprite.y, player.newY, 0.1);
-        player.pressingKeys.W = player.sprite.y - player.newY > 0;
+        this.tweens.add({
+          targets: player.sprite,
+          y: newY,
+          duration: 40,
+          ease: "Linear",
+          once: () => {
+            player.pressingKeys.W = player.sprite.y > newY;
+          },
+          onComplete: () => {
+            player.newY = newY;
+          },
+        });
+        serverPlayer.listen("x", (value) => {
+          const x = this.playerManager[i].player.sprite.x;
+          const newX = value;
+
+          this.tweens.add({
+            targets: this.playerManager[i].player.sprite,
+            x: newX,
+            duration: 100,
+            ease: "Linear",
+            onUpdate: () => {
+              player.pressingKeys.A = player.sprite.x > newX;
+              player.pressingKeys.D = player.sprite.x < newX;
+            },
+            onComplete: () => {
+              player.newX = newX;
+            },
+          });
+
+          console.log("[MOVE(X)] player", sessionId, "x changed to", value);
+          const item = this.playerManager.findByName(sessionId);
+          // item.player.sprite.x = value;
+        });
+
+        // player.pressingKeys.W = player.sprite.y - player.newY > 0;
 
         console.log("[MOVE(Y)] player", sessionId, "y changed to", newY);
         const item = this.playerManager.findByName(sessionId);

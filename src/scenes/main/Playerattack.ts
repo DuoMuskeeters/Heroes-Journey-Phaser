@@ -111,6 +111,10 @@ export function playerAttackListener(player: Player<Character>) {
           }
         }
       }
+      if (animation.key.includes(mcAnimTypes.JUMP)) {
+        player.play(mcAnimTypes.FALL, true);
+        player.sprite.anims.stopAfterRepeat(0);
+      }
     }
   );
   player.sprite.on(

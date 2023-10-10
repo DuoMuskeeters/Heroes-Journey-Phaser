@@ -4,7 +4,6 @@ import { Client } from "colyseus";
 import { Canlı, CanlıState } from "../schema/MyRoomState";
 import { RelayRoom } from "./RelayRoom";
 import { Inventory, Player } from "../schema/RelayRoomState";
-import { direction } from "../../../game/types";
 
 const SessionId = z.string().min(1).max(32);
 

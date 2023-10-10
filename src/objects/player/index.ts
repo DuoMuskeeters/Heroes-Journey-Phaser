@@ -42,7 +42,6 @@ export class Player<T extends Character> {
     this._sprite = scene.physics.add
       .sprite(x, y, type + "-" + mcAnimTypes.IDLE)
       .setCollideWorldBounds(true)
-      .setBounce(0.1)
       .setScale(2.55)
       .setBodySize(30, 45, true)
       .setDepth(300);
@@ -70,6 +69,8 @@ export class Player<T extends Character> {
 
   update(_time: number, _delta: number) {
     playerMovementUpdate(this);
+   
+
   }
 
   animKey(key: string) {
