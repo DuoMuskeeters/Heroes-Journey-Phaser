@@ -40,8 +40,8 @@ export type PressingKeys = {
   W: boolean;
   A: boolean;
   D: boolean;
-  Space: boolean;
-  Q: boolean;
+  Space: boolean | "ephemeral";
+  Q: boolean | "ephemeral";
   E: boolean;
 };
 

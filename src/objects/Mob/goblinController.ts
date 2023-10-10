@@ -1,4 +1,4 @@
-import PhaserGame from "../../PhaserGame";
+import PhaserGame from "../../client/PhaserGame";
 
 import {
   type GoblinTookHit,
@@ -7,19 +7,19 @@ import {
   mcEventTypes,
   mcEvents,
 } from "../../game/types/events";
-import { createGoblinBomb } from "../../scenes/main/Anims";
-import { goblinHealtbar, goblinspbar } from "../../scenes/Ui/Components";
+import { createGoblinBomb } from "../../client/scenes/main/Anims";
+import { goblinHealtbar, goblinspbar } from "../../client/scenes/Ui/Components";
 import {
   direction,
   type GoblinAnimTypes,
   goblinAnimTypes,
   mcAnimTypes,
 } from "../../game/types/types";
-import { createRoadCollider } from "../../scenes/main/TileGround";
+import { createRoadCollider } from "../../client/scenes/main/TileGround";
 import { type Character, type Goblin } from "../../game/Karakter";
 import { type Mob } from ".";
 import { type PlayerManager } from "../player/manager";
-import type MainScene from "../../scenes/main/MainScene";
+import type MainScene from "../../client/scenes/main/MainScene";
 
 export default class goblinController {
   private ıdletime = 0;

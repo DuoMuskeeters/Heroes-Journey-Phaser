@@ -9,11 +9,11 @@ import {
 } from "../../game/types";
 import { type Player } from ".";
 import { type Character, Iroh, Jack } from "../../game/Karakter";
-import MainScene from "../../scenes/main/MainScene";
+import MainScene from "../../client/scenes/main/MainScene";
 import {
   IROH_ATTACK1_FRAME_COUNT,
   JACK_ATTACK1_FRAME_COUNT,
-} from "../../scenes/main/Anims";
+} from "../../client/scenes/main/Anims";
 const runonUpdate = (player: Player<Character>) => {
   player.play(mcAnimTypes.RUN, true);
   player.sprite.body.setVelocityX(dirVelocity[player.lastdirection] * 250);
@@ -86,6 +86,11 @@ export function playerMovementUpdate(player: Player<Character>) {
   const D_isDOWN = player.pressingKeys.D;
   const justQ = player.pressingKeys.Q;
   const justE = player.pressingKeys.E;
+
+  if (player.pressingKeys.Q === "ephemeral") player.pressingKeys.Q = false;
+  if (player.pressingKeys.Space === "ephemeral")
+    player.pressingKeys.Space = false;
+
   // const mouse = scene.input.activePointer.leftButtonDown();
 
   const isNotDown =

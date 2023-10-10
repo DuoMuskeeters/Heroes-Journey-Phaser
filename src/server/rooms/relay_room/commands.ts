@@ -31,6 +31,36 @@ export class Move extends Command<RelayRoom> {
   }
 }
 
+export type PlayerSkillPayload = {
+  sessionId: string;
+  skill: "basic" | "heavy";
+};
+
+export class Skill extends Command<RelayRoom> {
+  client!: Client;
+  payload!: z.infer<typeof this.validator>;
+  validator = z.enum(["basic", "heavy"]);
+
+  get player() {
+    return this.state.getPlayer(this.client);
+  }
+
+  execute() {
+    this.room.broadcast(
+      "player-skill",
+      {
+        sessionId: this.client.sessionId,
+        skill: this.payload,
+      } satisfies PlayerSkillPayload,
+      { except: this.client }
+    );
+  }
+
+  validate(payload: unknown): boolean {
+    return this.validator.safeParse(payload).success;
+  }
+}
+
 export class ConnectPlayer extends Command<RelayRoom> {
   client!: Client;
   payload!: z.infer<typeof this.validator>;

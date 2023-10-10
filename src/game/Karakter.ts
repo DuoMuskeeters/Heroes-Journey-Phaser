@@ -1,4 +1,4 @@
-import { CONFIG } from "../PhaserGame";
+import { CONFIG } from "../client/PhaserGame";
 import { type MobTier, mobStates } from "./mobStats";
 import { type BaseTypes } from "./playerStats";
 import { Passive, Spell, SpellRange } from "./spell";

@@ -1,7 +1,7 @@
 import { type Character, Iroh, Jack } from "../../game/Karakter";
 import { PressingKeys, mcEventTypes, mcEvents } from "../../game/types/events";
 import { type Direction, direction, mcAnimTypes } from "../../game/types/types";
-import { playerAttackListener } from "../../scenes/main/Playerattack";
+import { playerAttackListener } from "../../client/scenes/main/Playerattack";
 import { getOrThrow } from "../utils";
 import { killCharacter, playerMovementUpdate } from "./movements";
 
