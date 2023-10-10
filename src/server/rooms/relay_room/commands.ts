@@ -15,9 +15,7 @@ const Coordinates = z.object({
 export class Move extends Command<RelayRoom> {
   client!: Client;
   payload!: z.infer<typeof this.validator>;
-  validator = Coordinates.extend({
-    dir: z.enum(["left", "right"]).optional(),
-  });
+  validator = Coordinates;
 
   get player() {
     return this.state.getPlayer(this.client);
@@ -26,7 +24,6 @@ export class Move extends Command<RelayRoom> {
   execute() {
     this.player.x = this.payload.x;
     this.player.y = this.payload.y;
-    if (this.payload.dir) this.player.dir = this.payload.dir;
   }
 
   validate(payload: unknown): boolean {

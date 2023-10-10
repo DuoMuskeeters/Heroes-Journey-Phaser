@@ -15,7 +15,7 @@ export default config({
      */
     gameServer.define("my_room", MyRoom);
     gameServer.define("relay", RelayRoom, {
-      maxClients: 2,
+      maxClients: 5,
       metadata: { id: 1 },
     });
   },

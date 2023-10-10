@@ -99,93 +99,54 @@ export default class MainScene extends Phaser.Scene {
   }
 
   onConnectionReady() {
-    mcEvents.on(mcEventTypes.MOVED, (i: number, keys: PressingKeys) => {
-      if (i !== this.player.index) return;
-      this.room.send(
-        ...command(new Move(), {
-          x: this.player.sprite.x,
-          y: this.player.sprite.y,
-          dir: this.player.lastdirection,
-        })
-      );
-    });
-
+    this.player.character.name = this.room.sessionId;
     this.room.onStateChange((state) => {
-      console.log("----------------------------------");
-      console.log("onStateChange", state);
-      state.players.forEach((player, sessionId) => {
-        console.log(
-          "player",
-          sessionId,
-          "is connected",
-          player.connected,
-          "x, y",
-          player.x,
-          player.y
-        );
-      });
-      console.log("----------------------------------");
+      console.debug("onStateChange", state);
     });
 
     this.room.state.players.onAdd((serverPlayer, sessionId) => {
-      if (sessionId === this.room.sessionId) return;
-      console.log("A player has joined! sid:", sessionId);
-      const player = new Player(new Iroh(sessionId, playerBaseStates.jack));
-      const i = this.playerManager.length;
-      player.create(this, 300, 0, i);
-      this.playerManager.push({ player, UI: {} as PlayerUI });
-      createAvatarFrame(this, this.playerManager[i]);
-      UI_createPlayer(this, this.playerManager[i]);
-      createRoadCollider(this, this.playerManager[i].player.sprite);
+      if (sessionId !== this.room.sessionId) {
+        console.log("A player has joined! sid:", sessionId);
+        const player = new Player(new Iroh(sessionId, playerBaseStates.jack));
+        const i = this.playerManager.length;
+        player.create(this, 300, 0, i);
+        this.playerManager.push({ player, UI: {} as PlayerUI });
+        createAvatarFrame(this, this.playerManager[i]);
+        UI_createPlayer(this, this.playerManager[i]);
+        createRoadCollider(this, this.playerManager[i].player.sprite);
+      }
+      const { player } = this.playerManager.findByName(sessionId);
 
-      serverPlayer.listen("dir", (value) => {
-        console.log("[MOVE(DIR)] player", sessionId, "dir changed to", value);
-        const item = this.playerManager.findByName(sessionId);
-        item.player.lastdirection = value;
-      });
+      player.sprite.x = serverPlayer.x;
+      player.sprite.y = serverPlayer.y;
+
+      if (sessionId === this.room.sessionId) return;
+
       serverPlayer.listen("y", (newY) => {
-        const { player } = this.playerManager.findByName(sessionId);
+        player.sprite.y = Phaser.Math.Linear(player.sprite.y, newY, 0.1);
+        player.pressingKeys.W = player.sprite.y > newY;
+        // console.log("[MOVE(Y)] player", sessionId, "y changed to", newY);
+      });
+      serverPlayer.listen("x", (newX) => {
+        // player.pressingKeys.A = player.sprite.x > newX;
+        // player.pressingKeys.D = player.sprite.x < newX;
+        // player.sprite.x = Phaser.Math.Linear(player.sprite.x, newX, 0.1);
 
         this.tweens.add({
           targets: player.sprite,
-          y: newY,
-          duration: 40,
+          x: newX,
+          duration: 100,
           ease: "Linear",
-          once: () => {
-            player.pressingKeys.W = player.sprite.y > newY;
+          onUpdate: () => {
+            player.pressingKeys.A = player.sprite.x > newX;
+            player.pressingKeys.D = player.sprite.x < newX;
           },
           onComplete: () => {
-            player.newY = newY;
+            player.newX = newX;
           },
         });
-        serverPlayer.listen("x", (value) => {
-          const x = this.playerManager[i].player.sprite.x;
-          const newX = value;
 
-          this.tweens.add({
-            targets: this.playerManager[i].player.sprite,
-            x: newX,
-            duration: 100,
-            ease: "Linear",
-            onUpdate: () => {
-              player.pressingKeys.A = player.sprite.x > newX;
-              player.pressingKeys.D = player.sprite.x < newX;
-            },
-            onComplete: () => {
-              player.newX = newX;
-            },
-          });
-
-          console.log("[MOVE(X)] player", sessionId, "x changed to", value);
-          const item = this.playerManager.findByName(sessionId);
-          // item.player.sprite.x = value;
-        });
-
-        // player.pressingKeys.W = player.sprite.y - player.newY > 0;
-
-        console.log("[MOVE(Y)] player", sessionId, "y changed to", newY);
-        const item = this.playerManager.findByName(sessionId);
-        // item.player.sprite.y = value;
+        // console.log("[MOVE(X)] player", sessionId, "x changed to", newX);
       });
     });
 
@@ -227,6 +188,16 @@ export default class MainScene extends Phaser.Scene {
         item.player.pressingKeys = message;
       }
     );
+
+    mcEvents.on(mcEventTypes.MOVED, (i: number, keys: PressingKeys) => {
+      if (i !== this.player.index) return;
+      this.room.send(
+        ...command(new Move(), {
+          x: this.player.sprite.x,
+          y: this.player.sprite.y,
+        })
+      );
+    });
   }
 
   async create() {

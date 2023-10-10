@@ -1,4 +1,4 @@
-import { Client, Room } from "colyseus";
+import { Client, Delayed, Room } from "colyseus";
 import { RelayState } from "../schema/RelayRoomState";
 import { COMMANDS, ConnectPlayer } from "./commands";
 import { Dispatcher } from "@colyseus/command";
@@ -11,8 +11,9 @@ import { Dispatcher } from "@colyseus/command";
  */
 
 export class RelayRoom extends Room<RelayState> {
-  public allowReconnectionTime: number = 5;
+  public allowReconnectionTime: number | "manual" = "manual";
   public dispatcher = new Dispatcher(this);
+  private interval?: Delayed;
 
   public onCreate(
     options: Partial<{
@@ -22,13 +23,17 @@ export class RelayRoom extends Room<RelayState> {
     }>
   ) {
     this.setState(new RelayState());
+    this.interval = this.clock.setInterval(() => {
+      // console.log("Regeneration");
+    }, 1000);
 
     if (options.maxClients) {
       this.maxClients = options.maxClients;
     }
 
     if (options.allowReconnectionTime) {
-      this.allowReconnectionTime = Math.min(options.allowReconnectionTime, 40);
+      this.allowReconnectionTime =
+        options.allowReconnectionTime ?? this.allowReconnectionTime;
     }
 
     if (options.metadata) {
@@ -82,5 +87,9 @@ export class RelayRoom extends Room<RelayState> {
       console.log("player timed out or consented leave");
       this.state.players.delete(client.sessionId);
     }
+  }
+
+  onDispose(): void | Promise<any> {
+    this.interval?.clear();
   }
 }

@@ -23,7 +23,18 @@ export function createAvatarFrame(
       .setScrollFactor(0)
       .setPosition(-230, -300);
   } else {
-    UI.playerindexText = scene.add.text(0, 0, `PLAYER: ${player.index + 1}`);
+    UI.playerindexText = scene.add
+      .text(0, 0, `PLAYER: ${player.index + 1}`)
+      .setFont("bold 15px Arial");
+    scene.room.state.players
+      .get(player.character.name)!
+      .listen("connected", (connected) => {
+        UI.playerindexText
+          .setText(
+            `PLAYER: ${player.index + 1} ${!connected ? "DISCONNECTED" : ""}`
+          )
+          .setColor(!connected ? "#ff0000" : "#000");
+      });
     UI.playerleveltext = scene.add.text(0, 0, `${player.character.level}`);
     UI.frameLayer = createLayer(otherPlayersFrame, "frame", [avatarframe])
       .setDepth(200)
