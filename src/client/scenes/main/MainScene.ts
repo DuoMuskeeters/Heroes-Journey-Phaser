@@ -12,8 +12,8 @@ import { createRoadCollider, createground } from "./TileGround";
 import { createMob as createMobs } from "./CreateMob";
 import { createAvatarFrame } from "../Ui/AvatarUi";
 
-import { Player } from "../../../objects/player";
-import { Iroh, Jack } from "../../../game/Karakter";
+import { Player, getCharacterType } from "../../../objects/player";
+import { Iroh, Jack, getCharacterClass } from "../../../game/Karakter";
 import {
   type GoblinTookHit,
   mcAnimTypes,
@@ -30,7 +30,7 @@ import { PlayerManager, type PlayerUI } from "../../../objects/player/manager";
 import { playerBaseStates } from "../../../game/playerStats";
 import { Client, Room } from "colyseus.js";
 import { getOrThrow } from "../../../objects/utils";
-import type { RelayState } from "../../../server/rooms/schema/RelayRoomState";
+import { RelayState } from "../../../server/rooms/schema/RelayRoomState";
 import { command } from "../../../client/utils";
 import {
   Move,
@@ -96,7 +96,7 @@ export default class MainScene extends Phaser.Scene {
 
   constructor() {
     super("mainscene");
-    const player = new Player(new Jack("jack", playerBaseStates.jack));
+    const player = new Player(new Iroh("jack", playerBaseStates.jack));
     this.playerManager = new PlayerManager();
     this.playerManager.push({ player, UI: {} as PlayerUI });
   }
@@ -108,9 +108,12 @@ export default class MainScene extends Phaser.Scene {
     });
 
     this.room.state.players.onAdd((serverPlayer, sessionId) => {
+      const Character = getCharacterClass(serverPlayer.type);
       if (sessionId !== this.room.sessionId) {
         console.log("A player has joined! sid:", sessionId);
-        const player = new Player(new Iroh(sessionId, playerBaseStates.jack));
+        const player = new Player(
+          new Character(sessionId, serverPlayer.character.state)
+        );
         const i = this.playerManager.length;
         player.create(this, 300, 0, i);
         this.playerManager.push({ player, UI: {} as PlayerUI });
@@ -124,6 +127,12 @@ export default class MainScene extends Phaser.Scene {
       player.sprite.y = serverPlayer.y;
 
       if (sessionId === this.room.sessionId) return;
+
+      serverPlayer.listen("connected", () => {
+        if (serverPlayer.connected)
+          console.log("serverPlayer connected", sessionId);
+        else console.log("serverPlayer disconnected", sessionId);
+      });
 
       serverPlayer.listen("y", (newY) => {
         player.sprite.y = Phaser.Math.Linear(player.sprite.y, newY, 0.1);
@@ -151,13 +160,6 @@ export default class MainScene extends Phaser.Scene {
 
         // console.log("[MOVE(X)] player", sessionId, "x changed to", newX);
       });
-    });
-
-    this.room.state.players.onChange((player, sessionId) => {
-      if (!player) return;
-
-      if (player.connected) console.log("player connected", sessionId);
-      else console.log("player disconnected", sessionId);
     });
 
     this.room.onError((code, message) => {
@@ -331,6 +333,7 @@ export default class MainScene extends Phaser.Scene {
           name: this.player.character.name,
           x: this.player.sprite.x,
           y: this.player.sprite.y,
+          type: getCharacterType(this.player.character),
         });
         connected = true;
       }

@@ -2,6 +2,7 @@ import { Client, Delayed, Room } from "colyseus";
 import { RelayState } from "../schema/RelayRoomState";
 import { COMMANDS, ConnectPlayer } from "./commands";
 import { Dispatcher } from "@colyseus/command";
+import { type PlayerType } from "../../../game/playerStats";
 
 /**
  * client.joinOrCreate("relayroom", {
@@ -62,6 +63,7 @@ export class RelayRoom extends Room<RelayState> {
       name: string;
       x: number;
       y: number;
+      type: PlayerType;
     }> = {}
   ) {
     const command = new ConnectPlayer();
@@ -70,6 +72,7 @@ export class RelayRoom extends Room<RelayState> {
     this.dispatcher.dispatch(command, {
       x: options.x ?? 0,
       y: options.y ?? 0,
+      type: options.type ?? "jack",
     });
   }
 

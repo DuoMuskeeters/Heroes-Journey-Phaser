@@ -2,7 +2,8 @@ import { Command } from "@colyseus/command";
 import { MyRoom } from "./MyRoom";
 import { z } from "zod";
 import { Client } from "colyseus";
-import { Canlı, CanlıState } from "../schema/MyRoomState";
+import { playerBaseStates } from "../../../game/playerStats";
+import { ServerPlayer } from "../schema/MyRoomState";
 
 const SessionId = z.string().min(1).max(32);
 
@@ -62,15 +63,7 @@ export class ConnectPlayer extends Command<MyRoom> {
   execute() {
     this.state.players.set(
       this.client.sessionId,
-      new Canlı(
-        "main player",
-        new CanlıState({
-          Strength: 25,
-          Agility: 25,
-          Intelligence: 25,
-          Constitution: 25,
-        })
-      )
+      new ServerPlayer("main player", playerBaseStates.jack)
     );
   }
 }

@@ -7,7 +7,7 @@
     "@colyseus/core": "^0.15.8",
     "@colyseus/monitor": "^0.15.1",
     "@colyseus/playground": "^0.15.5",
-    "@colyseus/schema": "^2.0.16",
+    "@colyseus/schema": "^2.0.18",
     "@colyseus/tools": "^0.15.21",
     "colyseus": "^0.15.9",
     "colyseus.js": "^0.15.14",

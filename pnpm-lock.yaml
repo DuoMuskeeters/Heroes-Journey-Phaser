@@ -18,14 +18,14 @@ dependencies:
     specifier: ^0.15.5
     version: 0.15.5(express@4.18.2)
   '@colyseus/schema':
-    specifier: ^2.0.16
-    version: 2.0.16
+    specifier: ^2.0.18
+    version: 2.0.18
   '@colyseus/tools':
     specifier: ^0.15.21
-    version: 0.15.21(@colyseus/schema@2.0.16)
+    version: 0.15.21(@colyseus/schema@2.0.18)
   colyseus:
     specifier: ^0.15.9
-    version: 0.15.9(@colyseus/schema@2.0.16)
+    version: 0.15.9(@colyseus/schema@2.0.18)
   colyseus.js:
     specifier: ^0.15.14
     version: 0.15.14
@@ -310,7 +310,7 @@ packages:
     peerDependencies:
       colyseus: '*'
     dependencies:
-      colyseus: 0.15.9(@colyseus/schema@2.0.16)
+      colyseus: 0.15.9(@colyseus/schema@2.0.18)
       debug: 4.3.4
     transitivePeerDependencies:
       - supports-color
@@ -321,7 +321,7 @@ packages:
     engines: {node: '>= 14.x'}
     dependencies:
       '@colyseus/greeting-banner': 2.0.2
-      '@colyseus/schema': 2.0.16
+      '@colyseus/schema': 2.0.18
       '@gamestdio/timer': 1.3.2
       '@types/redis': 2.8.32
       debug: 4.3.4
@@ -375,17 +375,17 @@ packages:
       - supports-color
     dev: false
 
-  /@colyseus/schema@2.0.16:
-    resolution: {integrity: sha512-uc917YlOP8tITASNrFnH9GKQq1r2hocnhZp5/wUJvB+P9807TZRkfCVajZlTHJHx+XIGbCbBzQgGrMny6Puhxw==}
+  /@colyseus/schema@2.0.18:
+    resolution: {integrity: sha512-IxSKoF6ThY7OfC66qLFs55W2pO3wJEGCU2dqpoJjNzuPAiEH/PbFAlKTfhLI+YzcP5vVRL7SfX8ykkm1rdbdeQ==}
     hasBin: true
     dev: false
 
-  /@colyseus/tools@0.15.21(@colyseus/schema@2.0.16):
+  /@colyseus/tools@0.15.21(@colyseus/schema@2.0.18):
     resolution: {integrity: sha512-gmzZZteAQiV8V6Jn6y3XvQ7wJBgGkSLAFBoK91qlaHVw2femtDx7XPwKxQSrvfX48bmt5Bx+xtk2sXwfDpZJ3A==}
     hasBin: true
     dependencies:
       '@colyseus/core': 0.15.8
-      '@colyseus/ws-transport': 0.15.1(@colyseus/schema@2.0.16)
+      '@colyseus/ws-transport': 0.15.1(@colyseus/schema@2.0.18)
       cors: 2.8.5
       dotenv: 8.6.0
       express: 4.18.2
@@ -397,13 +397,13 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@colyseus/ws-transport@0.15.1(@colyseus/schema@2.0.16):
+  /@colyseus/ws-transport@0.15.1(@colyseus/schema@2.0.18):
     resolution: {integrity: sha512-9QWb0OeZHDF2+PVIJ9LY0GriItnOatJCgmAG31ygfeEn1+ApkG1Ds/+cU7aBnYE2SGGWF4sKGAM3XUvScCRq4w==}
     peerDependencies:
       '@colyseus/schema': '>=1.0.0'
     dependencies:
       '@colyseus/core': 0.15.8
-      '@colyseus/schema': 2.0.16
+      '@colyseus/schema': 2.0.18
       '@types/ws': 7.4.7
       ws: 7.5.9
     transitivePeerDependencies:
@@ -1153,7 +1153,7 @@ packages:
     resolution: {integrity: sha512-hmsGWgaV/odvQ8kmwQQnv32bs/w3h3QGbJ5p11O+wNl4CqRnfzL8GFB8lyC5WSS7ge5wpa9RpIYAH2IE0DCokQ==}
     engines: {node: '>= 12.x'}
     dependencies:
-      '@colyseus/schema': 2.0.16
+      '@colyseus/schema': 2.0.18
       httpie: 2.0.0-next.13
       tslib: 2.6.2
       ws: 8.14.2
@@ -1162,14 +1162,14 @@ packages:
       - utf-8-validate
     dev: false
 
-  /colyseus@0.15.9(@colyseus/schema@2.0.16):
+  /colyseus@0.15.9(@colyseus/schema@2.0.18):
     resolution: {integrity: sha512-24tf40JfMj9cPpBPG+cIb2aA4Weo4+CeLg04dKhBU/ssMdFmblKJ/NjPP2KvTU8BcjNYN8P2nBJ9+/wzxUlXSg==}
     engines: {node: '>= 14.x'}
     dependencies:
       '@colyseus/core': 0.15.8
       '@colyseus/redis-driver': 0.15.4
       '@colyseus/redis-presence': 0.15.4
-      '@colyseus/ws-transport': 0.15.1(@colyseus/schema@2.0.16)
+      '@colyseus/ws-transport': 0.15.1(@colyseus/schema@2.0.18)
     transitivePeerDependencies:
       - '@colyseus/schema'
       - bufferutil

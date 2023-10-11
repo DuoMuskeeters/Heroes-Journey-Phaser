@@ -69,8 +69,6 @@ export class Player<T extends Character> {
 
   update(_time: number, _delta: number) {
     playerMovementUpdate(this);
-   
-
   }
 
   animKey(key: string) {

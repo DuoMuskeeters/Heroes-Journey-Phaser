@@ -1,7 +1,7 @@
 import { MapSchema, Schema, filter, type } from "@colyseus/schema";
 import { Client } from "colyseus";
-import { Canlı } from "./MyRoomState";
-import { Direction, direction } from "../../../game/types/types";
+import { Character } from "../../../game/Karakter";
+import { type PlayerType } from "../../../game/playerStats";
 
 function inSameGuild(client: Client, value: boolean, root: RelayState) {
   return true;
@@ -29,42 +29,38 @@ export class Inventory extends Schema {
   @filter(hiddenInventoryQuantity) @type("number") quantity: number;
 }
 
-export class Player extends Schema {
+export class ServerPlayer extends Schema {
+  @type("string") type: PlayerType;
+  @type("boolean") connected: boolean = true;
+  @type("string") sessionId: string;
+  @type(Character) character: Character;
+  @type(Inventory) inventory: Inventory;
+  @filter(inSameGuild) @type("number") x: number;
+  @filter(inSameGuild) @type("number") y: number;
+
   constructor(
     sessionId: string,
-    name: string,
-    inventory: Inventory,
-    character: Canlı,
+    character: Character,
     x: number,
     y: number,
-    dir: Direction = direction.right
+    inventory: Inventory,
+    type: PlayerType
   ) {
     super();
     this.sessionId = sessionId;
-    this.name = name;
     this.inventory = inventory;
     this.character = character;
-    this.connected = true;
     this.x = x;
     this.y = y;
-    this.dir = dir;
+    this.type = type;
   }
-
-  @filter(inSameGuild) @type("boolean") connected: boolean;
-  @type("string") name: string;
-  @type("string") sessionId: string;
-  @type(Canlı) character: Canlı;
-  @type(Inventory) inventory: Inventory;
-  @type("number") x: number;
-  @type("number") y: number;
-  @type("string") dir: Direction;
 }
 
 export class RelayState extends Schema {
-  @type({ map: Player }) public players = new MapSchema<Player>();
+  @type({ map: ServerPlayer }) public players = new MapSchema<ServerPlayer>();
 
-  getPlayer(client: Client): Player;
-  getPlayer(sessionId: string, broadcast?: Client): Player;
+  getPlayer(client: Client): ServerPlayer;
+  getPlayer(sessionId: string, broadcast?: Client): ServerPlayer;
   getPlayer(c: string | Client, broadcast?: Client) {
     const sessionId = typeof c === "string" ? c : c.sessionId;
     const player = this.players.get(sessionId);

@@ -1,9 +1,12 @@
 import { Command } from "@colyseus/command";
 import { z } from "zod";
 import { Client } from "colyseus";
-import { Canlı, CanlıState } from "../schema/MyRoomState";
 import { RelayRoom } from "./RelayRoom";
-import { Inventory, Player } from "../schema/RelayRoomState";
+import { Inventory, ServerPlayer } from "../schema/RelayRoomState";
+import { type PlayerType } from "../../../game/playerStats";
+import { playerBaseStates } from "../../../game/playerStats";
+import { AllPermutations } from "../../../objects/utils";
+import { getCharacterClass } from "../../../game/Karakter";
 
 const SessionId = z.string().min(1).max(32);
 
@@ -11,6 +14,11 @@ const Coordinates = z.object({
   x: z.number().min(0),
   y: z.number().min(0),
 });
+
+const PlayerTypes = z.enum([
+  "iroh",
+  "jack",
+] satisfies AllPermutations<PlayerType>);
 
 export class Move extends Command<RelayRoom> {
   client!: Client;
@@ -64,26 +72,22 @@ export class Skill extends Command<RelayRoom> {
 export class ConnectPlayer extends Command<RelayRoom> {
   client!: Client;
   payload!: z.infer<typeof this.validator>;
-  validator = Coordinates;
+  validator = Coordinates.extend({
+    type: PlayerTypes,
+  });
 
   execute() {
+    const Character = getCharacterClass(this.payload.type);
+
     this.state.players.set(
       this.client.sessionId,
-      new Player(
+      new ServerPlayer(
         this.client.sessionId,
-        "PlayerName",
-        new Inventory(this.client.sessionId, "gold", 31),
-        new Canlı(
-          "main player",
-          new CanlıState({
-            Strength: 25,
-            Agility: 25,
-            Intelligence: 25,
-            Constitution: 25,
-          })
-        ),
+        new Character("playerName", playerBaseStates[this.payload.type]),
         this.payload.x,
-        this.payload.y
+        this.payload.y,
+        new Inventory(this.client.sessionId, "gold", 31),
+        this.payload.type
       )
     );
   }

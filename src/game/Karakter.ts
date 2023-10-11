@@ -1,27 +1,28 @@
-import { CONFIG } from "../client/PhaserGame";
+import { Schema, type } from "@colyseus/schema";
 import { type MobTier, mobStates } from "./mobStats";
-import { type BaseTypes } from "./playerStats";
+import { type PlayerType, type BaseTypes } from "./playerStats";
 import { Passive, Spell, SpellRange } from "./spell";
 
 type Level = number;
 type XP = number;
 
-export class State {
+export class State extends Schema {
   // AUTO GENERATED
-  HP: number;
-  SP: number;
-  max_hp: number;
-  max_sp: number;
-  ATK: number;
-  ATKRATE: number;
+  @type("number") HP: number;
+  @type("number") SP: number;
+  @type("number") max_hp: number;
+  @type("number") max_sp: number;
+  @type("number") ATK: number;
+  @type("number") ATKRATE: number;
   // END AUTO GENERATED
 
-  Strength: number;
-  Agility: number;
-  Intelligence: number;
-  Constitution: number;
+  @type("number") Strength: number;
+  @type("number") Agility: number;
+  @type("number") Intelligence: number;
+  @type("number") Constitution: number;
 
   constructor({ Strength, Agility, Intelligence, Constitution }: BaseTypes) {
+    super();
     this.Strength = Strength;
     this.Agility = Agility;
     this.Intelligence = Intelligence;
@@ -47,9 +48,9 @@ export class State {
   }
 }
 
-export class Canlı {
-  name: string;
-  state: State;
+export class Canlı extends Schema {
+  @type("string") name: string;
+  @type(State) state: State;
   /**
    * @internal use only
    * take damage until 0 HP
@@ -63,6 +64,7 @@ export class Canlı {
   }
 
   constructor(name: string, state: State) {
+    super();
     this.name = name;
     this.state = state;
   }
@@ -70,10 +72,10 @@ export class Canlı {
 }
 
 export class Character extends Canlı {
-  exp: XP;
-  level: Level;
-  stat_point: number;
-  prefix = "";
+  @type("number") exp: XP;
+  @type("number") level: Level;
+  @type("number") stat_point: number;
+  @type("string") prefix = "";
 
   spellQ: Spell<SpellRange> = new Spell("heavy", SpellRange.SingleORNone, {
     has: () => false,
@@ -121,10 +123,20 @@ export class Character extends Canlı {
   });
 }
 
+export function getCharacterClass(type: PlayerType) {
+  return type === "jack"
+    ? Jack
+    : type === "iroh"
+    ? Iroh
+    : (() => {
+        throw new Error(`Unknown character type ${type}`);
+      })();
+}
+
 export class Iroh extends Character {
-  ATK1_MS = CONFIG.physics.arcade.debug ? 2 * 1000 : 1000;
-  lastCombo: 0 | 1 | 2 = 0;
-  lastBasicAttack: Date | null = null;
+  ATK1_MS = 1000;
+  @type("uint8") lastCombo: 0 | 1 | 2 = 0;
+  @type("number") lastBasicAttack: Date | null = null;
   prefix: "" | "fire" = "";
 
   inComboTime() {
@@ -172,8 +184,8 @@ export class Iroh extends Character {
 
 export class Jack extends Character {
   private lastQ: Date | null = null;
-  private standByTime = CONFIG.physics.arcade.debug ? 100 : 5 * 1000;
-  private spCost = CONFIG.physics.arcade.debug ? 5 : 50;
+  private standByTime = 5 * 1000;
+  private spCost = 50;
 
   basicAttack = new Spell("basic", SpellRange.Multiple, {
     damage: (rakipler) => rakipler.map(() => this.state.ATK),
