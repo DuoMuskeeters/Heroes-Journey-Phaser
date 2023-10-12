@@ -166,7 +166,7 @@ export function goblinHealtbar(controller: goblinController) {
 
   UI.hptitle
     .setText(
-      `${goblin.name}: (${
+      `${goblin.mob.name}: (${
         goblin.mob.tier
       })\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t${Math.round(state.HP)}`
     )

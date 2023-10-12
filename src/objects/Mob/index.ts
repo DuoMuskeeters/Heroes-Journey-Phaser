@@ -12,7 +12,6 @@ export class Mob<T extends MobCanlı> {
   private _attackrect?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   public lastdirection: Direction = direction.right;
   public id?: number;
-  public name = "";
 
   constructor(public mob: T) {}
 
@@ -21,7 +20,6 @@ export class Mob<T extends MobCanlı> {
     x: number,
     y: number,
     id: number,
-    name: string,
     anim: GoblinAnimTypes,
     Rectx: number,
     Recty: number,
@@ -31,7 +29,6 @@ export class Mob<T extends MobCanlı> {
   ) {
     this._scene = scene;
     this.id = id;
-    this.name = name;
     this._sprite = scene.physics.add
       .sprite(x * 2.55, y * 2.55, anim)
       .setBodySize(bdySizeX, bdySizeY, true)
@@ -40,7 +37,11 @@ export class Mob<T extends MobCanlı> {
       .setDepth(100)
       .setScale(scaleSize)
       .setOffset(60, 65);
-    this._attackrect = scene.physics.add.sprite(x, y, `$${name}-attackrect`);
+    this._attackrect = scene.physics.add.sprite(
+      x,
+      y,
+      `$${this.mob.name}-attackrect`
+    );
 
     (this._attackrect.body as Phaser.Physics.Arcade.Body).allowGravity = false;
     this.attackrect.setDisplaySize(Rectx, Recty).setDepth(0).setVisible(false);

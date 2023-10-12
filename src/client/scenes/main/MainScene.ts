@@ -262,7 +262,7 @@ export default class MainScene extends Phaser.Scene {
         const ctrl = this.mobController[id - 1];
         if (ctrl.goblin.id === id)
           console.log(
-            `[TOOK_HIT] goblin ${ctrl.goblin.name} took hit ${
+            `[TOOK_HIT] goblin ${ctrl.goblin.mob.name} took hit ${
               details.stun ? "(STUN)" : "(NORMAL)"
             } damage: ${details.damage} after hp: ${ctrl.goblin.mob.state.HP}`
           );
@@ -275,7 +275,7 @@ export default class MainScene extends Phaser.Scene {
         const ctrl = this.mobController[id - 1];
         if (ctrl.goblin.id === id)
           console.debug(
-            `%c[REGENERATED]%c goblin ${ctrl.goblin.name} regenerated hp=${details.HP} sp=${details.SP}`,
+            `%c[REGENERATED]%c goblin ${ctrl.goblin.mob.name} regenerated hp=${details.HP} sp=${details.SP}`,
             "color: darkgreen",
             "color: white"
           );
@@ -284,7 +284,8 @@ export default class MainScene extends Phaser.Scene {
 
     mobEvents.on(mobEventsTypes.DIED, (id: number) => {
       const ctrl = this.mobController[id - 1];
-      if (ctrl.goblin.id === id) console.log(`[DIED] ${ctrl.goblin.name} died`);
+      if (ctrl.goblin.id === id)
+        console.log(`[DIED] ${ctrl.goblin.mob.name} died`);
     });
     this.tilemap = this.make.tilemap({ key: "roadfile" });
 

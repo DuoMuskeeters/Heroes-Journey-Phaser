@@ -26,7 +26,6 @@ export function createMob(scene: MainScene) {
         x,
         y,
         id,
-        name,
         goblinAnimTypes.IDLE,
         220,
         110,
