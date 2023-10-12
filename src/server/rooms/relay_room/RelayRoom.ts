@@ -1,8 +1,14 @@
 import { Client, Delayed, Room } from "colyseus";
 import { RelayState } from "../schema/RelayRoomState";
-import { COMMANDS, ConnectPlayer } from "./commands";
+import {
+  COMMANDS,
+  ConnectPlayer,
+  Disconnect,
+  Leave,
+  Reconnect,
+} from "./commands";
 import { Dispatcher } from "@colyseus/command";
-import { type PlayerType } from "../../../game/playerStats";
+import { CommandInput } from "../../../client/utils";
 
 /**
  * client.joinOrCreate("relayroom", {
@@ -14,7 +20,6 @@ import { type PlayerType } from "../../../game/playerStats";
 export class RelayRoom extends Room<RelayState> {
   public allowReconnectionTime: number | "manual" = "manual";
   public dispatcher = new Dispatcher(this);
-  private interval?: Delayed;
 
   public onCreate(
     options: Partial<{
@@ -24,7 +29,7 @@ export class RelayRoom extends Room<RelayState> {
     }>
   ) {
     this.setState(new RelayState());
-    this.interval = this.clock.setInterval(() => {
+    this.clock.setInterval(() => {
       // console.log("Regeneration");
     }, 1000);
 
@@ -60,42 +65,32 @@ export class RelayRoom extends Room<RelayState> {
     });
   }
 
-  public onJoin(
-    client: Client,
-    options: Partial<{
-      name: string;
-      x: number;
-      y: number;
-      type: PlayerType;
-    }> = {}
-  ) {
+  public onJoin(client: Client, options: CommandInput<ConnectPlayer>) {
     const command = new ConnectPlayer();
     command.client = client;
 
-    this.dispatcher.dispatch(command, {
-      x: options.x ?? 0,
-      y: options.y ?? 0,
-      type: options.type ?? "jack",
-    });
+    this.dispatcher.dispatch(command, options);
   }
 
   async onLeave(client: Client, consented: boolean) {
     console.log(client.sessionId, "disconnected!");
-    this.state.players.get(client.sessionId)!.connected = false;
+    const disconnect = new Disconnect();
+    disconnect.client = client;
+    this.dispatcher.dispatch(disconnect);
     try {
       if (consented) {
         throw new Error("consented leave");
       }
       await this.allowReconnection(client, this.allowReconnectionTime);
-      this.state.players.get(client.sessionId)!.connected = true;
+      const reconnect = new Reconnect();
+      reconnect.client = client;
+      this.dispatcher.dispatch(reconnect);
       console.log(client.sessionId, "reconnected!");
     } catch (error) {
       console.log("player timed out or consented leave");
-      this.state.players.delete(client.sessionId);
+      const leave = new Leave();
+      leave.client = client;
+      this.dispatcher.dispatch(leave, consented);
     }
-  }
-
-  onDispose(): void | Promise<any> {
-    this.interval?.clear();
   }
 }

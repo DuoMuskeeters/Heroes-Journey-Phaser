@@ -1,17 +1,9 @@
-import { type Character, Iroh, Jack } from "../../game/Karakter";
+import { type Character, Iroh, Jack, Archer } from "../../game/Karakter";
 import { PressingKeys, mcEventTypes, mcEvents } from "../../game/types/events";
 import { type Direction, direction, mcAnimTypes } from "../../game/types/types";
 import { playerAttackListener } from "../../client/scenes/main/Playerattack";
 import { getOrThrow } from "../utils";
 import { killCharacter, playerMovementUpdate } from "./movements";
-
-export function getCharacterType(character: Character) {
-  return character instanceof Jack
-    ? "jack"
-    : character instanceof Iroh
-    ? "iroh"
-    : "unknown";
-}
 
 export class Player<T extends Character> {
   private _index?: number;
@@ -31,7 +23,7 @@ export class Player<T extends Character> {
   constructor(public character: T) {}
 
   create(scene: Phaser.Scene, x: number, y: number, i: number) {
-    const type = getCharacterType(this.character);
+    const type = this.character.type;
     this._index = i;
     this._scene = scene;
     this._sprite = scene.physics.add
@@ -67,7 +59,7 @@ export class Player<T extends Character> {
   }
 
   animKey(key: string) {
-    const type = getCharacterType(this.character);
+    const type = this.character.type
     const prefix = this.character.prefix;
     return prefix + type + "-" + key;
   }

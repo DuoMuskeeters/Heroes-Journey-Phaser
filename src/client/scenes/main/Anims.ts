@@ -1,6 +1,5 @@
-import { type Character } from "../../../game/Karakter";
+import { type CharacterType, type Character } from "../../../game/Karakter";
 import { type MobType } from "../../../game/mobStats";
-import { type PlayerType } from "../../../game/playerStats";
 import { goblinAnimTypes, mcAnimTypes } from "../../../game/types/types";
 import { type Player } from "../../../objects/player";
 import type MenuScene from "../menu/MenuScene";
@@ -54,7 +53,7 @@ const players = [
     death: { start: 16, end: 21 },
     takehit: { start: 56, end: 59 },
   } as const,
-] satisfies (Record<string, unknown> & { type: PlayerType | "fireiroh" })[];
+] satisfies (Record<string, unknown> & { type: CharacterType | "fireiroh" })[];
 
 export function createPlayeranims(scene: MainScene | MenuScene) {
   for (const mc of players) {

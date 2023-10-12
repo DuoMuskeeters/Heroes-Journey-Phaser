@@ -1,10 +1,32 @@
 import { Schema, type } from "@colyseus/schema";
 import { type MobTier, mobStates } from "./mobStats";
-import { type PlayerType, type BaseTypes } from "./playerStats";
-import { Passive, Spell, SpellRange } from "./spell";
+import { type BaseTypes } from "./playerStats";
+import { ExtractSpell, Passive, Spell, SpellDamage, SpellRange } from "./spell";
 
 type Level = number;
 type XP = number;
+
+export function instanceCharacter(
+  character: unknown,
+  type: "any"
+): character is Character;
+
+export function instanceCharacter<T extends CharacterType>(
+  character: unknown,
+  type: T
+): character is ExtractCharacter<T>;
+
+export function instanceCharacter<T extends CharacterType>(
+  character: unknown,
+  type: T | "any"
+): character is ExtractCharacter<T> {
+  return (
+    character instanceof Object &&
+    "type" in character &&
+    typeof character.type === "string" &&
+    (character.type === type || type === "any")
+  );
+}
 
 export class State extends Schema {
   // AUTO GENERATED
@@ -72,6 +94,7 @@ export class Canlı extends Schema {
 }
 
 export class Character extends Canlı {
+  @type("string") type: CharacterType | "unknown" = "unknown";
   @type("number") exp: XP;
   @type("number") level: Level;
   @type("number") stat_point: number;
@@ -93,6 +116,10 @@ export class Character extends Canlı {
     this.exp = exp;
     this.level = level;
     this.stat_point = level * 5;
+  }
+
+  static [Symbol.hasInstance](instance: unknown) {
+    return instanceCharacter(instance, "any");
   }
 
   level_up() {
@@ -123,53 +150,49 @@ export class Character extends Canlı {
   });
 }
 
-export function getCharacterClass(type: PlayerType) {
-  return type === "jack"
-    ? Jack
-    : type === "iroh"
-    ? Iroh
-    : (() => {
-        throw new Error(`Unknown character type ${type}`);
-      })();
+export function getCharacterClass(type: CharacterType | "unknown") {
+  if (type === "unknown") throw new Error(`Unknown character type ${type}`);
+  return CHARACTERS[type];
+}
+
+export function IrohInComboTime(iroh: Iroh) {
+  return Date.now() - iroh.lastBasicAttack < iroh.ATK1_MS;
+}
+
+export function IrohTransform(iroh: Iroh) {
+  const mode = iroh.prefix === "fire" ? "" : "fire";
+  iroh.prefix = mode;
+  iroh.state.calculate_power(); // always get the recent stats (fire iroh may have got increased stats recently)
+  if (mode === "fire") {
+    iroh.state.ATK *= 2;
+  }
 }
 
 export class Iroh extends Character {
+  type: "iroh" = "iroh";
   ATK1_MS = 1000;
   @type("uint8") lastCombo: 0 | 1 | 2 = 0;
-  @type("number") lastBasicAttack: Date | null = null;
+  @type("number") lastBasicAttack: number = 0;
   prefix: "" | "fire" = "";
-
-  inComboTime() {
-    return Date.now() - (this.lastBasicAttack?.getTime() ?? 0) < this.ATK1_MS;
-  }
-
-  transform() {
-    const mode = this.prefix === "fire" ? "" : "fire";
-    this.prefix = mode;
-    this.state.calculate_power(); // always get the recent stats (fire iroh may have got increased stats recently)
-    if (mode === "fire") {
-      this.state.ATK *= 2;
-    }
-  }
 
   basicAttack = new Spell("basic", SpellRange.SingleORNone, {
     damage: () => {
       const damage = this.state.ATK;
-      return this.inComboTime() && this.lastCombo === 2
+      return IrohInComboTime(this) && this.lastCombo === 2
         ? damage * 0.4
         : damage * 0.3;
     },
     hit: (rakip, damage) => {
       if (this.lastCombo === 2) this.lastCombo = 0;
-      else if (this.inComboTime()) this.lastCombo += 1;
+      else if (IrohInComboTime(this)) this.lastCombo += 1;
       else this.lastCombo = 1;
 
-      this.lastBasicAttack = new Date();
+      this.lastBasicAttack = Date.now();
       return rakip?._takeDamage(damage);
     },
   });
 
-  private QcostSP = 4.16;
+  @type("number") QcostSP = 4.16;
 
   spellQ = new Spell("heavy", SpellRange.Multiple, {
     cancelable: true,
@@ -180,12 +203,39 @@ export class Iroh extends Character {
       return rakipler.map((rakip, i) => rakip._takeDamage(damages[i]));
     },
   });
+
+  static [Symbol.hasInstance](instance: unknown) {
+    return instanceCharacter(instance, "iroh");
+  }
+}
+
+export function JackBasicAttack(c: Jack) {
+  return new Spell("basic", SpellRange.Multiple, {
+    damage: (rakipler) => rakipler.map(() => c.state.ATK),
+    hit: (rakipler, damages) =>
+      rakipler.map((r, i) => r._takeDamage(damages[i])),
+  });
+}
+
+export function JackSpeelQ(c: Jack) {
+  return new Spell("heavy", SpellRange.Multiple, {
+    has: () => c.lastQ + c.standByTime < Date.now(),
+    damage: (rakipler) => rakipler.map(() => c.state.ATK * 3),
+    hit: (rakipler, damages) => {
+      c.lastQ = Date.now();
+      c.state.SP = Math.max(c.state.SP - c.spCost, 0);
+      return rakipler.map(
+        (rakip, i) =>
+          (rakip.state.HP = Math.max(rakip.state.HP - damages[i], 0))
+      );
+    },
+  });
 }
 
 export class Jack extends Character {
-  private lastQ: Date | null = null;
-  private standByTime = 5 * 1000;
-  private spCost = 50;
+  @type("number") lastQ: number = 0;
+  @type("number") standByTime = 5 * 1000;
+  @type("number") spCost = 50;
 
   basicAttack = new Spell("basic", SpellRange.Multiple, {
     damage: (rakipler) => rakipler.map(() => this.state.ATK),
@@ -198,10 +248,10 @@ export class Jack extends Character {
   // });
 
   spellQ = new Spell("heavy", SpellRange.Multiple, {
-    has: () => (this.lastQ?.getTime() ?? 0) + this.standByTime < Date.now(),
+    has: () => this.lastQ + this.standByTime < Date.now(),
     damage: (rakipler) => rakipler.map(() => this.state.ATK * 3),
     hit: (rakipler, damages) => {
-      this.lastQ = new Date();
+      this.lastQ = Date.now();
       this.state.SP = Math.max(this.state.SP - this.spCost, 0);
       return rakipler.map(
         (rakip, i) =>
@@ -214,6 +264,16 @@ export class Jack extends Character {
 export class Archer extends Character {
   arrowCount = 0;
 }
+
+export const CHARACTERS = {
+  jack: Jack,
+  iroh: Iroh,
+} as const;
+
+export type CharacterType = keyof typeof CHARACTERS;
+export type ExtractCharacter<T extends CharacterType> = InstanceType<
+  (typeof CHARACTERS)[T]
+>;
 
 export class MobCanlı extends Canlı {
   constructor(public tier: MobTier = 1, name: string, state?: State) {
@@ -258,7 +318,10 @@ export class Goblin extends MobCanlı {
   spellQ = new Spell("heavy", SpellRange.Multiple, {
     damage: (rakipler) => rakipler.map(() => this.state.ATK * 3),
     has: () => this.state.SP === this.state.max_sp,
-    onUse: () => (this.state.SP = 0),
+    onUse: () => {
+      if (!(this.state.SP === this.state.max_sp)) throw new Error("SP yok");
+      this.state.SP = 0;
+    },
     hit: (rakipler, damages) =>
       rakipler.map((rakip, i) => rakip._takeDamage(damages[i])),
   });

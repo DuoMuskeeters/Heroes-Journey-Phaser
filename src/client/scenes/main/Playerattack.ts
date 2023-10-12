@@ -3,6 +3,7 @@ import {
   type Goblin,
   Iroh,
   Jack,
+  IrohTransform,
 } from "../../../game/Karakter";
 import { type Spell, SpellRange } from "../../../game/spell";
 import {
@@ -15,7 +16,7 @@ import {
 import { mcAnimTypes } from "../../../game/types/types";
 import { type Mob } from "../../../objects/Mob";
 import type goblinController from "../../../objects/Mob/goblinController";
-import { type Player, getCharacterType } from "../../../objects/player";
+import { type Player } from "../../../objects/player";
 import MainScene from "./MainScene";
 
 type GoblinEmit = { goblin: Mob<Goblin>; damage: number };
@@ -35,7 +36,7 @@ function emit(
     mobEvents.emit(mobEventsTypes.TOOK_HIT, mob.goblin.id, {
       damage: mob.damage,
       stun: atk === "heavy",
-      from: getCharacterType(player.character),
+      from: player.character.type,
     } satisfies GoblinTookHit);
   });
 }
@@ -51,7 +52,7 @@ function attack(
     // SINGLE TARGET
     const closest = ctrl[0] as goblinController | undefined;
     if (!closest) return; // no goblins in range, do not use skill
-    const damage = spell.damage(closest?.goblin.mob);
+    const damage = spell.damage(closest.goblin.mob);
     spell.hit(closest?.goblin.mob);
 
     if (closest) emits.push({ goblin: closest?.goblin, damage });
@@ -77,6 +78,7 @@ function attack(
 }
 
 export function playerAttackListener(player: Player<Character>) {
+  if (player.index !== 0) return;
   const scene = player.scene;
   const isMain = scene instanceof MainScene;
   const controllers = isMain ? scene.mobController : [];
@@ -96,7 +98,7 @@ export function playerAttackListener(player: Player<Character>) {
       }
 
       if (spell) attack(player, spell, getAffectedMobs());
-      if (player.index === 0 && animation.key.includes(mcAnimTypes.TRANSFORM)) {
+      if (animation.key.includes(mcAnimTypes.TRANSFORM)) {
         if (
           player.character instanceof Iroh &&
           !animation.key.includes("fire")
@@ -108,7 +110,7 @@ export function playerAttackListener(player: Player<Character>) {
             mcEvents.emit(mcEventTypes.TRANSFORM, player.index, delay);
           // Client should handle this
           else {
-            player.character.transform();
+            IrohTransform(player.character);
 
             player.scene.time.addEvent({
               delay,
@@ -116,7 +118,7 @@ export function playerAttackListener(player: Player<Character>) {
                 player.play(mcAnimTypes.TRANSFORM);
                 player.sprite.anims.stopAfterRepeat(0);
                 if (player.character instanceof Iroh)
-                  player.character.transform();
+                  IrohTransform(player.character);
               },
             });
           }

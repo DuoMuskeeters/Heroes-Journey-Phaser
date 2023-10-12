@@ -12,8 +12,12 @@ import { createRoadCollider, createground } from "./TileGround";
 import { createMob as createMobs } from "./CreateMob";
 import { createAvatarFrame } from "../Ui/AvatarUi";
 
-import { Player, getCharacterType } from "../../../objects/player";
-import { Iroh, Jack, getCharacterClass } from "../../../game/Karakter";
+import { Player } from "../../../objects/player";
+import {
+  type CharacterType,
+  Iroh,
+  getCharacterClass,
+} from "../../../game/Karakter";
 import {
   type GoblinTookHit,
   mcAnimTypes,
@@ -30,13 +34,14 @@ import { PlayerManager, type PlayerUI } from "../../../objects/player/manager";
 import { playerBaseStates } from "../../../game/playerStats";
 import { Client, Room } from "colyseus.js";
 import { getOrThrow } from "../../../objects/utils";
-import { RelayState } from "../../../server/rooms/schema/RelayRoomState";
-import { command } from "../../../client/utils";
+import type { RelayState } from "../../../server/rooms/schema/RelayRoomState";
+import { CommandInput, command } from "../../../client/utils";
 import {
+  type PlayerSkillPayload,
   Move,
-  PlayerSkillPayload,
   Skill,
   Transform,
+  type ConnectPlayer,
 } from "../../../server/rooms/relay_room/commands";
 
 type Key = Phaser.Input.Keyboard.Key;
@@ -111,7 +116,7 @@ export default class MainScene extends Phaser.Scene {
     });
 
     this.room.state.players.onAdd((serverPlayer, sessionId) => {
-      const Character = getCharacterClass(serverPlayer.type);
+      const Character = getCharacterClass(serverPlayer.character.type);
       if (sessionId !== this.room.sessionId) {
         console.log("A player has joined! sid:", sessionId);
         const player = new Player(
@@ -128,7 +133,6 @@ export default class MainScene extends Phaser.Scene {
 
       player.sprite.x = serverPlayer.x;
       player.sprite.y = serverPlayer.y;
-      player.character.state = serverPlayer.character.state;
       player.character.prefix = serverPlayer.character.prefix;
 
       serverPlayer.character.listen("state", (newState) => {
@@ -350,11 +354,17 @@ export default class MainScene extends Phaser.Scene {
 
       if (!this.connected) {
         this.room = await this.client.joinOrCreate("relay", {
-          name: this.player.character.name,
           x: this.player.sprite.x,
           y: this.player.sprite.y,
-          type: getCharacterType(this.player.character),
-        });
+          type: this.player.character.type as CharacterType,
+          mobs: this.mobController.map((mob) => ({
+            x: mob.goblin.sprite.x,
+            y: mob.goblin.sprite.y,
+            name: mob.goblin.mob.name,
+            id: mob.goblin.id ?? 0,
+            type: "goblin",
+          })),
+        } satisfies CommandInput<ConnectPlayer>);
         this.connected = true;
       }
 

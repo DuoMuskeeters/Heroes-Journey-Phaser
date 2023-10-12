@@ -1,7 +1,6 @@
 import { MapSchema, Schema, filter, type } from "@colyseus/schema";
 import { Client, Delayed } from "colyseus";
-import { Character } from "../../../game/Karakter";
-import { type PlayerType } from "../../../game/playerStats";
+import { Character, MobCanlı } from "../../../game/Karakter";
 
 function inSameGuild(client: Client, value: boolean, root: RelayState) {
   return true;
@@ -30,13 +29,13 @@ export class Inventory extends Schema {
 }
 
 export class ServerPlayer extends Schema {
-  @type("string") type: PlayerType;
   @type("boolean") connected: boolean = true;
+  @type("boolean") authoritive: boolean = false;
   @type("string") sessionId: string;
   @type(Character) character: Character;
   @type(Inventory) inventory: Inventory;
-  @filter(inSameGuild) @type("number") x: number;
-  @filter(inSameGuild) @type("number") y: number;
+  @filter(inSameGuild) @type("uint16") x: number;
+  @filter(inSameGuild) @type("uint16") y: number;
 
   transformation?: Delayed;
 
@@ -45,8 +44,7 @@ export class ServerPlayer extends Schema {
     character: Character,
     x: number,
     y: number,
-    inventory: Inventory,
-    type: PlayerType
+    inventory: Inventory
   ) {
     super();
     this.sessionId = sessionId;
@@ -54,12 +52,38 @@ export class ServerPlayer extends Schema {
     this.character = character;
     this.x = x;
     this.y = y;
-    this.type = type;
+  }
+}
+
+export class ServerMob extends Schema {
+  @type(MobCanlı) mob: MobCanlı;
+  @type("uint16") x: number;
+  @type("uint16") y: number;
+  id: number;
+
+  constructor(mob: MobCanlı, x: number, y: number, id: number) {
+    super();
+    this.mob = mob;
+    this.x = x;
+    this.y = y;
+    this.id = id;
   }
 }
 
 export class RelayState extends Schema {
   @type({ map: ServerPlayer }) public players = new MapSchema<ServerPlayer>();
+  @type({ map: ServerMob }) public mobs = new MapSchema<ServerMob>();
+
+  getAuthoritivePlayer() {
+    let player: ServerPlayer | undefined;
+    this.players.forEach((p) => {
+      if (player && p.authoritive)
+        throw new Error("multiple authoritive players");
+
+      if (p.authoritive) player = p;
+    });
+    return player;
+  }
 
   getPlayer(client: Client): ServerPlayer;
   getPlayer(sessionId: string, broadcast?: Client): ServerPlayer;

@@ -1,5 +1,4 @@
-import { type getCharacterType } from "../objects/player";
-import { State } from "./Karakter";
+import { CharacterType, State } from "./Karakter";
 
 export type BaseTypes = {
   Strength: number;
@@ -7,11 +6,6 @@ export type BaseTypes = {
   Intelligence: number;
   Constitution: number;
 };
-
-export type PlayerType = Exclude<
-  ReturnType<typeof getCharacterType>,
-  "unknown"
->;
 
 export const playerBaseStates = {
   jack: new State({
@@ -26,4 +20,4 @@ export const playerBaseStates = {
     Intelligence: 25,
     Constitution: 25,
   }),
-} satisfies Record<PlayerType, State>;
+} satisfies Record<CharacterType, State>;

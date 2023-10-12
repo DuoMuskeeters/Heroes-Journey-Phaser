@@ -8,7 +8,12 @@ import {
   PressingKeys,
 } from "../../game/types";
 import { type Player } from ".";
-import { type Character, Iroh, Jack } from "../../game/Karakter";
+import {
+  type Character,
+  Iroh,
+  Jack,
+  IrohInComboTime,
+} from "../../game/Karakter";
 import MainScene from "../../client/scenes/main/MainScene";
 import {
   IROH_ATTACK1_FRAME_COUNT,
@@ -43,7 +48,7 @@ const attackonUpdate = (player: Player<Character>) => {
     frameRate = player.character.state.ATKRATE * IROH_ATTACK1_FRAME_COUNT;
     const { lastCombo } = player.character;
 
-    if (player.character.inComboTime())
+    if (IrohInComboTime(player.character))
       anim =
         lastCombo === 2
           ? mcAnimTypes.ATTACK_1_COMBO3
