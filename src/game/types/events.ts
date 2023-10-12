@@ -9,6 +9,7 @@ export const mcEventTypes = {
   TOOK_HIT: "TOOK_HIT",
   DIED: "DIED",
   MOVED: "MOVED",
+  TRANSFORM: "TRANSFORM",
 } as const;
 
 export type McEventTypes = (typeof mcEventTypes)[keyof typeof mcEventTypes];
@@ -42,7 +43,7 @@ export type PressingKeys = {
   D: boolean;
   Space: boolean | "ephemeral";
   Q: boolean | "ephemeral";
-  E: boolean;
+  E: boolean | "ephemeral";
 };
 
 export const gameEvents = new Phaser.Events.EventEmitter();

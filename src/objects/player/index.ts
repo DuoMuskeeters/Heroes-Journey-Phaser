@@ -28,15 +28,10 @@ export class Player<T extends Character> {
     Space: false,
   };
 
-  newX!: number;
-  newY!: number;
-
   constructor(public character: T) {}
 
   create(scene: Phaser.Scene, x: number, y: number, i: number) {
     const type = getCharacterType(this.character);
-    this.newX = x;
-    this.newY = y;
     this._index = i;
     this._scene = scene;
     this._sprite = scene.physics.add

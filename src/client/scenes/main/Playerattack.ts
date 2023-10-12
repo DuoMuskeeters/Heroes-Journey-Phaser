@@ -96,21 +96,30 @@ export function playerAttackListener(player: Player<Character>) {
       }
 
       if (spell) attack(player, spell, getAffectedMobs());
-      if (animation.key.includes(mcAnimTypes.TRANSFORM)) {
+      if (player.index === 0 && animation.key.includes(mcAnimTypes.TRANSFORM)) {
         if (
           player.character instanceof Iroh &&
           !animation.key.includes("fire")
         ) {
-          player.character.transform();
-          player.scene.time.addEvent({
-            delay: 5000,
-            callback: () => {
-              player.play(mcAnimTypes.TRANSFORM);
-              player.sprite.anims.stopAfterRepeat(0);
-              if (player.character instanceof Iroh)
-                player.character.transform();
-            },
-          });
+          const delay = 5000;
+
+          if (isMain && scene.connected)
+            // Sending transform event to server
+            mcEvents.emit(mcEventTypes.TRANSFORM, player.index, delay);
+          // Client should handle this
+          else {
+            player.character.transform();
+
+            player.scene.time.addEvent({
+              delay,
+              callback: () => {
+                player.play(mcAnimTypes.TRANSFORM);
+                player.sprite.anims.stopAfterRepeat(0);
+                if (player.character instanceof Iroh)
+                  player.character.transform();
+              },
+            });
+          }
           if (player.character instanceof Jack) {
             throw new Error("jack transform not implemented");
           }

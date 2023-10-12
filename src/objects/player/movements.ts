@@ -90,6 +90,7 @@ export function playerMovementUpdate(player: Player<Character>) {
   if (player.pressingKeys.Q === "ephemeral") player.pressingKeys.Q = false;
   if (player.pressingKeys.Space === "ephemeral")
     player.pressingKeys.Space = false;
+  if (player.pressingKeys.E === "ephemeral") player.pressingKeys.E = false;
 
   // const mouse = scene.input.activePointer.leftButtonDown();
 

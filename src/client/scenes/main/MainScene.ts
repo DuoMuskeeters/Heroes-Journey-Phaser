@@ -35,6 +35,8 @@ import { command } from "../../../client/utils";
 import {
   Move,
   PlayerSkillPayload,
+  Skill,
+  Transform,
 } from "../../../server/rooms/relay_room/commands";
 
 type Key = Phaser.Input.Keyboard.Key;
@@ -51,6 +53,7 @@ export default class MainScene extends Phaser.Scene {
 
   client = new Client("ws://localhost:2567");
   _room?: Room<RelayState>;
+  connected = false;
 
   keySpace!: Key;
   keyW!: Key;
@@ -125,6 +128,18 @@ export default class MainScene extends Phaser.Scene {
 
       player.sprite.x = serverPlayer.x;
       player.sprite.y = serverPlayer.y;
+      player.character.state = serverPlayer.character.state;
+      player.character.prefix = serverPlayer.character.prefix;
+
+      serverPlayer.character.listen("state", (newState) => {
+        console.log("serverPlayer character state changed to ", newState);
+        player.character.state = newState;
+      });
+
+      serverPlayer.character.listen("prefix", (newState) => {
+        console.log("serverPlayer prefix changed to", newState);
+        player.character.prefix = serverPlayer.character.prefix;
+      });
 
       if (sessionId === this.room.sessionId) return;
 
@@ -153,9 +168,6 @@ export default class MainScene extends Phaser.Scene {
             player.pressingKeys.A = player.sprite.x > newX;
             player.pressingKeys.D = player.sprite.x < newX;
           },
-          onComplete: () => {
-            player.newX = newX;
-          },
         });
 
         // console.log("[MOVE(X)] player", sessionId, "x changed to", newX);
@@ -181,8 +193,8 @@ export default class MainScene extends Phaser.Scene {
     });
 
     this.room.onMessage(
-      "player-spell",
-      ([sessionId, message]: [string, PlayerSkillPayload]) => {
+      "player-skill",
+      ([sessionId, skill]: PlayerSkillPayload) => {
         const item = this.playerManager.find(
           ({ player }) => player.character.name === sessionId
         );
@@ -190,10 +202,15 @@ export default class MainScene extends Phaser.Scene {
           console.error(`player ${sessionId} not found`);
           return;
         }
-        const key = message.skill === "basic" ? "Space" : "Q";
+        const key = skill === "basic" ? "Space" : skill === "heavy" ? "Q" : "E";
         item.player.pressingKeys[key] = "ephemeral";
       }
     );
+
+    mcEvents.on(mcEventTypes.TRANSFORM, (i: number, delay: number) => {
+      if (i !== this.player.index) return;
+      this.room.send(...command(new Transform(), delay));
+    });
 
     mcEvents.on(mcEventTypes.MOVED, (i: number, keys: PressingKeys) => {
       if (i !== this.player.index) return;
@@ -203,11 +220,13 @@ export default class MainScene extends Phaser.Scene {
           y: this.player.sprite.y,
         })
       );
-      if (keys.Space === true || keys.Q === true) {
-        this.room.send("player-spell", {
-          sessionId: this.player.character.name,
-          skill: keys.Space === true ? "basic" : "heavy",
-        } satisfies PlayerSkillPayload);
+      let skill: "basic" | "heavy" | "transform";
+      if (
+        ((skill = "basic") && keys.Space === true) ||
+        ((skill = "heavy") && keys.Q === true) ||
+        ((skill = "transform") && keys.E === true)
+      ) {
+        this.room.send(...command(new Skill(), skill));
       }
     });
   }
@@ -282,6 +301,7 @@ export default class MainScene extends Phaser.Scene {
     // this.frontroad.setCollisionByExclusion([-1], true);
     createMobs(this);
 
+    // TODO: server side regeneration
     this.time.addEvent({
       delay: 1000,
       callback: () => {
@@ -315,30 +335,29 @@ export default class MainScene extends Phaser.Scene {
     });
 
     try {
-      let connected = false;
       const reconnect = reconnectionToken.get();
       reconnectionToken.delete();
 
       if (reconnect) {
         try {
           this.room = await this.client.reconnect(reconnect);
-          connected = true;
+          this.connected = true;
         } catch (error) {
           // reconnection failed
         }
       }
 
-      if (!connected) {
+      if (!this.connected) {
         this.room = await this.client.joinOrCreate("relay", {
           name: this.player.character.name,
           x: this.player.sprite.x,
           y: this.player.sprite.y,
           type: getCharacterType(this.player.character),
         });
-        connected = true;
+        this.connected = true;
       }
 
-      if (!connected) throw new Error("room connection failed");
+      if (!this.connected) throw new Error("room connection failed");
 
       console.log(
         `Joined as ${this.room.sessionId} index: ${this.player.index}`

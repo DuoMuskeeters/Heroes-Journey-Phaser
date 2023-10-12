@@ -1,5 +1,5 @@
 import { MapSchema, Schema, filter, type } from "@colyseus/schema";
-import { Client } from "colyseus";
+import { Client, Delayed } from "colyseus";
 import { Character } from "../../../game/Karakter";
 import { type PlayerType } from "../../../game/playerStats";
 
@@ -37,6 +37,8 @@ export class ServerPlayer extends Schema {
   @type(Inventory) inventory: Inventory;
   @filter(inSameGuild) @type("number") x: number;
   @filter(inSameGuild) @type("number") y: number;
+
+  transformation?: Delayed;
 
   constructor(
     sessionId: string,

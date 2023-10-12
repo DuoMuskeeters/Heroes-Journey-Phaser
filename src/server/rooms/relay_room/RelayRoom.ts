@@ -50,7 +50,10 @@ export class RelayRoom extends Room<RelayState> {
      */
     this.onMessage(1, (client, data) => {
       const Command = COMMANDS.find((c) => c.name === data.command);
-      if (!Command) throw new Error(`command ${data.command} not found`);
+      if (!Command) {
+        client.error(2, `command ${data.command} not found`);
+        return;
+      }
       const command = new Command();
       command.client = client;
       this.dispatcher.dispatch(command, data.payload);

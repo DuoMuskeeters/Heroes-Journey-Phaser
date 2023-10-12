@@ -6,7 +6,7 @@ import { Inventory, ServerPlayer } from "../schema/RelayRoomState";
 import { type PlayerType } from "../../../game/playerStats";
 import { playerBaseStates } from "../../../game/playerStats";
 import { AllPermutations } from "../../../objects/utils";
-import { getCharacterClass } from "../../../game/Karakter";
+import { Iroh, getCharacterClass } from "../../../game/Karakter";
 
 const SessionId = z.string().min(1).max(32);
 
@@ -19,6 +19,8 @@ const PlayerTypes = z.enum([
   "iroh",
   "jack",
 ] satisfies AllPermutations<PlayerType>);
+
+const PlayerSkill = z.enum(["basic", "heavy", "transform"]);
 
 export class Move extends Command<RelayRoom> {
   client!: Client;
@@ -35,19 +37,20 @@ export class Move extends Command<RelayRoom> {
   }
 
   validate(payload: unknown): boolean {
-    return this.validator.safeParse(payload).success;
+    if (!this.validator.safeParse(payload).success) return false;
+    return !this.player.character.isDead();
   }
 }
 
-export type PlayerSkillPayload = {
-  sessionId: string;
-  skill: "basic" | "heavy";
-};
+export type PlayerSkillPayload = [
+  z.infer<typeof SessionId>,
+  z.infer<typeof PlayerSkill>
+];
 
 export class Skill extends Command<RelayRoom> {
   client!: Client;
   payload!: z.infer<typeof this.validator>;
-  validator = z.enum(["basic", "heavy"]);
+  validator = PlayerSkill;
 
   get player() {
     return this.state.getPlayer(this.client);
@@ -56,16 +59,14 @@ export class Skill extends Command<RelayRoom> {
   execute() {
     this.room.broadcast(
       "player-skill",
-      {
-        sessionId: this.client.sessionId,
-        skill: this.payload,
-      } satisfies PlayerSkillPayload,
+      [this.client.sessionId, this.payload] satisfies PlayerSkillPayload,
       { except: this.client }
     );
   }
 
   validate(payload: unknown): boolean {
-    return this.validator.safeParse(payload).success;
+    if (!this.validator.safeParse(payload).success) return false;
+    return !this.player.character.isDead();
   }
 }
 
@@ -105,6 +106,42 @@ export class Disconnect extends Command<RelayRoom> {
   }
 }
 
+export class Transform extends Command<RelayRoom> {
+  client!: Client;
+  payload!: z.infer<typeof this.validator>;
+  validator = z.number().min(100).max(5000);
+
+  get player() {
+    return this.state.getPlayer(this.client);
+  }
+
+  execute() {
+    if (!(this.player.character instanceof Iroh)) {
+      this.client.error(19, "Transformation Failed, You are not Iroh");
+      return;
+    }
+
+    if (this.player.transformation) {
+      this.client.error(19, "Transformation Failed, Already on transformation");
+      return;
+    }
+
+    this.player.character.transform();
+    this.player.transformation = this.clock.setTimeout(() => {
+      if (!(this.player.character instanceof Iroh))
+        throw new Error("[Internal] Transformation Failed, Player is not Iroh");
+
+      this.player.character.transform();
+      this.player.transformation = undefined;
+    }, this.payload);
+  }
+
+  validate(): boolean {
+    if (!this.validator.safeParse(this.payload).success) return false;
+    return !this.player.character.isDead();
+  }
+}
+
 export class Leave extends Command<RelayRoom> {
   client!: Client;
 
@@ -113,4 +150,4 @@ export class Leave extends Command<RelayRoom> {
   }
 }
 
-export const COMMANDS = [Move, Disconnect, Leave];
+export const COMMANDS = [Move, Skill, Transform, Disconnect, Leave];
