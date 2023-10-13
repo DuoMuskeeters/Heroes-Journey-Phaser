@@ -6,15 +6,25 @@ import { ExtractSpell, Passive, Spell, SpellDamage, SpellRange } from "./spell";
 type Level = number;
 type XP = number;
 
+export function instanceCharacter(
+  character: unknown,
+  type: "any"
+): character is Character;
+
 export function instanceCharacter<T extends CharacterType>(
   character: unknown,
   type: T
+): character is ExtractCharacter<T>;
+
+export function instanceCharacter<T extends CharacterType>(
+  character: unknown,
+  type: T | "any"
 ): character is ExtractCharacter<T> {
   return (
     character instanceof Object &&
     "type" in character &&
     typeof character.type === "string" &&
-    character.type === type
+    (character.type === type || type === "any")
   );
 }
 
@@ -60,27 +70,50 @@ export class State extends Schema {
   }
 }
 
+/**
+ * @internal use only
+ * take damage until 0 HP
+ */
+export function CanlıTakeDamage(c: Canlı | undefined, damage: number) {
+  if (!c) return 0;
+  return (c.state.HP = Math.max(0, c.state.HP - damage));
+}
+
+export function CanlıHeal(c: Canlı, { hp = 0, sp = 0 }) {
+  c.state.HP = Math.min(c.state.max_hp, c.state.HP + hp);
+  c.state.SP = Math.min(c.state.max_sp, c.state.SP + sp);
+}
+
+export function CanlıIsDead(c: Canlı) {
+  return Math.floor(c.state.HP) === 0;
+}
+
 export class Canlı extends Schema {
   @type("string") name: string;
   @type(State) state: State;
-  /**
-   * @internal use only
-   * take damage until 0 HP
-   */
-  _takeDamage(damage: number) {
-    return (this.state.HP = Math.max(0, this.state.HP - damage));
-  }
-  _heal({ hp = 0, sp = 0 }) {
-    this.state.HP = Math.min(this.state.max_hp, this.state.HP + hp);
-    this.state.SP = Math.min(this.state.max_sp, this.state.SP + sp);
-  }
 
   constructor(name: string, state: State) {
     super();
     this.name = name;
     this.state = state;
   }
-  isDead = () => Math.floor(this.state.HP) === 0;
+}
+
+export function CharacterLevelUp(c: Character) {
+  const requirement_exp: XP = level_exp(c.level);
+  while (c.exp > requirement_exp) {
+    c.level += 1;
+    c.exp = c.exp - requirement_exp;
+    c.stat_point += 5;
+  }
+}
+
+export function CharacterIncrease(c: Character, stat: keyof BaseTypes) {
+  if (c.stat_point > 0) {
+    c.state[stat] += 1;
+    c.stat_point -= 1;
+    c.state.calculate_power();
+  }
 }
 
 export class Character extends Canlı {
@@ -89,6 +122,7 @@ export class Character extends Canlı {
   @type("number") level: Level;
   @type("number") stat_point: number;
   @type("string") prefix = "";
+  @type("number") reg = 0.025;
 
   constructor(name: string, state: State, exp: XP = 0, level: Level = 1) {
     super(name, state);
@@ -97,31 +131,20 @@ export class Character extends Canlı {
     this.stat_point = level * 5;
   }
 
-  level_up() {
-    const requirement_exp: XP = level_exp(this.level);
-    while (this.exp > requirement_exp) {
-      this.level += 1;
-      this.exp = this.exp - requirement_exp;
-      this.stat_point += 5;
-    }
+  static [Symbol.hasInstance](instance: unknown) {
+    return instanceCharacter(instance, "any");
   }
-  increase(stat: "Strength" | "Agility" | "Intelligence" | "Constitution") {
-    if (this.stat_point > 0) {
-      this.state[stat] += 1;
-      this.stat_point -= 1;
-      this.state.calculate_power();
-    }
-  }
+}
 
-  private reg = 0.025;
-  regeneration = new Passive({
-    has: () => !this.isDead(),
+export function CharacterRegeneration(c: Character) {
+  return new Passive({
+    has: () => !CanlıIsDead(c),
     view: () => {
-      const HP = this.state.max_hp * this.reg;
-      const SP = this.state.max_sp * this.reg;
+      const HP = c.state.max_hp * c.reg;
+      const SP = c.state.max_sp * c.reg;
       return { HP, SP };
     },
-    do: ({ HP, SP }) => this._heal({ hp: HP, sp: SP }),
+    do: ({ HP, SP }) => CanlıHeal(c, { hp: HP, sp: SP }),
   });
 }
 
@@ -156,7 +179,7 @@ export function IrohBasicAttack(c: Iroh) {
       else c.lastCombo = 1;
 
       c.lastBasicAttack = Date.now();
-      return rakip?._takeDamage(damage);
+      return CanlıTakeDamage(rakip, damage);
     },
   });
 }
@@ -168,7 +191,7 @@ export function IrohSpeelQ(c: Iroh) {
     damage: (rakipler) => rakipler.map(() => c.state.ATK / 6),
     hit: (rakipler, damages) => {
       c.state.SP = Math.max(c.state.SP - c.QcostSP, 0);
-      return rakipler.map((rakip, i) => rakip._takeDamage(damages[i]));
+      return rakipler.map((rakip, i) => CanlıTakeDamage(rakip, damages[i]));
     },
   });
 }
@@ -191,7 +214,7 @@ export function JackBasicAttack(c: Jack) {
   return new Spell("basic", SpellRange.Multiple, {
     damage: (rakipler) => rakipler.map(() => c.state.ATK),
     hit: (rakipler, damages) =>
-      rakipler.map((r, i) => r._takeDamage(damages[i])),
+      rakipler.map((r, i) => CanlıTakeDamage(r, damages[i])),
   });
 }
 
@@ -248,29 +271,33 @@ export class MobCanlı extends Canlı {
     return false;
   }
 
-  private HP_Reg = 0.001;
-  private SP_Reg = 0.002;
+  HP_Reg = 0.001;
+  SP_Reg = 0.002;
+}
 
-  regeneration = new Passive({
-    has: () => !this.isDead(),
-    view: () => {
-      const hp_reg = this.state.Intelligence * this.HP_Reg;
-      const sp_reg = this.state.Intelligence * this.SP_Reg;
-      const HP = this.state.max_hp * hp_reg;
-      const SP = this.state.max_sp * sp_reg;
-      return { HP, SP };
-    },
-    do: ({ HP, SP }) => this._heal({ hp: HP, sp: SP }),
-  });
-
-  basicAttack = new Spell("basic", SpellRange.SingleORNone, {
-    damage: () => this.state.ATK,
+export function mobBasicAttack(c: MobCanlı) {
+  return new Spell("basic", SpellRange.SingleORNone, {
+    damage: () => c.state.ATK,
     hit: (rakip, damage) => {
       if (!(rakip instanceof Character))
         throw new Error("NOTE: şu anda mob sadece karaktere vurabilir.");
 
-      return rakip?._takeDamage(damage);
+      return CanlıTakeDamage(rakip, damage);
     },
+  });
+}
+
+export function mobRegeneration(c: MobCanlı) {
+  return new Passive({
+    has: () => !CanlıIsDead(c),
+    view: () => {
+      const hp_reg = c.state.Intelligence * c.HP_Reg;
+      const sp_reg = c.state.Intelligence * c.SP_Reg;
+      const HP = c.state.max_hp * hp_reg;
+      const SP = c.state.max_sp * sp_reg;
+      return { HP, SP };
+    },
+    do: ({ HP, SP }) => CanlıHeal(c, { hp: HP, sp: SP }),
   });
 }
 
@@ -283,7 +310,7 @@ export class Goblin extends MobCanlı {
       this.state.SP = 0;
     },
     hit: (rakipler, damages) =>
-      rakipler.map((rakip, i) => rakip._takeDamage(damages[i])),
+      rakipler.map((rakip, i) => CanlıTakeDamage(rakip, damages[i])),
   });
 }
 

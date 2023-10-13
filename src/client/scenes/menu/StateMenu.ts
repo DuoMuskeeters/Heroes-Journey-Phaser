@@ -1,6 +1,6 @@
 import { CONFIG } from "../../PhaserGame";
 import { type Player } from "../../../objects/player";
-import { type Character } from "../../../game/Karakter";
+import { CharacterIncrease, type Character } from "../../../game/Karakter";
 
 export default class statemenu {
   scene!: Phaser.Scene;
@@ -86,7 +86,7 @@ Job: Samurai    MAX HP:   ${this.character.state.max_hp}`
       button.image.setInteractive().on(Phaser.Input.Events.POINTER_UP, () => {
         if (this.character.stat_point > 0) {
           // button type -> "Agility"
-          this.character.increase(button.type);
+          CharacterIncrease(this.character, button.type);
           button.text.setText(
             `${button.type}: ${this.character.state[button.type]}`
           );

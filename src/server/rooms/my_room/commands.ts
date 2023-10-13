@@ -1,7 +1,7 @@
 import { Command } from "@colyseus/command";
 import { MyRoom } from "./MyRoom";
 import { z } from "zod";
-import { Client } from "colyseus";
+import { Client, Room } from "colyseus";
 import { playerBaseStates } from "../../../game/playerStats";
 import { ServerPlayer } from "../schema/MyRoomState";
 
@@ -30,11 +30,12 @@ export class Hit extends Command<MyRoom> {
     return this.state.players.get(this.payload.enemy);
   }
 
-  execute() {
-    const spell = this.payload.type;
-    const damage = this.player.state.ATK * 2;
-    this.enemy?._takeDamage(damage);
-  }
+  // execute() {
+  //   const spell = this.payload.type;
+  //   const damage = this.player.state.ATK * 2;
+  //   this.enemy?._takeDamage(damage);
+  // }
+  execute() {}
 
   validate(payload: unknown): boolean {
     return this.validator.safeParse(payload).success;

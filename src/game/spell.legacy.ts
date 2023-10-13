@@ -1,5 +1,6 @@
 import {
   Canlı,
+  CanlıTakeDamage,
   Character,
   Iroh,
   IrohInComboTime,
@@ -95,7 +96,7 @@ export function canlıHit(
 
   if (!enemy) return;
   if (enemy instanceof Array) {
-    return enemy.map((e) => e._takeDamage(damage));
+    return enemy.map((e) => CanlıTakeDamage(e, damage));
   }
-  return enemy._takeDamage(damage);
+  return CanlıTakeDamage(enemy, damage);
 }

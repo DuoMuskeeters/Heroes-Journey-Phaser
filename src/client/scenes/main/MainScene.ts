@@ -17,6 +17,10 @@ import {
   type CharacterType,
   Jack,
   getCharacterClass,
+  Iroh,
+  Character,
+  CharacterRegeneration,
+  mobRegeneration,
 } from "../../../game/Karakter";
 import {
   type GoblinTookHit,
@@ -42,6 +46,7 @@ import {
   Skill,
   Transform,
   type ConnectPlayer,
+  ChangeCharacter,
 } from "../../../server/rooms/relay_room/commands";
 
 type Key = Phaser.Input.Keyboard.Key;
@@ -103,7 +108,10 @@ export default class MainScene extends Phaser.Scene {
 
   constructor() {
     super("mainscene");
-    const player = new Player(new Jack("jack", playerBaseStates.jack));
+    const type = "jack" satisfies CharacterType;
+    const Character = getCharacterClass(type);
+    const state = playerBaseStates[type];
+    const player = new Player(new Character(type, state));
     this.playerManager = new PlayerManager();
     this.playerManager.push({ player, UI: {} as PlayerUI });
   }
@@ -117,6 +125,14 @@ export default class MainScene extends Phaser.Scene {
 
     this.room.state.players.onAdd((serverPlayer, sessionId) => {
       console.log("players.onAdd:", sessionId);
+      console.log("player character type:", serverPlayer.character.type);
+
+      console.log("instance check", {
+        jack: serverPlayer.character instanceof Jack,
+        iroh: serverPlayer.character instanceof Iroh,
+        character: serverPlayer.character instanceof Character,
+      });
+
       if (sessionId !== this.room.sessionId) {
         console.log("A player has joined! sid:", sessionId);
         const Character = getCharacterClass(serverPlayer.character.type);
@@ -136,14 +152,9 @@ export default class MainScene extends Phaser.Scene {
       player.sprite.y = serverPlayer.y;
       player.character.prefix = serverPlayer.character.prefix;
 
-      serverPlayer.character.listen("state", (newState) => {
-        console.log("serverPlayer character state changed to ", newState);
-        player.character.state = newState;
-      });
-
-      serverPlayer.character.listen("prefix", (newState) => {
-        console.log("serverPlayer prefix changed to", newState);
-        player.character.prefix = serverPlayer.character.prefix;
+      serverPlayer.listen("character", (newState) => {
+        console.log("serverPlayer character changed to ", newState);
+        player.character = newState;
       });
 
       if (sessionId === this.room.sessionId) return;
@@ -225,14 +236,25 @@ export default class MainScene extends Phaser.Scene {
           y: this.player.sprite.y,
         })
       );
-      let skill: "basic" | "heavy" | "transform";
-      if (
-        ((skill = "basic") && keys.Space === true) ||
-        ((skill = "heavy") && keys.Q === true) ||
-        ((skill = "transform") && keys.E === true)
-      ) {
-        this.room.send(...command(new Skill(), skill));
+      if (keys.Space === true || keys.Q === true || keys.E === true) {
+        this.room.send(
+          ...command(
+            new Skill(),
+            keys.Space === true
+              ? "basic"
+              : keys.Q === true
+              ? "heavy"
+              : "transform"
+          )
+        );
       }
+      if (keys.E === true)
+        this.room.send(
+          ...command(
+            new ChangeCharacter(),
+            this.player.character.type === "iroh" ? "jack" : "iroh"
+          )
+        );
     });
   }
 
@@ -308,37 +330,40 @@ export default class MainScene extends Phaser.Scene {
     createMobs(this);
 
     // TODO: server side regeneration
-    this.time.addEvent({
-      delay: 1000,
-      callback: () => {
-        if (this.scene.isPaused()) return;
-        this.playerManager.forEach(({ player }) => {
-          if (player.character.regeneration.has()) {
-            const view = player.character.regeneration.view();
-            player.character.regeneration.do();
+    if (!this.connected)
+      this.time.addEvent({
+        delay: 1000,
+        callback: () => {
+          if (this.scene.isPaused()) return;
+          this.playerManager.forEach(({ player }) => {
+            const regeneration = CharacterRegeneration(player.character);
+            if (regeneration.has()) {
+              const view = regeneration.view();
+              regeneration.do();
 
-            mcEvents.emit(
-              mcEventTypes.REGENERATED,
-              player.index,
-              view satisfies Regenerated
-            );
-          }
-        });
-        this.mobController.forEach((controller) => {
-          if (controller.goblin.mob.regeneration.has()) {
-            const view = controller.goblin.mob.regeneration.view();
-            controller.goblin.mob.regeneration.do();
+              mcEvents.emit(
+                mcEventTypes.REGENERATED,
+                player.index,
+                view satisfies Regenerated
+              );
+            }
+          });
+          this.mobController.forEach((controller) => {
+            const regeneration = mobRegeneration(controller.goblin.mob);
+            if (regeneration.has()) {
+              const view = regeneration.view();
+              regeneration.do();
 
-            mobEvents.emit(
-              mobEventsTypes.REGENERATED,
-              controller.goblin.id,
-              view satisfies Regenerated
-            );
-          }
-        });
-      },
-      loop: true,
-    });
+              mobEvents.emit(
+                mobEventsTypes.REGENERATED,
+                controller.goblin.id,
+                view satisfies Regenerated
+              );
+            }
+          });
+        },
+        loop: true,
+      });
 
     try {
       const reconnect = reconnectionToken.get();
@@ -360,7 +385,7 @@ export default class MainScene extends Phaser.Scene {
           /**
            * @note I wanted both characters to be on screen.
            **/
-          type: "iroh" as CharacterType,
+          type: this.player.character.type as CharacterType,
           mobs: this.mobController.map((mob) => ({
             x: mob.goblin.sprite.x,
             y: mob.goblin.sprite.y,

@@ -16,7 +16,12 @@ import {
   mcAnimTypes,
 } from "../../game/types/types";
 import { createRoadCollider } from "../../client/scenes/main/TileGround";
-import { type Character, type Goblin } from "../../game/Karakter";
+import {
+  CanlıIsDead,
+  mobBasicAttack,
+  type Character,
+  type Goblin,
+} from "../../game/Karakter";
 import { type Mob } from ".";
 import { type PlayerManager } from "../player/manager";
 import type MainScene from "../../client/scenes/main/MainScene";
@@ -79,7 +84,7 @@ export default class goblinController {
     let dist = Infinity;
 
     this.playerManager.forEach(({ player }, idx) => {
-      if (player.character.isDead()) return;
+      if (CanlıIsDead(player.character)) return;
       const distance = Math.abs(this.goblin.sprite.x - player.sprite.x);
       if (distance < dist) {
         dist = distance;
@@ -177,15 +182,19 @@ export default class goblinController {
   }
 
   playerAlive() {
-    return this.playerManager.map(({ player }) => !player.character.isDead());
+    return this.playerManager.map(
+      ({ player }) => !CanlıIsDead(player.character)
+    );
   }
 
   hitPlayer(i: number) {
     const { player } = this.playerManager[i];
     const goblin = this.goblin.mob;
 
-    const damage = goblin.basicAttack.damage(player.character);
-    goblin.basicAttack.hit(player.character);
+    const basicAttack = mobBasicAttack(goblin);
+
+    const damage = basicAttack.damage(player.character);
+    basicAttack.hit(player.character);
 
     mcEvents.emit(mcEventTypes.TOOK_HIT, i, damage);
   }
@@ -222,7 +231,7 @@ export default class goblinController {
     );
   }
   hasUltimate = this.goblin.mob.spellQ.has;
-  isDead = this.goblin.mob.isDead;
+  isDead = () => CanlıIsDead(this.goblin.mob);
   OnStun() {
     const animsKey = this.goblin.sprite?.anims.getName();
     return this.goblin.sprite.body && animsKey === goblinAnimTypes.TAKE_HIT;
@@ -315,7 +324,7 @@ export default class goblinController {
   }
 
   private attackOnUpdate(_dt: number) {
-    if (this.goblin.mob.isDead()) return;
+    if (this.isDead()) return;
     const leftorRight = this.leftoRight();
     this.goblin.sprite.setVelocityX(leftorRight.velocity.ıdle);
     this.goblin.sprite.setFlipX(leftorRight.flip);

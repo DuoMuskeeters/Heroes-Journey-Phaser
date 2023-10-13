@@ -11,6 +11,7 @@ import {
   Iroh,
   getCharacterClass,
   IrohTransform,
+  CanlıIsDead,
 } from "../../../game/Karakter";
 import { MobType } from "../../../game/mobStats";
 
@@ -47,7 +48,7 @@ export class Move extends Command<RelayRoom> {
 
   validate(payload: unknown): boolean {
     if (!this.validator.safeParse(payload).success) return false;
-    return !this.player.character.isDead();
+    return !CanlıIsDead(this.player.character);
   }
 }
 
@@ -75,7 +76,7 @@ export class Skill extends Command<RelayRoom> {
 
   validate(payload: unknown): boolean {
     if (!this.validator.safeParse(payload).success) return false;
-    return !this.player.character.isDead();
+    return !CanlıIsDead(this.player.character);
   }
 }
 
@@ -146,6 +147,36 @@ export class Reconnect extends Command<RelayRoom> {
   }
 }
 
+export class ChangeCharacter extends Command<RelayRoom> {
+  client!: Client;
+  payload!: z.infer<typeof this.validator>;
+  validator = PlayerTypes;
+
+  get player() {
+    return this.state.getPlayer(this.client);
+  }
+
+  execute() {
+    if (this.player.transformation) {
+      return this.client.error(
+        20,
+        "Player is now on transformation, cannot change character type"
+      );
+    }
+
+    const Character = getCharacterClass(this.payload);
+    const character = new Character(
+      this.player.character.name,
+      this.player.character.state
+    );
+    this.player.character = character;
+  }
+
+  validate(payload: unknown): boolean {
+    return this.validator.safeParse(payload).success;
+  }
+}
+
 export class Transform extends Command<RelayRoom> {
   client!: Client;
   payload!: z.infer<typeof this.validator>;
@@ -178,7 +209,7 @@ export class Transform extends Command<RelayRoom> {
 
   validate(): boolean {
     if (!this.validator.safeParse(this.payload).success) return false;
-    return !this.player.character.isDead();
+    return !CanlıIsDead(this.player.character);
   }
 }
 
@@ -191,4 +222,11 @@ export class Leave extends Command<RelayRoom> {
   }
 }
 
-export const COMMANDS = [Move, Skill, Transform, Disconnect, Leave];
+export const COMMANDS = [
+  Move,
+  Skill,
+  Transform,
+  ChangeCharacter,
+  Disconnect,
+  Leave,
+];

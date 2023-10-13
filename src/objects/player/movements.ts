@@ -17,6 +17,7 @@ import {
   JackSpeelQ,
   IrohBasicAttack,
   JackBasicAttack,
+  CanlıIsDead,
 } from "../../game/Karakter";
 import MainScene from "../../client/scenes/main/MainScene";
 import {
@@ -157,7 +158,7 @@ export function playerMovementUpdate(player: Player<Character>) {
 
   setAttackrect(player);
 
-  if (player.character.isDead()) return;
+  if (CanlıIsDead(player.character)) return;
 
   if ((A_isDOWN && canMoVE) || player.lastdirection === direction.left) {
     player.lastdirection = direction.left;

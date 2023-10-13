@@ -1,4 +1,4 @@
-import { type Character, Iroh, Jack, Archer } from "../../game/Karakter";
+import { type Character, CanlıIsDead } from "../../game/Karakter";
 import { PressingKeys, mcEventTypes, mcEvents } from "../../game/types/events";
 import { type Direction, direction, mcAnimTypes } from "../../game/types/types";
 import { playerAttackListener } from "../../client/scenes/main/Playerattack";
@@ -47,7 +47,8 @@ export class Player<T extends Character> {
   }
 
   onTookHit(_damage: number) {
-    if (this.character.isDead()) mcEvents.emit(mcEventTypes.DIED, this.index);
+    if (CanlıIsDead(this.character))
+      mcEvents.emit(mcEventTypes.DIED, this.index);
   }
 
   onDied() {
@@ -59,7 +60,7 @@ export class Player<T extends Character> {
   }
 
   animKey(key: string) {
-    const type = this.character.type
+    const type = this.character.type;
     const prefix = this.character.prefix;
     return prefix + type + "-" + key;
   }
