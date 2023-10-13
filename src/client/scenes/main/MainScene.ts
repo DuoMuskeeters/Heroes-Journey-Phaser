@@ -13,7 +13,11 @@ import { createMob as createMobs } from "./CreateMob";
 import { createAvatarFrame } from "../Ui/AvatarUi";
 
 import { Player } from "../../../objects/player";
-import { CharacterType, Jack, getCharacterClass } from "../../../game/Karakter";
+import {
+  type CharacterType,
+  Jack,
+  getCharacterClass,
+} from "../../../game/Karakter";
 import {
   type GoblinTookHit,
   mcAnimTypes,

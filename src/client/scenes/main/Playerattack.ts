@@ -81,7 +81,7 @@ function attack(
   return emit(s.type, player, emits);
 }
 
-export function playerAttackListener(player: Player<Jack | Iroh>) {
+export function playerAttackListener(player: Player<Character>) {
   if (player.index !== 0) return;
   const scene = player.scene;
   const isMain = scene instanceof MainScene;
@@ -94,15 +94,17 @@ export function playerAttackListener(player: Player<Jack | Iroh>) {
     (animation: Phaser.Animations.Animation) => {
       let spell: Spell<SpellRange> | undefined;
 
-      if (animation.key.includes(mcAnimTypes.ATTACK_1))
-        spell =
-          player.character instanceof Iroh
-            ? IrohBasicAttack(player.character)
-            : JackBasicAttack(player.character);
-      else if (animation.key.includes(mcAnimTypes.ATTACK_2)) {
+      if (animation.key.includes(mcAnimTypes.ATTACK_1)) {
+        if (player.character instanceof Iroh) {
+          spell = IrohBasicAttack(player.character);
+        } else if (player.character instanceof Jack) {
+          spell = JackBasicAttack(player.character);
+        } else throw new Error("Unknown character type for attack 1");
+      } else if (animation.key.includes(mcAnimTypes.ATTACK_2)) {
         if (player.character instanceof Iroh) return; // heavy attack is handled in update
         if (player.character instanceof Jack)
           spell = JackSpeelQ(player.character);
+        else throw new Error("Unknown character type for attack 2");
       }
 
       if (spell) attack(player, spell, getAffectedMobs());
@@ -131,7 +133,7 @@ export function playerAttackListener(player: Player<Jack | Iroh>) {
             });
           }
           if (player.character instanceof Jack) {
-            console.log("jack transform not implemented");
+            throw new Error("jack transform not implemented");
           }
         }
       }
@@ -148,7 +150,6 @@ export function playerAttackListener(player: Player<Jack | Iroh>) {
       } else if (animation.key.includes(mcAnimTypes.ATTACK_2)) {
         const affectedMobs = getAffectedMobs(true);
         let damages: number[];
-        console.log(player.character instanceof Jack);
         if (player.character instanceof Iroh) {
           const padding = 2;
           const frames = animation.frames.slice(padding, -padding);
