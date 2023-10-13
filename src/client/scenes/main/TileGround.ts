@@ -16,13 +16,9 @@ export function createground(scene: MainScene) {
 
   const scale = [2.55, 2.55];
 
-  scene.frontroad = createLayer(scene.tilemap, "backroad", tiles).setScale(
-    ...scale
-  );
-
-  scene.backroad = createLayer(scene.tilemap, "frontroad", tiles).setScale(
-    ...scale
-  );
+  scene.road = createLayer(scene.tilemap, "road", tiles)
+    .setScale(...scale)
+    .setCollisionFromCollisionGroup();
 
   createLayer(scene.tilemap, "lamp", lamp, 0, -85).setScale(...scale);
   createLayer(scene.tilemap, "rock_3", rock3, 0, 15).setScale(...scale);
@@ -35,13 +31,10 @@ export function createground(scene: MainScene) {
   createLayer(scene.tilemap, "fence", [fence_1, fence_2], 0, 15).setScale(
     ...scale
   );
-
-  scene.backroad.setCollisionByProperty({ collides: true });
-  scene.frontroad.setCollisionByProperty({ collides: true });
 }
 export function createRoadCollider(
   scene: MainScene,
   object: Phaser.Types.Physics.Arcade.ArcadeColliderType
 ) {
-  scene.physics.add.collider(object, [scene.frontroad, scene.backroad]);
+  scene.physics.add.collider(object, [scene.road]);
 }

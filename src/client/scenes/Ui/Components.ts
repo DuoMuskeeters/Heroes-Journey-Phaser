@@ -107,10 +107,10 @@ const UI_updateSP = (
 export function UI_updateOtherPlayers(scene: MainScene) {
   scene.playerManager.forEach(({ player, UI }, i) => {
     if (i === 0) return;
-    UI.frameLayer.setPosition(player.sprite.x - 60, player.sprite.y - 170);
-    UI.playerindexText.setPosition(UI.frameLayer.x, UI.frameLayer.y + 20);
+    UI.frameLayer.setPosition(player.sprite.x - 60, player.sprite.y - 160);
+    UI.playerindexText.setPosition(UI.frameLayer.x, UI.frameLayer.y);
     UI.playerleveltext
-      .setPosition(UI.frameLayer.x + 20, UI.frameLayer.y + 53)
+      .setPosition(UI.frameLayer.x + 30, UI.frameLayer.y + 40)
       .setScale(1.5);
   });
 }
@@ -123,7 +123,7 @@ export function UI_updatePlayersHP(scene: MainScene) {
     if (i !== 0) {
       UI.hpBar
         .setScale(3, 3)
-        .setPosition(UI.frameLayer.x - 35, UI.frameLayer.y + 50);
+        .setPosition(UI.frameLayer.x - 8, UI.frameLayer.y + 50);
 
       UIhpText.setPosition(
         UI.hpBar.getRightCenter(UI.hpBar).x + 120,
@@ -145,7 +145,7 @@ export function UI_updatePlayersSP(scene: MainScene) {
     if (i !== 0) {
       UI.spBar
         .setScale(2.1, 3)
-        .setPosition(UI.frameLayer.x - 10, UI.frameLayer.y + 75);
+        .setPosition(UI.frameLayer.x + 17, UI.frameLayer.y + 75);
 
       UIspText.setPosition(
         UI.spBar.getRightCenter(UI.spBar).x + 90,

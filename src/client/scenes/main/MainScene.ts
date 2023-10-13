@@ -53,8 +53,7 @@ const reconnectionToken = {
 };
 
 export default class MainScene extends Phaser.Scene {
-  frontroad!: Phaser.Tilemaps.TilemapLayer;
-  backroad!: Phaser.Tilemaps.TilemapLayer;
+  road!: Phaser.Tilemaps.TilemapLayer;
 
   client = new Client("ws://localhost:2567");
   _room?: Room<RelayState>;
@@ -110,15 +109,17 @@ export default class MainScene extends Phaser.Scene {
   }
 
   onConnectionReady() {
+    console.log("connection ready");
     this.player.character.name = this.room.sessionId;
     this.room.onStateChange((state) => {
       console.debug("onStateChange", state);
     });
 
     this.room.state.players.onAdd((serverPlayer, sessionId) => {
-      const Character = getCharacterClass(serverPlayer.character.type);
+      console.log("players.onAdd:", sessionId);
       if (sessionId !== this.room.sessionId) {
         console.log("A player has joined! sid:", sessionId);
+        const Character = getCharacterClass(serverPlayer.character.type);
         const player = new Player(
           new Character(sessionId, serverPlayer.character.state)
         );
@@ -176,7 +177,7 @@ export default class MainScene extends Phaser.Scene {
 
         // console.log("[MOVE(X)] player", sessionId, "x changed to", newX);
       });
-    });
+    }, false);
 
     this.room.onError((code, message) => {
       console.error("[Server Error: %d] %s", code, message);
