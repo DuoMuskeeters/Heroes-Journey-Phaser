@@ -6,25 +6,15 @@ import { ExtractSpell, Passive, Spell, SpellDamage, SpellRange } from "./spell";
 type Level = number;
 type XP = number;
 
-export function instanceCharacter(
-  character: unknown,
-  type: "any"
-): character is Character;
-
 export function instanceCharacter<T extends CharacterType>(
   character: unknown,
   type: T
-): character is ExtractCharacter<T>;
-
-export function instanceCharacter<T extends CharacterType>(
-  character: unknown,
-  type: T | "any"
 ): character is ExtractCharacter<T> {
   return (
     character instanceof Object &&
     "type" in character &&
     typeof character.type === "string" &&
-    (character.type === type || type === "any")
+    character.type === type
   );
 }
 
@@ -100,26 +90,11 @@ export class Character extends Canlı {
   @type("number") stat_point: number;
   @type("string") prefix = "";
 
-  spellQ: Spell<SpellRange> = new Spell("heavy", SpellRange.SingleORNone, {
-    has: () => false,
-    damage: () => 0,
-    hit: () => undefined,
-  });
-
-  basicAttack: Spell<SpellRange> = new Spell("basic", SpellRange.SingleORNone, {
-    damage: () => this.state.ATK,
-    hit: (rakip, damage) => rakip?._takeDamage(damage),
-  });
-
   constructor(name: string, state: State, exp: XP = 0, level: Level = 1) {
     super(name, state);
     this.exp = exp;
     this.level = level;
     this.stat_point = level * 5;
-  }
-
-  static [Symbol.hasInstance](instance: unknown) {
-    return instanceCharacter(instance, "any");
   }
 
   level_up() {
@@ -167,6 +142,36 @@ export function IrohTransform(iroh: Iroh) {
     iroh.state.ATK *= 2;
   }
 }
+export function IrohBasicAttack(c: Iroh) {
+  return new Spell("basic", SpellRange.SingleORNone, {
+    damage: () => {
+      const damage = c.state.ATK;
+      return IrohInComboTime(c) && c.lastCombo === 2
+        ? damage * 0.4
+        : damage * 0.3;
+    },
+    hit: (rakip, damage) => {
+      if (c.lastCombo === 2) c.lastCombo = 0;
+      else if (IrohInComboTime(c)) c.lastCombo += 1;
+      else c.lastCombo = 1;
+
+      c.lastBasicAttack = Date.now();
+      return rakip?._takeDamage(damage);
+    },
+  });
+}
+
+export function IrohSpeelQ(c: Iroh) {
+  return new Spell("heavy", SpellRange.Multiple, {
+    cancelable: true,
+    has: () => c.state.SP >= c.QcostSP,
+    damage: (rakipler) => rakipler.map(() => c.state.ATK / 6),
+    hit: (rakipler, damages) => {
+      c.state.SP = Math.max(c.state.SP - c.QcostSP, 0);
+      return rakipler.map((rakip, i) => rakip._takeDamage(damages[i]));
+    },
+  });
+}
 
 export class Iroh extends Character {
   type: "iroh" = "iroh";
@@ -175,34 +180,7 @@ export class Iroh extends Character {
   @type("number") lastBasicAttack: number = 0;
   prefix: "" | "fire" = "";
 
-  basicAttack = new Spell("basic", SpellRange.SingleORNone, {
-    damage: () => {
-      const damage = this.state.ATK;
-      return IrohInComboTime(this) && this.lastCombo === 2
-        ? damage * 0.4
-        : damage * 0.3;
-    },
-    hit: (rakip, damage) => {
-      if (this.lastCombo === 2) this.lastCombo = 0;
-      else if (IrohInComboTime(this)) this.lastCombo += 1;
-      else this.lastCombo = 1;
-
-      this.lastBasicAttack = Date.now();
-      return rakip?._takeDamage(damage);
-    },
-  });
-
   @type("number") QcostSP = 4.16;
-
-  spellQ = new Spell("heavy", SpellRange.Multiple, {
-    cancelable: true,
-    has: () => this.state.SP >= this.QcostSP,
-    damage: (rakipler) => rakipler.map(() => this.state.ATK / 6),
-    hit: (rakipler, damages) => {
-      this.state.SP = Math.max(this.state.SP - this.QcostSP, 0);
-      return rakipler.map((rakip, i) => rakip._takeDamage(damages[i]));
-    },
-  });
 
   static [Symbol.hasInstance](instance: unknown) {
     return instanceCharacter(instance, "iroh");
@@ -233,32 +211,14 @@ export function JackSpeelQ(c: Jack) {
 }
 
 export class Jack extends Character {
+  type: "jack" = "jack";
   @type("number") lastQ: number = 0;
   @type("number") standByTime = 5 * 1000;
   @type("number") spCost = 50;
 
-  basicAttack = new Spell("basic", SpellRange.Multiple, {
-    damage: (rakipler) => rakipler.map(() => this.state.ATK),
-    hit: (rakipler, damages) =>
-      rakipler.map((r, i) => r._takeDamage(damages[i])),
-  });
-  // basicAttack = new Spell("basic", SpellRange.SingleORNone, {
-  //   damage: () => this.state.ATK,
-  //   hit: (rakip, damage) => rakip?._takeDamage(damage),
-  // });
-
-  spellQ = new Spell("heavy", SpellRange.Multiple, {
-    has: () => this.lastQ + this.standByTime < Date.now(),
-    damage: (rakipler) => rakipler.map(() => this.state.ATK * 3),
-    hit: (rakipler, damages) => {
-      this.lastQ = Date.now();
-      this.state.SP = Math.max(this.state.SP - this.spCost, 0);
-      return rakipler.map(
-        (rakip, i) =>
-          (rakip.state.HP = Math.max(rakip.state.HP - damages[i], 0))
-      );
-    },
-  });
+  static [Symbol.hasInstance](instance: unknown) {
+    return instanceCharacter(instance, "jack");
+  }
 }
 
 export class Archer extends Character {
@@ -266,8 +226,8 @@ export class Archer extends Character {
 }
 
 export const CHARACTERS = {
-  jack: Jack,
   iroh: Iroh,
+  jack: Jack,
 } as const;
 
 export type CharacterType = keyof typeof CHARACTERS;

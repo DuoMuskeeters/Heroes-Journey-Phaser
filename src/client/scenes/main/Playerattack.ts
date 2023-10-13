@@ -4,6 +4,10 @@ import {
   Iroh,
   Jack,
   IrohTransform,
+  IrohBasicAttack,
+  JackBasicAttack,
+  IrohSpeelQ,
+  JackSpeelQ,
 } from "../../../game/Karakter";
 import { type Spell, SpellRange } from "../../../game/spell";
 import {
@@ -77,7 +81,7 @@ function attack(
   return emit(s.type, player, emits);
 }
 
-export function playerAttackListener(player: Player<Character>) {
+export function playerAttackListener(player: Player<Jack | Iroh>) {
   if (player.index !== 0) return;
   const scene = player.scene;
   const isMain = scene instanceof MainScene;
@@ -91,10 +95,14 @@ export function playerAttackListener(player: Player<Character>) {
       let spell: Spell<SpellRange> | undefined;
 
       if (animation.key.includes(mcAnimTypes.ATTACK_1))
-        spell = player.character.basicAttack;
+        spell =
+          player.character instanceof Iroh
+            ? IrohBasicAttack(player.character)
+            : JackBasicAttack(player.character);
       else if (animation.key.includes(mcAnimTypes.ATTACK_2)) {
         if (player.character instanceof Iroh) return; // heavy attack is handled in update
-        spell = player.character.spellQ;
+        if (player.character instanceof Jack)
+          spell = JackSpeelQ(player.character);
       }
 
       if (spell) attack(player, spell, getAffectedMobs());
@@ -123,7 +131,7 @@ export function playerAttackListener(player: Player<Character>) {
             });
           }
           if (player.character instanceof Jack) {
-            throw new Error("jack transform not implemented");
+            console.log("jack transform not implemented");
           }
         }
       }
@@ -140,7 +148,7 @@ export function playerAttackListener(player: Player<Character>) {
       } else if (animation.key.includes(mcAnimTypes.ATTACK_2)) {
         const affectedMobs = getAffectedMobs(true);
         let damages: number[];
-
+        console.log(player.character instanceof Jack);
         if (player.character instanceof Iroh) {
           const padding = 2;
           const frames = animation.frames.slice(padding, -padding);
@@ -149,14 +157,14 @@ export function playerAttackListener(player: Player<Character>) {
           if (isAtFrame) {
             const mobs = affectedMobs.map((ctrl) => ctrl.goblin.mob);
 
-            if (!player.character.spellQ.has()) {
+            if (!IrohSpeelQ(player.character).has()) {
               console.log(
                 `[PlayerAttack] player ${player.index} heavy strike has exhausted`
               );
               return player.sprite.anims.stop();
             }
-            damages = player.character.spellQ.damage(mobs);
-            player.character.spellQ.hit(mobs);
+            damages = IrohSpeelQ(player.character).damage(mobs);
+            IrohSpeelQ(player.character).hit(mobs);
 
             emit(
               "heavy",

@@ -13,12 +13,18 @@ import {
   Iroh,
   Jack,
   IrohInComboTime,
+  IrohSpeelQ,
+  JackSpeelQ,
+  IrohBasicAttack,
+  JackBasicAttack,
 } from "../../game/Karakter";
 import MainScene from "../../client/scenes/main/MainScene";
 import {
   IROH_ATTACK1_FRAME_COUNT,
   JACK_ATTACK1_FRAME_COUNT,
 } from "../../client/scenes/main/Anims";
+import { channel } from "diagnostics_channel";
+import { never } from "zod";
 const runonUpdate = (player: Player<Character>) => {
   player.play(mcAnimTypes.RUN, true);
   player.sprite.body.setVelocityX(dirVelocity[player.lastdirection] * 250);
@@ -34,7 +40,11 @@ const jumpandFallonupdate = (player: Player<Character>) => {
   player.sprite.body.setVelocityY(-900);
 };
 const heavyStrikeonUpdate = (player: Player<Jack | Iroh>) => {
-  if (player.character.spellQ.has()) {
+  const spellHas =
+    player.character instanceof Iroh
+      ? IrohSpeelQ(player.character).has()
+      : JackSpeelQ(player.character).has();
+  if (spellHas) {
     player.play(mcAnimTypes.ATTACK_2, true);
     player.sprite.anims.stopAfterRepeat(0);
     player.sprite.body.setVelocityX(0);
@@ -120,13 +130,30 @@ export function playerMovementUpdate(player: Player<Character>) {
   const transformActive =
     player.character instanceof Iroh && player.character.prefix === "fire";
 
-  const cancelableQ =
-    (attackQActive && player.character.spellQ.cancelable) || !attackQActive;
-  const cancelableA1 =
-    (attack1Active && player.character.basicAttack.cancelable) ||
-    !attack1Active;
+  const isCancelQforChrctr =
+    player.character instanceof Iroh
+      ? IrohSpeelQ(player.character).cancelable
+      : player.character instanceof Jack
+      ? JackSpeelQ(player.character).cancelable
+      : undefined;
+
+  const İsCancelA1forChrctr =
+    player.character instanceof Iroh
+      ? IrohBasicAttack(player.character).cancelable
+      : player.character instanceof Jack
+      ? JackBasicAttack(player.character).cancelable
+      : undefined;
+
+  const cancelableQforMov =
+    (attackQActive && isCancelQforChrctr) || !attackQActive;
+
+  const cancelableA1forMov =
+    (attack1Active && İsCancelA1forChrctr) || !attack1Active;
+
   const OnStun = player.sprite.anims.getName().includes(mcAnimTypes.TAKE_HIT);
-  const canMoVE = !OnStun && !onTransform && cancelableA1 && cancelableQ;
+
+  const canMoVE =
+    !OnStun && !onTransform && cancelableA1forMov && cancelableQforMov;
 
   setAttackrect(player);
 
@@ -162,12 +189,16 @@ export function playerMovementUpdate(player: Player<Character>) {
   if (W_isDOWN && canMoVE) jumpandFallonupdate(player);
   if (RunisDown && !W_isDOWN && canMoVE) runonUpdate(player);
   //Can run while AttackQactive
-  if (Space_isD && canMoVE && cancelableQ) attackonUpdate(player); //Can base attack while AttackQctive
+  if (Space_isD && canMoVE && cancelableQforMov) attackonUpdate(player); //Can base attack while AttackQctive
 
   if (justQ) {
-    if (player.character instanceof Jack && cancelableA1)
+    if (player.character instanceof Jack && cancelableA1forMov)
       heavyStrikeonUpdate(player as Player<Jack>);
-    else if (player.character instanceof Iroh && cancelableA1 && !onTransform)
+    else if (
+      player.character instanceof Iroh &&
+      cancelableA1forMov &&
+      !onTransform
+    )
       heavyStrikeonUpdate(player as Player<Iroh>);
     // else throw new Error("unknown character type for Q attack");
   }

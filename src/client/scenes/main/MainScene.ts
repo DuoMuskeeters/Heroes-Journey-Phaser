@@ -13,11 +13,7 @@ import { createMob as createMobs } from "./CreateMob";
 import { createAvatarFrame } from "../Ui/AvatarUi";
 
 import { Player } from "../../../objects/player";
-import {
-  type CharacterType,
-  Iroh,
-  getCharacterClass,
-} from "../../../game/Karakter";
+import { CharacterType, Jack, getCharacterClass } from "../../../game/Karakter";
 import {
   type GoblinTookHit,
   mcAnimTypes,
@@ -103,7 +99,7 @@ export default class MainScene extends Phaser.Scene {
 
   constructor() {
     super("mainscene");
-    const player = new Player(new Iroh("jack", playerBaseStates.jack));
+    const player = new Player(new Jack("jack", playerBaseStates.jack));
     this.playerManager = new PlayerManager();
     this.playerManager.push({ player, UI: {} as PlayerUI });
   }
@@ -357,7 +353,10 @@ export default class MainScene extends Phaser.Scene {
         this.room = await this.client.joinOrCreate("relay", {
           x: this.player.sprite.x,
           y: this.player.sprite.y,
-          type: this.player.character.type as CharacterType,
+          /**
+           * @note I wanted both characters to be on screen.
+           **/
+          type: "iroh" as CharacterType,
           mobs: this.mobController.map((mob) => ({
             x: mob.goblin.sprite.x,
             y: mob.goblin.sprite.y,
