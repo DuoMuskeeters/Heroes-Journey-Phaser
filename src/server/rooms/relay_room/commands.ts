@@ -15,7 +15,8 @@ import {
 } from "../../../game/Karakter";
 import { MobType } from "../../../game/mobStats";
 
-const SessionId = z.string().min(1).max(32);
+const SessionId = z.string().trim().min(1).max(32);
+const Name = z.string().trim().min(1).max(32);
 
 const UINT16_MAX = 65535;
 
@@ -85,9 +86,10 @@ export class ConnectPlayer extends Command<RelayRoom> {
   payload!: z.infer<typeof this.validator>;
   validator = Coordinates.extend({
     type: PlayerTypes,
+    name: Name,
     mobs: z.array(
       Coordinates.extend({
-        name: z.string().min(1),
+        name: Name,
         type: MobTypes,
         id: z.number().int().min(1),
       })
@@ -99,7 +101,7 @@ export class ConnectPlayer extends Command<RelayRoom> {
 
     const player = new ServerPlayer(
       this.client.sessionId,
-      new Character("playerName", playerBaseStates[this.payload.type]),
+      new Character(this.payload.name, playerBaseStates[this.payload.type]),
       this.payload.x,
       this.payload.y,
       new Inventory(this.client.sessionId, "gold", 31)

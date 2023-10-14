@@ -15,17 +15,16 @@ import {
   IrohInComboTime,
   IrohSpeelQ,
   JackSpeelQ,
-  IrohBasicAttack,
-  JackBasicAttack,
   CanlıIsDead,
+  CharacterSpellQ,
+  CharacterSpellBasicAttack,
 } from "../../game/Karakter";
 import MainScene from "../../client/scenes/main/MainScene";
 import {
   IROH_ATTACK1_FRAME_COUNT,
   JACK_ATTACK1_FRAME_COUNT,
 } from "../../client/scenes/main/Anims";
-import { channel } from "diagnostics_channel";
-import { never } from "zod";
+
 const runonUpdate = (player: Player<Character>) => {
   player.play(mcAnimTypes.RUN, true);
   player.sprite.body.setVelocityX(dirVelocity[player.lastdirection] * 250);
@@ -131,19 +130,11 @@ export function playerMovementUpdate(player: Player<Character>) {
   const transformActive =
     player.character instanceof Iroh && player.character.prefix === "fire";
 
-  const isCancelQforChrctr =
-    player.character instanceof Iroh
-      ? IrohSpeelQ(player.character).cancelable
-      : player.character instanceof Jack
-      ? JackSpeelQ(player.character).cancelable
-      : undefined;
+  const spellQ = CharacterSpellQ(player.character);
+  const spellBasic = CharacterSpellBasicAttack(player.character);
 
-  const İsCancelA1forChrctr =
-    player.character instanceof Iroh
-      ? IrohBasicAttack(player.character).cancelable
-      : player.character instanceof Jack
-      ? JackBasicAttack(player.character).cancelable
-      : undefined;
+  const isCancelQforChrctr = spellQ?.cancelable;
+  const İsCancelA1forChrctr = spellBasic?.cancelable;
 
   const cancelableQforMov =
     (attackQActive && isCancelQforChrctr) || !attackQActive;

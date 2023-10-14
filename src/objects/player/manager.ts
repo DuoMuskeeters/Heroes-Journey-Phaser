@@ -27,6 +27,11 @@ export class PlayerManager extends Array<{
     if (!item) throw new Error(`PlayerManager: player ${name} not found`);
     return item;
   }
+  findBySessionId(sessionId: string) {
+    const item = this.find(({ player }) => player.sessionId === sessionId);
+    if (!item) throw new Error(`PlayerManager: player ${sessionId} not found`);
+    return item;
+  }
   mainPlayer() {
     if (this.length === 0)
       throw new Error("PlayerManager: No player is added yet");
@@ -51,6 +56,7 @@ export class PlayerManager extends Array<{
     UI.playerleveltext.destroy();
 
     this.splice(i, 1);
+    // TODO: splice needs to reorder each player.index after i
   }
   destroy() {
     mcEvents.removeAllListeners();

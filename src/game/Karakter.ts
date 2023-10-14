@@ -116,6 +116,16 @@ export function CharacterIncrease(c: Character, stat: keyof BaseTypes) {
   }
 }
 
+export function CharacterSpellQ(c: Character) {
+  if (c instanceof Iroh) return IrohSpeelQ(c);
+  else if (c instanceof Jack) return JackSpeelQ(c);
+}
+
+export function CharacterSpellBasicAttack(c: Character) {
+  if (c instanceof Iroh) return IrohBasicAttack(c);
+  else if (c instanceof Jack) return JackBasicAttack(c);
+}
+
 export class Character extends Canlı {
   @type("string") type: CharacterType | "unknown" = "unknown";
   @type("number") exp: XP;

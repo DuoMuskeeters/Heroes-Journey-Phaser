@@ -20,7 +20,7 @@ export class Player<T extends Character> {
     Space: false,
   };
 
-  constructor(public character: T) {}
+  constructor(public character: T, public _sessionId?: string) {}
 
   create(scene: Phaser.Scene, x: number, y: number, i: number) {
     const type = this.character.type;
@@ -89,5 +89,9 @@ export class Player<T extends Character> {
 
   get attackrect() {
     return getOrThrow(this._attackrect, "Attackrect");
+  }
+
+  get sessionId() {
+    return getOrThrow(this._sessionId, "SessionId");
   }
 }

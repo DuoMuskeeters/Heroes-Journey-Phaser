@@ -63,13 +63,7 @@ export default class MainScene extends Phaser.Scene {
   client = new Client("ws://localhost:2567");
   _room?: Room<RelayState>;
   connected = false;
-
-  keySpace!: Key;
-  keyW!: Key;
-  keyA!: Key;
-  keyD!: Key;
-  keyQ!: Key;
-  keyE!: Key;
+  keys!: { Space: Key; W: Key; A: Key; D: Key; Q: Key; E: Key };
 
   keyEnter!: Key;
   keyUp!: Key;
@@ -118,26 +112,23 @@ export default class MainScene extends Phaser.Scene {
 
   onConnectionReady() {
     console.log("connection ready");
-    this.player.character.name = this.room.sessionId;
+    this.player._sessionId = this.room.sessionId;
     this.room.onStateChange((state) => {
       console.debug("onStateChange", state);
     });
 
     this.room.state.players.onAdd((serverPlayer, sessionId) => {
       console.log("players.onAdd:", sessionId);
-      console.log("player character type:", serverPlayer.character.type);
-
-      console.log("instance check", {
-        jack: serverPlayer.character instanceof Jack,
-        iroh: serverPlayer.character instanceof Iroh,
-        character: serverPlayer.character instanceof Character,
-      });
 
       if (sessionId !== this.room.sessionId) {
         console.log("A player has joined! sid:", sessionId);
         const Character = getCharacterClass(serverPlayer.character.type);
         const player = new Player(
-          new Character(sessionId, serverPlayer.character.state)
+          new Character(
+            serverPlayer.character.name,
+            serverPlayer.character.state
+          ),
+          serverPlayer.sessionId
         );
         const i = this.playerManager.length;
         player.create(this, 300, 0, i);
@@ -146,7 +137,7 @@ export default class MainScene extends Phaser.Scene {
         UI_createPlayer(this, this.playerManager[i]);
         createRoadCollider(this, this.playerManager[i].player.sprite);
       }
-      const { player } = this.playerManager.findByName(sessionId);
+      const { player } = this.playerManager.findBySessionId(sessionId);
 
       player.sprite.x = serverPlayer.x;
       player.sprite.y = serverPlayer.y;
@@ -196,10 +187,8 @@ export default class MainScene extends Phaser.Scene {
 
     this.room.state.players.onRemove((_player, sessionId) => {
       console.log("A player has left! sid:", sessionId);
-      const player = this.playerManager.find(
-        ({ player }) => player.character.name === sessionId
-      );
-      const i = !player ? -1 : this.playerManager.indexOf(player);
+      const player = this.playerManager.findBySessionId(sessionId);
+      const i = this.playerManager.indexOf(player);
       if (i === -1) {
         console.error(`player ${sessionId} not found`);
         return;
@@ -382,10 +371,8 @@ export default class MainScene extends Phaser.Scene {
         this.room = await this.client.joinOrCreate("relay", {
           x: this.player.sprite.x,
           y: this.player.sprite.y,
-          /**
-           * @note I wanted both characters to be on screen.
-           **/
           type: this.player.character.type as CharacterType,
+          name: this.player.character.name,
           mobs: this.mobController.map((mob) => ({
             x: mob.goblin.sprite.x,
             y: mob.goblin.sprite.y,
@@ -425,30 +412,25 @@ export default class MainScene extends Phaser.Scene {
     });
 
     this.player.pressingKeys = {
-      W: this.keyW.isDown,
-      A: this.keyA.isDown,
-      D: this.keyD.isDown,
-      Space: this.keySpace.isDown,
-      Q: Phaser.Input.Keyboard.JustDown(this.keyQ),
-      E: Phaser.Input.Keyboard.JustDown(this.keyE),
+      W: this.keys.W.isDown,
+      A: this.keys.A.isDown,
+      D: this.keys.D.isDown,
+      Space: this.keys.Space.isDown,
+      Q: Phaser.Input.Keyboard.JustDown(this.keys.Q),
+      E: Phaser.Input.Keyboard.JustDown(this.keys.E),
     };
   }
   Addkey() {
     const keyboard = this.input.keyboard;
     if (!keyboard) throw new Error("keyboard is not defined");
 
-    this.keySpace = keyboard.addKey("SPACE");
-    this.keyW = keyboard.addKey("W");
-    this.keyA = keyboard.addKey("A");
-    this.keyD = keyboard.addKey("D");
-    this.keyQ = keyboard.addKey("Q");
-    this.keyE = keyboard.addKey("E");
-
-    this.keyEnter = keyboard.addKey("ENTER");
-    this.keyUp = keyboard.addKey("UP");
-    this.keyLeft = keyboard.addKey("LEFT");
-    this.keyRight = keyboard.addKey("RIGHT");
-    this.keyP = keyboard.addKey("P");
-    this.keyO = keyboard.addKey("O");
+    this.keys = {
+      Space: keyboard.addKey("SPACE"),
+      W: keyboard.addKey("W"),
+      A: keyboard.addKey("A"),
+      D: keyboard.addKey("D"),
+      Q: keyboard.addKey("Q"),
+      E: keyboard.addKey("E"),
+    };
   }
 }
