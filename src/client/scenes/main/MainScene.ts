@@ -60,7 +60,7 @@ const reconnectionToken = {
 export default class MainScene extends Phaser.Scene {
   road!: Phaser.Tilemaps.TilemapLayer;
 
-  client = new Client("ws://localhost:2567");
+  client = new Client("ws://127.0.0.1:2567");
   _room?: Room<RelayState>;
   connected = false;
   keys!: { Space: Key; W: Key; A: Key; D: Key; Q: Key; E: Key };
@@ -200,9 +200,7 @@ export default class MainScene extends Phaser.Scene {
     this.room.onMessage(
       "player-skill",
       ([sessionId, skill]: PlayerSkillPayload) => {
-        const item = this.playerManager.find(
-          ({ player }) => player.character.name === sessionId
-        );
+        const item = this.playerManager.findBySessionId(sessionId);
         if (!item) {
           console.error(`player ${sessionId} not found`);
           return;

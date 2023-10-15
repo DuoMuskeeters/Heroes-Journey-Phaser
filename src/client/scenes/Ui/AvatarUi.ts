@@ -27,7 +27,7 @@ export function createAvatarFrame(
       .text(0, 0, `PLAYER: ${player.index + 1}`)
       .setFont("bold 15px Arial");
     scene.room.state.players
-      .get(player.character.name)!
+      .get(player.sessionId)!
       .listen("connected", (connected) => {
         UI.playerindexText
           .setText(

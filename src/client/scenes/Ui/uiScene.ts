@@ -43,7 +43,10 @@ export class UiScene extends Phaser.Scene {
     });
 
     mcEvents.on(mcEventTypes.BASIC_ATTACK_USED, (i: number) => {
-      console.log(`player ${i} basic attack used`);
+      const { player } = mainscene.playerManager[i];
+      console.log(
+        `player ${player.character.type} ${player.sessionId} basic attack used`
+      );
     });
 
     mcEvents.on(mcEventTypes.HEAVY_ATTACK_USED, (i: number) => {

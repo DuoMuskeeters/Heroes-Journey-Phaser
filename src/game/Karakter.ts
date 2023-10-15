@@ -208,7 +208,7 @@ export function IrohSpeelQ(c: Iroh) {
 
 export class Iroh extends Character {
   type: "iroh" = "iroh";
-  ATK1_MS = 1000;
+  @type("number") ATK1_MS = 1000;
   @type("uint8") lastCombo: 0 | 1 | 2 = 0;
   @type("number") lastBasicAttack: number = 0;
   prefix: "" | "fire" = "";
