@@ -60,7 +60,7 @@ export class UiScene extends Phaser.Scene {
     mcEvents.on(mcEventTypes.BASIC_ATTACK_USED, (i: number) => {
       const { player } = this.mainscene.playerManager[i];
       console.log(
-        `player ${player.character.type} ${player.sessionId} basic attack used`
+        `player ${player.character.type} ${player._sessionId} basic attack used`
       );
     });
 
@@ -78,7 +78,6 @@ export class UiScene extends Phaser.Scene {
   }
 
   update(_time: number, _delta: number): void {
-    
     this.statemenu.update();
     UI_updateOtherPlayers(this.mainscene.playerManager);
     Backroundmovement(this, this.mainscene.cameras);

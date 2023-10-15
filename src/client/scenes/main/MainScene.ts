@@ -88,6 +88,8 @@ export default class MainScene extends Phaser.Scene {
     const player = new Player(new Character(type, state));
     this.playerManager = new PlayerManager();
     this.playerManager.push({ player, UI: {} as PlayerUI });
+    if (CONFIG.physics.arcade.debug)
+      (globalThis as unknown as { player: typeof player }).player = player;
   }
 
   onConnectionReady() {
@@ -298,6 +300,14 @@ export default class MainScene extends Phaser.Scene {
     // this.frontroad.setCollisionByExclusion([-1], true);
     createMobs(this);
 
+    this.cameras.main.setZoom(2.5);
+    this.cameras.main.startFollow(this.player.sprite, false, 1, 1, 0, 0);
+    this.player.play(mcAnimTypes.FALL, true);
+    this.player.sprite.anims.stopAfterRepeat(2);
+    this.physics.world.setBounds(0, 0, Infinity, CONFIG.height - 300);
+    this.scene.launch("ui");
+    this.scene.bringToTop();
+
     // TODO: server side regeneration
     if (!this.connected)
       this.time.addEvent({
@@ -374,13 +384,6 @@ export default class MainScene extends Phaser.Scene {
     } catch (error) {
       console.error(error);
     }
-    this.cameras.main.setZoom(2.5);
-    this.cameras.main.startFollow(this.player.sprite, false, 1, 1, 0, 0);
-    this.player.play(mcAnimTypes.FALL, true);
-    this.player.sprite.anims.stopAfterRepeat(2);
-    this.physics.world.setBounds(0, 0, Infinity, CONFIG.height - 300);
-    this.scene.launch("ui");
-    this.scene.bringToTop();
   }
 
   update(time: number, delta: number): void {
