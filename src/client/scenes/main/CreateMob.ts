@@ -29,7 +29,7 @@ export function createMob(scene: MainScene) {
         goblinAnimTypes.IDLE,
         220,
         110,
-        2.55,
+        1,
         32,
         36
       );

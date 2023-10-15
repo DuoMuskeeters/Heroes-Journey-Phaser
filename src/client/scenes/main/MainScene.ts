@@ -1,12 +1,6 @@
 import Phaser from "phaser";
-import { createBackground } from "../preLoad/assets";
 import { loadAnimations } from "./Anims";
-import {
-  UI_createPlayer,
-  UI_updateOtherPlayers,
-  UI_updatePlayersHP,
-  UI_updatePlayersSP,
-} from "../Ui/Components";
+import { UI_createPlayer } from "../Ui/Components";
 import { Backroundmovement } from "./GameMovement";
 import { createRoadCollider, createground } from "./TileGround";
 import { createMob as createMobs } from "./CreateMob";
@@ -15,10 +9,7 @@ import { createAvatarFrame } from "../Ui/AvatarUi";
 import { Player } from "../../../objects/player";
 import {
   type CharacterType,
-  Jack,
   getCharacterClass,
-  Iroh,
-  Character,
   CharacterRegeneration,
   mobRegeneration,
 } from "../../../game/Karakter";
@@ -65,13 +56,6 @@ export default class MainScene extends Phaser.Scene {
   connected = false;
   keys!: { Space: Key; W: Key; A: Key; D: Key; Q: Key; E: Key };
 
-  keyEnter!: Key;
-  keyUp!: Key;
-  keyLeft!: Key;
-  keyRight!: Key;
-  keyi!: Key;
-  keyP!: Key;
-  keyO!: Key;
   playerManager: PlayerManager;
   friendlyFire = false;
 
@@ -92,10 +76,6 @@ export default class MainScene extends Phaser.Scene {
   }
 
   mobController: goblinController[] = [];
-  backgrounds!: {
-    rationx: number;
-    sprite: Phaser.GameObjects.TileSprite;
-  }[];
 
   shopobject?: Phaser.GameObjects.Sprite;
   tilemap!: Phaser.Tilemaps.Tilemap;
@@ -137,7 +117,7 @@ export default class MainScene extends Phaser.Scene {
         UI_createPlayer(this, this.playerManager[i]);
         createRoadCollider(this, this.playerManager[i].player.sprite);
       }
-      const { player } = this.playerManager.findBySessionId(sessionId);
+      const { player, UI } = this.playerManager.findBySessionId(sessionId);
 
       player.sprite.x = serverPlayer.x;
       player.sprite.y = serverPlayer.y;
@@ -150,10 +130,15 @@ export default class MainScene extends Phaser.Scene {
 
       if (sessionId === this.room.sessionId) return;
 
-      serverPlayer.listen("connected", () => {
-        if (serverPlayer.connected)
-          console.log("serverPlayer connected", sessionId);
+      serverPlayer.listen("connected", (connected) => {
+        if (connected) console.log("serverPlayer connected", sessionId);
         else console.log("serverPlayer disconnected", sessionId);
+
+        UI.playerindexText
+          .setText(
+            `PLAYER: ${player.index + 1} ${!connected ? "DISCONNECTED" : ""}`
+          )
+          .setColor(!connected ? "#ff0000" : "#000");
       });
 
       serverPlayer.listen("y", (newY) => {
@@ -304,13 +289,10 @@ export default class MainScene extends Phaser.Scene {
     this.tilemap = this.make.tilemap({ key: "roadfile" });
 
     this.Addkey();
-    createBackground(this);
     loadAnimations(this);
     createground(this);
     this.playerManager.forEach((player) => {
       createRoadCollider(this, player.player.sprite);
-      createAvatarFrame(this, player);
-      UI_createPlayer(this, player);
     });
 
     // this.frontroad.setCollisionByExclusion([-1], true);
@@ -392,19 +374,17 @@ export default class MainScene extends Phaser.Scene {
     } catch (error) {
       console.error(error);
     }
-    this.cameras.main.startFollow(this.player.sprite, false, 1, 0, -420, -160);
+    this.cameras.main.setZoom(2.5);
+    this.cameras.main.startFollow(this.player.sprite, false, 1, 1, 0, 0);
     this.player.play(mcAnimTypes.FALL, true);
     this.player.sprite.anims.stopAfterRepeat(2);
     this.physics.world.setBounds(0, 0, Infinity, CONFIG.height - 300);
     this.scene.launch("ui");
+    this.scene.bringToTop();
   }
 
   update(time: number, delta: number): void {
     this.playerManager.update(time, delta);
-    UI_updateOtherPlayers(this);
-    Backroundmovement(this);
-    UI_updatePlayersHP(this);
-    UI_updatePlayersSP(this);
     this.mobController.forEach((mobCcontroller) => {
       if (mobCcontroller.goblin.sprite.body) mobCcontroller.update(delta);
     });

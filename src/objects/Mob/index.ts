@@ -30,7 +30,7 @@ export class Mob<T extends MobCanlı> {
     this._scene = scene;
     this.id = id;
     this._sprite = scene.physics.add
-      .sprite(x * 2.55, y * 2.55, anim)
+      .sprite(x, y, anim)
       .setBodySize(bdySizeX, bdySizeY, true)
       .setCollideWorldBounds(true)
       .setBounce(0)

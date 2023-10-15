@@ -20,7 +20,7 @@ export const CONFIG = {
     default: "arcade",
     arcade: {
       debug: true,
-      gravity: { y: (2000 / 724) * /*CONFIG.height*/ 900 },
+      gravity: { y: 1 * /*CONFIG.height*/ 900 },
     },
   },
 } as const; // satisfies Phaser.Types.Core.GameConfig;

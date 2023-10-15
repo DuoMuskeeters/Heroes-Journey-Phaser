@@ -256,7 +256,6 @@ export function createGoblinBomb(
       player.sprite.y - 200,
       goblinAnimTypes.BOMB
     )
-    .setScale(2.5, 2.5)
     .setDepth(4)
     .setBodySize(25, 15, true);
 }
@@ -278,7 +277,7 @@ export function shop(scene: MainScene | MenuScene) {
 }
 
 export function createBar(
-  scene: MainScene,
+  scene: Phaser.Scene,
   framepercent: number,
   bar: "hpBar" | "spBar",
   index: number

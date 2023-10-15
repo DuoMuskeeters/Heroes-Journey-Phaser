@@ -27,7 +27,7 @@ import {
 
 const runonUpdate = (player: Player<Character>) => {
   player.play(mcAnimTypes.RUN, true);
-  player.sprite.body.setVelocityX(dirVelocity[player.lastdirection] * 250);
+  player.sprite.body.setVelocityX(dirVelocity[player.lastdirection] * 200);
 };
 
 const ıdleonUpdate = (player: Player<Character>) => {
@@ -37,7 +37,7 @@ const ıdleonUpdate = (player: Player<Character>) => {
 const jumpandFallonupdate = (player: Player<Character>) => {
   player.play(mcAnimTypes.JUMP, true);
   player.sprite.anims.stopAfterRepeat(0);
-  player.sprite.body.setVelocityY(-900);
+  player.sprite.body.setVelocityY(-400);
 };
 const heavyStrikeonUpdate = (player: Player<Jack | Iroh>) => {
   const spellHas =
@@ -162,7 +162,7 @@ export function playerMovementUpdate(player: Player<Character>) {
 
   if (!player.sprite.body.onFloor()) {
     player.sprite.body.setVelocityX(
-      RunisDown ? dirVelocity[player.lastdirection] * 250 : 0
+      RunisDown ? dirVelocity[player.lastdirection] * 150 : 0
     );
 
     if (!isanimplaying) {

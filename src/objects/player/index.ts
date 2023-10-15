@@ -29,7 +29,6 @@ export class Player<T extends Character> {
     this._sprite = scene.physics.add
       .sprite(x, y, type + "-" + mcAnimTypes.IDLE)
       .setCollideWorldBounds(true)
-      .setScale(2.55)
       .setBodySize(30, 45, true)
       .setDepth(300);
     if (type === "iroh") this._sprite.setOffset(56, 19);

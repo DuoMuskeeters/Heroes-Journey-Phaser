@@ -331,26 +331,4 @@ export default class goblinController {
     this.goblin.lastdirection = leftorRight.Direction;
     this.mobPlay(goblinAnimTypes.ATTACK);
   }
-
-  // private handleStomped(
-  //   goblinmob: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
-  // ) {
-  //   if (this.mobrect !== goblinmob) {
-  //     return;
-  //   }
-
-  //   goblinEvents.off(goblinEventsTypes.DIED, this.handleStomped, this);
-
-  //   this.mainscene.tweens.add({
-  //     targets: this.mobrect,
-  //     displayHeight: 0,
-  //     y: this.mobrect.y + this.mobrect.displayHeight * 0.5,
-  //     duration: 200,
-  //     onComplete: () => {
-  //       this.mobrect.destroy();
-  //     },
-  //   });
-
-  //   // this.stateMachine.setState("goblin-death");
-  // }
 }

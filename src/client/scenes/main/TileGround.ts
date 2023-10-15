@@ -14,7 +14,7 @@ export function createground(scene: MainScene) {
   const rock1 = addTilesetImage(scene.tilemap, "rock_1", "rock_1");
   const sign = addTilesetImage(scene.tilemap, "sign", "sign");
 
-  const scale = [2.55, 2.55];
+  const scale = [1, 1];
 
   scene.road = createLayer(scene.tilemap, "road", tiles)
     .setScale(...scale)
