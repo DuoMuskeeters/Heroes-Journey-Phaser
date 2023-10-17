@@ -209,8 +209,8 @@ export class Transform extends Command<RelayRoom> {
     }, this.payload);
   }
 
-  validate(): boolean {
-    if (!this.validator.safeParse(this.payload).success) return false;
+  validate(payload: unknown): boolean {
+    if (!this.validator.safeParse(payload).success) return false;
     return !CanlıIsDead(this.player.character);
   }
 }

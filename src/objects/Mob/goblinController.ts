@@ -14,6 +14,8 @@ import {
   type GoblinAnimTypes,
   goblinAnimTypes,
   mcAnimTypes,
+  playerVelocity,
+  goblinVelocity,
 } from "../../game/types/types";
 import { createRoadCollider } from "../../client/scenes/main/TileGround";
 import {
@@ -80,19 +82,15 @@ export default class goblinController {
   };
 
   public closestPlayer = () => {
-    let index = 0;
-    let dist = Infinity;
+    const closest = this.goblin.scene.physics.closest(
+      this.goblin.sprite,
+      this.playerManager.map(({ player }) => player.sprite)
+    );
+    if (!closest) return -1;
 
-    this.playerManager.forEach(({ player }, idx) => {
-      if (CanlıIsDead(player.character)) return;
-      const distance = Math.abs(this.goblin.sprite.x - player.sprite.x);
-      if (distance < dist) {
-        dist = distance;
-        index = idx;
-      }
-    });
-
-    return index;
+    return this.playerManager.findIndex(
+      ({ player }) => player.sprite === closest
+    );
   };
 
   private leftoRight = () => {
@@ -102,7 +100,7 @@ export default class goblinController {
     return this.goblin.sprite.x - player.sprite.body.x > 0
       ? {
           velocity: {
-            run: -150,
+            run: -goblinVelocity.run,
             ıdle: 0,
           },
           flip: false,
@@ -110,7 +108,7 @@ export default class goblinController {
         }
       : {
           velocity: {
-            run: 150,
+            run: goblinVelocity.run,
             ıdle: 0,
           },
           flip: true,
@@ -168,14 +166,14 @@ export default class goblinController {
       mobEventsTypes.TOOK_HIT,
       (index: number, details: GoblinTookHit) => {
         if (this.goblin.id === index && details.stun) {
-          goblin.sprite.setVelocityX(0);
+          goblin.sprite.setVelocityX(goblinVelocity.takeHit);
           this.mobPlay(goblinAnimTypes.TAKE_HIT);
         }
       }
     );
     mobEvents.on(mobEventsTypes.ULTI, (index: number) => {
       if (this.goblin.id === index) {
-        goblin.sprite.setVelocityX(0);
+        goblin.sprite.setVelocityX(goblinVelocity.hitting);
         this.mobPlay(goblinAnimTypes.ULTI);
       }
     });
@@ -218,7 +216,7 @@ export default class goblinController {
         areTouchingBomb.forEach((isTouching, i) => {
           if (!isTouching) return;
           const { player } = this.playerManager[i];
-          player.sprite.setVelocityX(0);
+          player.sprite.setVelocityX(playerVelocity.takeHit);
           player.play(mcAnimTypes.TAKE_HIT, true);
           player.sprite.anims.stopAfterRepeat(0);
           characters.push(player.character);
@@ -242,7 +240,10 @@ export default class goblinController {
 
     return this.playerManager.map(
       ({ player }, i) =>
-        Math.abs(player.sprite.body.x - this.goblin.sprite.x) <= 300 &&
+        Math.abs(player.sprite.x - this.goblin.sprite.x) <=
+          this.goblin.attackrect.width * 6 &&
+        Math.abs(player.sprite.y - this.goblin.sprite.y) <=
+          this.goblin.attackrect.height * 2 &&
         !this.isDead() &&
         playerAlive[i]
     );
@@ -296,7 +297,7 @@ export default class goblinController {
 
   private ıdleOnUpdate(dt: number) {
     this.ıdletime += dt;
-    this.goblin.sprite.setVelocityX(0);
+    this.goblin.sprite.setVelocityX(goblinVelocity.idle);
 
     if (this.ıdletime > 4000) {
       if (this.goblin.lastdirection === direction.left) {
@@ -313,7 +314,7 @@ export default class goblinController {
 
   private runOnUpdate(_dt: number) {
     if (this.goblin.sprite.body.onWall()) {
-      this.goblin.sprite.setVelocityY(-300);
+      this.goblin.sprite.setVelocityY(goblinVelocity.climb);
     }
     const leftorRight = this.leftoRight();
 
@@ -331,26 +332,4 @@ export default class goblinController {
     this.goblin.lastdirection = leftorRight.Direction;
     this.mobPlay(goblinAnimTypes.ATTACK);
   }
-
-  // private handleStomped(
-  //   goblinmob: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
-  // ) {
-  //   if (this.mobrect !== goblinmob) {
-  //     return;
-  //   }
-
-  //   goblinEvents.off(goblinEventsTypes.DIED, this.handleStomped, this);
-
-  //   this.mainscene.tweens.add({
-  //     targets: this.mobrect,
-  //     displayHeight: 0,
-  //     y: this.mobrect.y + this.mobrect.displayHeight * 0.5,
-  //     duration: 200,
-  //     onComplete: () => {
-  //       this.mobrect.destroy();
-  //     },
-  //   });
-
-  //   // this.stateMachine.setState("goblin-death");
-  // }
 }

@@ -1,4 +1,8 @@
-import { type Character, CanlıIsDead } from "../../game/Karakter";
+import {
+  type Character,
+  CanlıIsDead,
+  CharacterType,
+} from "../../game/Karakter";
 import { PressingKeys, mcEventTypes, mcEvents } from "../../game/types/events";
 import { type Direction, direction, mcAnimTypes } from "../../game/types/types";
 import { playerAttackListener } from "../../client/scenes/main/Playerattack";
@@ -29,15 +33,14 @@ export class Player<T extends Character> {
     this._sprite = scene.physics.add
       .sprite(x, y, type + "-" + mcAnimTypes.IDLE)
       .setCollideWorldBounds(true)
-      .setScale(2.55)
       .setBodySize(30, 45, true)
       .setDepth(300);
     if (type === "iroh") this._sprite.setOffset(56, 19);
     if (type === "jack") this._sprite.setOffset(85, 77);
 
     this._attackrect = scene.physics.add
-      .sprite(500, 500, "attackrect")
-      .setDisplaySize(280, 170)
+      .sprite(0, 0, "attackrect")
+      .setDisplaySize(100, 70)
       .setVisible(false);
 
     (this._attackrect.body as Phaser.Physics.Arcade.Body).allowGravity = false;
@@ -53,6 +56,12 @@ export class Player<T extends Character> {
 
   onDied() {
     killCharacter(this);
+  }
+
+  onCharacterChange(type: CharacterType | "unknown") {
+    console.log("onCharacterChange", type);
+    if (type === "iroh") this.sprite.setOffset(56, 19);
+    if (type === "jack") this.sprite.setOffset(85, 77);
   }
 
   update(_time: number, _delta: number) {

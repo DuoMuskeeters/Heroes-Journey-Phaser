@@ -14,23 +14,19 @@ export function createground(scene: MainScene) {
   const rock1 = addTilesetImage(scene.tilemap, "rock_1", "rock_1");
   const sign = addTilesetImage(scene.tilemap, "sign", "sign");
 
-  const scale = [2.55, 2.55];
+  scene.road = createLayer(
+    scene.tilemap,
+    "road",
+    tiles
+  ).setCollisionFromCollisionGroup();
 
-  scene.road = createLayer(scene.tilemap, "road", tiles)
-    .setScale(...scale)
-    .setCollisionFromCollisionGroup();
-
-  createLayer(scene.tilemap, "lamp", lamp, 0, -85).setScale(...scale);
-  createLayer(scene.tilemap, "rock_3", rock3, 0, 15).setScale(...scale);
-  createLayer(scene.tilemap, "rock_2", rock2, 0, 30).setScale(...scale);
-  createLayer(scene.tilemap, "rock_1", rock1, 0, 33).setScale(...scale);
-  createLayer(scene.tilemap, "sign", sign, 0, -20).setScale(...scale);
-  createLayer(scene.tilemap, "grass", [grass1, grass2, grass3], 0, 55).setScale(
-    ...scale
-  );
-  createLayer(scene.tilemap, "fence", [fence_1, fence_2], 0, 15).setScale(
-    ...scale
-  );
+  createLayer(scene.tilemap, "lamp", lamp, 0, -33);
+  createLayer(scene.tilemap, "rock_3", rock3, 0, 6);
+  createLayer(scene.tilemap, "rock_2", rock2, 0, 12);
+  createLayer(scene.tilemap, "rock_1", rock1, 0, 12);
+  createLayer(scene.tilemap, "sign", sign, 0, -7);
+  createLayer(scene.tilemap, "grass", [grass1, grass2, grass3], 0, 20);
+  createLayer(scene.tilemap, "fence", [fence_1, fence_2], 0, 6);
 }
 export function createRoadCollider(
   scene: MainScene,

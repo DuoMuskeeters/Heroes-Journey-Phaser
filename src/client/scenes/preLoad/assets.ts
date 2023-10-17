@@ -1,6 +1,4 @@
 import { CONFIG } from "../../PhaserGame";
-import type MainScene from "../main/MainScene";
-import type MenuScene from "../menu/MenuScene";
 import type LoadScene from "./Load";
 
 export function preloadAssets(scene: LoadScene) {
@@ -10,7 +8,7 @@ export function preloadAssets(scene: LoadScene) {
   scene.load.pack("goblin", "goblin-package.json");
 }
 
-export function createBackground(scene: MainScene | MenuScene) {
+export function createBackground(scene: Phaser.Scene) {
   const bg1 = {
     rationx: 0.05,
     sprite: scene.add
@@ -40,9 +38,9 @@ export function createBackground(scene: MainScene | MenuScene) {
       .setDisplaySize(CONFIG.width, CONFIG.height)
       .setScrollFactor(0),
   };
-  scene.backgrounds = [bg1, bg2, bg3];
+  return [bg1, bg2, bg3];
 }
-export function forestRoad(scene: MenuScene) {
+export function forestRoad(scene: Phaser.Scene) {
   const road = {
     rationx: 0.3,
     sprite: scene.add
@@ -52,5 +50,5 @@ export function forestRoad(scene: MenuScene) {
       .setScrollFactor(0),
   };
 
-  scene.road = road;
+  return road;
 }

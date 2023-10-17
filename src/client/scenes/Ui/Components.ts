@@ -1,4 +1,3 @@
-import type MainScene from "../main/MainScene";
 import type goblinController from "../../../objects/Mob/goblinController";
 import { createBar } from "../main/Anims";
 import { type PlayerManager } from "../../../objects/player/manager";
@@ -6,7 +5,7 @@ import { type PlayerManager } from "../../../objects/player/manager";
 import type Phaser from "phaser";
 
 export function UI_createPlayer(
-  scene: MainScene,
+  scene: Phaser.Scene,
   playerItem: PlayerManager[number]
 ) {
   const { player, UI } = playerItem;
@@ -61,7 +60,7 @@ export function UI_createPlayer(
     .setDepth(500);
 }
 const UI_updateHP = (
-  scene: MainScene,
+  scene: Phaser.Scene,
   { player, UI }: PlayerManager[number]
 ) => {
   const state = player.character.state;
@@ -83,7 +82,7 @@ const UI_updateHP = (
   }
 };
 const UI_updateSP = (
-  scene: MainScene,
+  scene: Phaser.Scene,
   { player, UI }: PlayerManager[number]
 ) => {
   const state = player.character.state;
@@ -104,8 +103,8 @@ const UI_updateSP = (
     UI.spBar.anims.play(`spBar-${player.index}`, true);
   }
 };
-export function UI_updateOtherPlayers(scene: MainScene) {
-  scene.playerManager.forEach(({ player, UI }, i) => {
+export function UI_updateOtherPlayers(playerManager: PlayerManager) {
+  playerManager.forEach(({ player, UI }, i) => {
     if (i === 0) return;
     UI.frameLayer.setPosition(player.sprite.x - 60, player.sprite.y - 160);
     UI.playerindexText.setPosition(UI.frameLayer.x, UI.frameLayer.y);
@@ -114,12 +113,15 @@ export function UI_updateOtherPlayers(scene: MainScene) {
       .setScale(1.5);
   });
 }
-export function UI_updatePlayersHP(scene: MainScene) {
-  scene.playerManager.forEach(({ player, UI }, i) => {
+export function UI_updatePlayersHP(
+  scene: Phaser.Scene,
+  playerManager: PlayerManager
+) {
+  playerManager.forEach(({ player, UI }, i) => {
     const state = player.character.state;
     const UIhpText = UI.hptext;
     UIhpText.setText(`${Math.floor(state.HP)}`);
-    UI_updateHP(scene, scene.playerManager[i]);
+    UI_updateHP(scene, playerManager[i]);
     if (i !== 0) {
       UI.hpBar
         .setScale(3, 3)
@@ -135,10 +137,13 @@ export function UI_updatePlayersHP(scene: MainScene) {
   });
 }
 
-export function UI_updatePlayersSP(scene: MainScene) {
-  scene.playerManager.forEach(({ player, UI }, i) => {
+export function UI_updatePlayersSP(
+  scene: Phaser.Scene,
+  playerManager: PlayerManager
+) {
+  playerManager.forEach(({ player, UI }, i) => {
     const state = player.character.state;
-    UI_updateSP(scene, scene.playerManager[i]);
+    UI_updateSP(scene, playerManager[i]);
     const UIspText = UI.sptext;
     UIspText.setText(`${Math.floor(state.SP)}`);
 

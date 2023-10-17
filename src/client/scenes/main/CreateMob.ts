@@ -21,18 +21,13 @@ export function createMob(scene: MainScene) {
       const tier = (objData.properties as Property[])[0].value as MobTier;
 
       const newGoblin = new Mob(new Goblin(tier, name));
-      newGoblin.create(
-        scene,
-        x,
-        y,
-        id,
-        goblinAnimTypes.IDLE,
-        220,
-        110,
-        2.55,
-        32,
-        36
-      );
+      newGoblin.create(scene, x, y, id, goblinAnimTypes.IDLE, {
+        attackRectX: 90,
+        attackRectY: 45,
+        scaleSize: 1,
+        bodySizeX: 32,
+        bodySizeY: 36,
+      });
       const healtbar = scene.add.graphics();
       const spbar = scene.add.graphics();
       const hptitle = scene.add

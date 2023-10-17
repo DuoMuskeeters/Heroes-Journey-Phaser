@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { loadAnimations, shop } from "../main/Anims";
 import { createBackground, forestRoad } from "../preLoad/assets";
 import { Backroundmovement } from "../main/GameMovement";
-import { mcAnimTypes } from "../../../game/types/types";
+import { mcAnimTypes, playerVelocity } from "../../../game/types/types";
 import { CONFIG } from "../../PhaserGame";
 import { Player } from "../../../objects/player";
 import { Jack } from "../../../game/Karakter";
@@ -73,8 +73,8 @@ export default class MenuScene extends Phaser.Scene {
     this.brand.setDepth(100).setScrollFactor(0);
     this.gameTitle.setDepth(100).setScrollFactor(0);
 
-    createBackground(this);
-    forestRoad(this);
+    this.backgrounds = createBackground(this);
+    this.road = forestRoad(this);
     loadAnimations(this);
     this.physics.world.setBounds(0, 0, Infinity, CONFIG.height - 140);
     shop(this);
@@ -97,14 +97,14 @@ export default class MenuScene extends Phaser.Scene {
         this.player.sprite.body instanceof Phaser.Physics.Arcade.Body
       ) {
         this.player.play(mcAnimTypes.RUN, true);
-        this.player.sprite.body.setVelocityX(300);
+        this.player.sprite.setVelocityX(playerVelocity.run);
       }
     });
     this.createIntro();
   }
 
   update(_time: number, _delta: number): void {
-    Backroundmovement(this);
+    Backroundmovement(this, this.cameras);
     if (this.road !== undefined) {
       this.road.sprite.tilePositionX =
         this.cameras.main.scrollX * this.road.rationx;

@@ -1,9 +1,8 @@
 import { PlayerManager } from "../../../objects/player/manager";
-import type MainScene from "../main/MainScene";
 import { addTilesetImage, createLayer } from "./utils";
 
 export function createAvatarFrame(
-  scene: MainScene,
+  scene: Phaser.Scene,
   playerItem: PlayerManager[number]
 ) {
   const { player, UI } = playerItem;
@@ -26,15 +25,6 @@ export function createAvatarFrame(
     UI.playerindexText = scene.add
       .text(0, 0, `PLAYER: ${player.index + 1}`)
       .setFont("bold 15px Arial");
-    scene.room.state.players
-      .get(player.sessionId)!
-      .listen("connected", (connected) => {
-        UI.playerindexText
-          .setText(
-            `PLAYER: ${player.index + 1} ${!connected ? "DISCONNECTED" : ""}`
-          )
-          .setColor(!connected ? "#ff0000" : "#000");
-      });
     UI.playerleveltext = scene.add.text(0, 0, `${player.character.level}`);
     UI.frameLayer = createLayer(otherPlayersFrame, "frame", [avatarframe])
       .setDepth(200)
