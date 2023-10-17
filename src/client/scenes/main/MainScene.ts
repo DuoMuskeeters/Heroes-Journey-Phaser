@@ -128,6 +128,7 @@ export default class MainScene extends Phaser.Scene {
       serverPlayer.listen("character", (newState) => {
         console.log("serverPlayer character changed to ", newState);
         player.character = newState;
+        player.onCharacterChange(newState.type);
       });
 
       if (sessionId === this.room.sessionId) return;

@@ -6,6 +6,7 @@ import {
   mcEvents,
   mcEventTypes,
   PressingKeys,
+  playerVelocity,
 } from "../../game/types";
 import { type Player } from ".";
 import {
@@ -24,20 +25,23 @@ import {
   IROH_ATTACK1_FRAME_COUNT,
   JACK_ATTACK1_FRAME_COUNT,
 } from "../../client/scenes/main/Anims";
+import { CONFIG } from "../../client/PhaserGame";
 
 const runonUpdate = (player: Player<Character>) => {
   player.play(mcAnimTypes.RUN, true);
-  player.sprite.body.setVelocityX(dirVelocity[player.lastdirection] * 200);
+  player.sprite.setVelocityX(
+    dirVelocity[player.lastdirection] * playerVelocity.run
+  );
 };
 
 const ıdleonUpdate = (player: Player<Character>) => {
   player.play(mcAnimTypes.IDLE, true);
-  player.sprite.body.setVelocityX(0);
+  player.sprite.setVelocityX(playerVelocity.idle);
 };
 const jumpandFallonupdate = (player: Player<Character>) => {
   player.play(mcAnimTypes.JUMP, true);
   player.sprite.anims.stopAfterRepeat(0);
-  player.sprite.body.setVelocityY(-400);
+  player.sprite.setVelocityY(playerVelocity.jump);
 };
 const heavyStrikeonUpdate = (player: Player<Jack | Iroh>) => {
   const spellHas =
@@ -47,7 +51,7 @@ const heavyStrikeonUpdate = (player: Player<Jack | Iroh>) => {
   if (spellHas) {
     player.play(mcAnimTypes.ATTACK_2, true);
     player.sprite.anims.stopAfterRepeat(0);
-    player.sprite.body.setVelocityX(0);
+    player.sprite.setVelocityX(playerVelocity.hitting);
   }
 };
 const attackonUpdate = (player: Player<Character>) => {
@@ -76,19 +80,19 @@ const attackonUpdate = (player: Player<Character>) => {
   animation.frameRate = frameRate;
   player.play(anim, true);
   player.sprite.anims.stopAfterRepeat(0);
-  player.sprite.body.setVelocityX(0);
+  player.sprite.setVelocityX(playerVelocity.hitting);
 };
 
 const setAttackrect = (player: Player<Character>) => {
   player.attackrect.setPosition(
-    player.sprite.x + dirVelocity[player.lastdirection] * 90,
-    player.sprite.y - 40
+    player.sprite.x + dirVelocity[player.lastdirection] * 40,
+    player.sprite.y - 15
   );
 };
 export function killCharacter(player: Player<Character>) {
   player.play(mcAnimTypes.DEATH, true);
   player.sprite.anims.stopAfterRepeat(0);
-  player.sprite.body.setVelocityX(0);
+  player.sprite.setVelocityX(playerVelocity.dead);
 }
 
 export function playerMovementUpdate(player: Player<Character>) {
@@ -147,7 +151,7 @@ export function playerMovementUpdate(player: Player<Character>) {
   const canMoVE =
     !OnStun && !onTransform && cancelableA1forMov && cancelableQforMov;
 
-  setAttackrect(player);
+  if (attack1Active || attackQActive) setAttackrect(player);
 
   if (CanlıIsDead(player.character)) return;
 
@@ -161,8 +165,10 @@ export function playerMovementUpdate(player: Player<Character>) {
   }
 
   if (!player.sprite.body.onFloor()) {
-    player.sprite.body.setVelocityX(
-      RunisDown ? dirVelocity[player.lastdirection] * 150 : 0
+    player.sprite.setVelocityX(
+      RunisDown
+        ? dirVelocity[player.lastdirection] * playerVelocity.fly
+        : playerVelocity.idle
     );
 
     if (!isanimplaying) {
@@ -198,7 +204,7 @@ export function playerMovementUpdate(player: Player<Character>) {
     if (player.character instanceof Iroh && !transformActive) {
       player.play(mcAnimTypes.TRANSFORM, true);
       player.sprite.anims.stopAfterRepeat(0);
-      player.sprite.setVelocityX(0);
+      player.sprite.setVelocityX(playerVelocity.hitting);
     }
     if (player.character instanceof Jack) {
       console.log("jack E not implemented");
