@@ -12,8 +12,8 @@ import { killCharacter, playerMovementUpdate } from "./movements";
 export class Player<T extends Character> {
   private _index?: number;
   private _scene?: Phaser.Scene;
-  private _sprite?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
-  private _attackrect?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+  private _sprite?: Phaser.Physics.Matter.Sprite;
+  private _attackrect?: Phaser.Physics.Matter.Sprite;
   public lastdirection: Direction = direction.right;
   public pressingKeys: PressingKeys = {
     W: false,
@@ -30,18 +30,18 @@ export class Player<T extends Character> {
     const type = this.character.type;
     this._index = i;
     this._scene = scene;
-    this._sprite = scene.physics.add
+    this._sprite = scene.matter.add
       .sprite(x, y, type + "-" + mcAnimTypes.IDLE)
-      .setCollideWorldBounds(true)
-      .setBodySize(30, 45, true)
-      .setDepth(300);
-    if (type === "iroh") this._sprite.setOffset(56, 19);
-    if (type === "jack") this._sprite.setOffset(85, 77);
+      .setDepth(300)
+      .setBody({})
+      .setFixedRotation();
 
-    this._attackrect = scene.physics.add
+    this._attackrect = scene.matter.add
       .sprite(0, 0, "attackrect")
       .setDisplaySize(100, 70)
-      .setVisible(false);
+      .setVisible(false)
+      .setSensor(true)
+      .setIgnoreGravity(true);
 
     (this._attackrect.body as Phaser.Physics.Arcade.Body).allowGravity = false;
 
@@ -60,8 +60,6 @@ export class Player<T extends Character> {
 
   onCharacterChange(type: CharacterType | "unknown") {
     console.log("onCharacterChange", type);
-    if (type === "iroh") this.sprite.setOffset(56, 19);
-    if (type === "jack") this.sprite.setOffset(85, 77);
   }
 
   update(_time: number, _delta: number) {

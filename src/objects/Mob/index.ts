@@ -8,8 +8,8 @@ import { getOrThrow } from "../utils";
 
 export class Mob<T extends MobCanlı> {
   private _scene?: Phaser.Scene;
-  private _sprite?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
-  private _attackrect?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+  private _sprite?: Phaser.Physics.Matter.Sprite;
+  private _attackrect?: Phaser.Physics.Matter.Sprite;
   public lastdirection: Direction = direction.right;
   public id?: number;
 
@@ -31,15 +31,13 @@ export class Mob<T extends MobCanlı> {
   ) {
     this._scene = scene;
     this.id = id;
-    this._sprite = scene.physics.add
+    this._sprite = scene.matter.add
       .sprite(x, y, anim)
-      .setBodySize(args.bodySizeX, args.bodySizeY, true)
-      .setCollideWorldBounds(true)
-      .setBounce(0)
       .setDepth(100)
       .setScale(args.scaleSize)
-      .setOffset(60, 65);
-    this._attackrect = scene.physics.add.sprite(
+      .setFixedRotation();
+
+    this._attackrect = scene.matter.add.sprite(
       x,
       y,
       `$${this.mob.name}-attackrect`
@@ -49,7 +47,9 @@ export class Mob<T extends MobCanlı> {
     this.attackrect
       .setDisplaySize(args.attackRectX, args.attackRectY)
       .setDepth(0)
-      .setVisible(false);
+      .setVisible(false)
+      .setSensor(true)
+      .setIgnoreGravity(true);
   }
 
   // update(time: number, delta: number) {}

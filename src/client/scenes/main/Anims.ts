@@ -250,14 +250,13 @@ export function createGoblinBomb(
   scene: Phaser.Scene,
   player: Player<Character>
 ) {
-  return scene.physics.add
+  return scene.matter.add
     .sprite(
-      player.sprite.body.center.x,
+      player.sprite.x,
       player.sprite.y - 200,
       goblinAnimTypes.BOMB
     )
     .setDepth(4)
-    .setBodySize(25, 15, true);
 }
 export function shop(scene: MainScene | MenuScene) {
   scene.shopobject = scene.add

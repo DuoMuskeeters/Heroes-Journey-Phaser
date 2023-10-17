@@ -19,6 +19,8 @@ export function createground(scene: MainScene) {
     "road",
     tiles
   ).setCollisionFromCollisionGroup();
+  scene.matter.world.convertTilemapLayer(scene.road, {});
+  scene.road.body = scene.matter.body.create(scene.road);
 
   createLayer(scene.tilemap, "lamp", lamp, 0, -33);
   createLayer(scene.tilemap, "rock_3", rock3, 0, 6);
@@ -27,10 +29,4 @@ export function createground(scene: MainScene) {
   createLayer(scene.tilemap, "sign", sign, 0, -7);
   createLayer(scene.tilemap, "grass", [grass1, grass2, grass3], 0, 20);
   createLayer(scene.tilemap, "fence", [fence_1, fence_2], 0, 6);
-}
-export function createRoadCollider(
-  scene: MainScene,
-  object: Phaser.Types.Physics.Arcade.ArcadeColliderType
-) {
-  scene.physics.add.collider(object, [scene.road]);
 }

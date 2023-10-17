@@ -2,7 +2,6 @@ import { Goblin } from "../../../game/Karakter";
 import { goblinAnimTypes } from "../../../game/types/types";
 import { Mob } from "../../../objects/Mob";
 import type MainScene from "./MainScene";
-import { createRoadCollider } from "./TileGround";
 import goblinController from "../../../objects/Mob/goblinController";
 import { type MobType, type MobTier } from "../../../game/mobStats";
 
@@ -39,8 +38,6 @@ export function createMob(scene: MainScene) {
         })
         .setFontFamily('Georgia, "Goudy Bookletter 1911", Times, serif')
         .setFontStyle("bold");
-
-      createRoadCollider(scene, newGoblin.sprite);
 
       scene.mobController.push(
         new goblinController(newGoblin, scene.playerManager, {

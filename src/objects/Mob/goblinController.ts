@@ -1,4 +1,3 @@
-import PhaserGame from "../../client/PhaserGame";
 
 import {
   type GoblinTookHit,
@@ -17,7 +16,6 @@ import {
   playerVelocity,
   goblinVelocity,
 } from "../../game/types/types";
-import { createRoadCollider } from "../../client/scenes/main/TileGround";
 import {
   CanlıIsDead,
   mobBasicAttack,
@@ -26,12 +24,11 @@ import {
 } from "../../game/Karakter";
 import { type Mob } from ".";
 import { type PlayerManager } from "../player/manager";
-import type MainScene from "../../client/scenes/main/MainScene";
 
 export default class goblinController {
   private ıdletime = 0;
 
-  private bomb?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+  private bomb?: Phaser.Physics.Matter.Sprite;
   /**
    * @returns Array of true if mob is hitting player and attack animation is at first frame
    */
@@ -42,7 +39,7 @@ export default class goblinController {
       this.goblin.sprite.anims.getName() === goblinAnimTypes.ATTACK;
 
     const isOverlapping = this.playerManager.map(({ player }) =>
-      this.goblin.scene.physics.overlap(this.goblin.attackrect, player.sprite)
+      this.goblin.scene.matter.overlap(this.goblin.attackrect, [player.sprite])
     );
 
     if (!atFrame || !isAttacking) return this.playerManager.map(() => false);
@@ -59,9 +56,9 @@ export default class goblinController {
         animsName.includes(mcAnimTypes.ATTACK_1) || // includes all a1 combos
         animsName.includes(mcAnimTypes.ATTACK_2);
 
-      const isOverlapping = this.goblin.scene.physics.overlap(
+      const isOverlapping = this.goblin.scene.matter.overlap(
         this.goblin.sprite,
-        player.attackrect
+        [player.attackrect]
       );
 
       return isOverlapping && isAttacking && atFrame;
@@ -69,10 +66,11 @@ export default class goblinController {
   };
 
   private playersTouchingBomb() {
-    const atFrame = Number(this.bomb?.anims.getFrameName()) === 6;
+    if (!this.bomb) return this.playerManager.map(() => false);
+    const atFrame = Number(this.bomb.anims.getFrameName()) === 6;
     return this.playerManager.map(
       ({ player }) =>
-        this.goblin.scene.physics.overlap(player.sprite, this.bomb) && atFrame
+        this.goblin.scene.matter.overlap(player.sprite, [this.bomb!]) && atFrame
     );
   }
   private mobPlay = (animation: GoblinAnimTypes) => {
@@ -82,14 +80,20 @@ export default class goblinController {
   };
 
   public closestPlayer = () => {
-    const closest = this.goblin.scene.physics.closest(
-      this.goblin.sprite,
-      this.playerManager.map(({ player }) => player.sprite)
-    );
-    if (!closest) return -1;
+    const sorted = this.playerManager.sort((a, b) => {
+      const distanceA = Phaser.Math.Distance.BetweenPoints(
+        this.goblin.sprite,
+        a.player.sprite
+      );
+      const distanceB = Phaser.Math.Distance.BetweenPoints(
+        this.goblin.sprite,
+        b.player.sprite
+      );
+      return distanceA - distanceB;
+    });
 
     return this.playerManager.findIndex(
-      ({ player }) => player.sprite === closest
+      ({ player }) => player.sprite === sorted[0].player.sprite
     );
   };
 
@@ -97,7 +101,7 @@ export default class goblinController {
     const index = this.closestPlayer();
     const { player } = this.playerManager[index];
 
-    return this.goblin.sprite.x - player.sprite.body.x > 0
+    return this.goblin.sprite.x - player.sprite.x > 0
       ? {
           velocity: {
             run: -goblinVelocity.run,
@@ -142,12 +146,8 @@ export default class goblinController {
           const { player } = this.playerManager[this.closestPlayer()];
           goblin.mob.spellQ.onUse();
           this.bomb = createGoblinBomb(goblin.scene, player);
-          // TODO: remove this line
-          const mainscene = PhaserGame.scene.keys.mainscene as MainScene;
-          createRoadCollider(mainscene, this.bomb);
-
-          this.bomb?.anims.play(goblinAnimTypes.BOMB, true);
-          this.bomb?.anims.stopAfterRepeat(0);
+          this.bomb.anims.play(goblinAnimTypes.BOMB, true);
+          this.bomb.anims.stopAfterRepeat(0);
           this.BombListener();
         }
         if (animation.key === goblinAnimTypes.DEATH) {
@@ -253,9 +253,9 @@ export default class goblinController {
     const canSeePlayer = this.canSeePlayer();
     return this.playerManager.map(({ player }, i) => {
       const waitForUlti = !this.hasUltimate();
-      const isOverlapping = this.goblin.scene.physics.overlap(
+      const isOverlapping = this.goblin.scene.matter.overlap(
         this.goblin.attackrect,
-        player.sprite
+        [player.sprite.body as any]
       );
 
       return isOverlapping && !this.OnStun() && waitForUlti && canSeePlayer[i];
@@ -313,9 +313,10 @@ export default class goblinController {
   }
 
   private runOnUpdate(_dt: number) {
-    if (this.goblin.sprite.body.onWall()) {
-      this.goblin.sprite.setVelocityY(goblinVelocity.climb);
-    }
+    // TODO: port to matter physics
+    // if (this.goblin.sprite.onWall()) {
+    //   this.goblin.sprite.setVelocityY(goblinVelocity.climb);
+    // }
     const leftorRight = this.leftoRight();
 
     this.goblin.sprite.setVelocityX(leftorRight.velocity.run);

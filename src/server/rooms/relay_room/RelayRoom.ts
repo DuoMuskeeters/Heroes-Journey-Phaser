@@ -9,6 +9,7 @@ import {
 } from "./commands";
 import { Dispatcher } from "@colyseus/command";
 import { CommandInput } from "../../../client/utils";
+import { Engine } from "matter-js";
 
 /**
  * client.joinOrCreate("relayroom", {
@@ -20,6 +21,7 @@ import { CommandInput } from "../../../client/utils";
 export class RelayRoom extends Room<RelayState> {
   public allowReconnectionTime: number | "manual" = "manual";
   public dispatcher = new Dispatcher(this);
+  public engine = Engine.create();
 
   public onCreate(
     options: Partial<{

@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { loadAnimations } from "./Anims";
 import { UI_createPlayer } from "../Ui/Components";
 import { Backroundmovement } from "./GameMovement";
-import { createRoadCollider, createground } from "./TileGround";
+import { createground } from "./TileGround";
 import { createMob as createMobs } from "./CreateMob";
 import { createAvatarFrame } from "../Ui/AvatarUi";
 
@@ -88,7 +88,7 @@ export default class MainScene extends Phaser.Scene {
     const player = new Player(new Character(type, state));
     this.playerManager = new PlayerManager();
     this.playerManager.push({ player, UI: {} as PlayerUI });
-    if (CONFIG.physics.arcade.debug)
+    if (CONFIG.physics.matter.debug)
       (globalThis as unknown as { player: typeof player }).player = player;
   }
 
@@ -117,7 +117,6 @@ export default class MainScene extends Phaser.Scene {
         this.playerManager.push({ player, UI: {} as PlayerUI });
         createAvatarFrame(this, this.playerManager[i]);
         UI_createPlayer(this, this.playerManager[i]);
-        createRoadCollider(this, this.playerManager[i].player.sprite);
       }
       const { player, UI } = this.playerManager.findBySessionId(sessionId);
 
@@ -294,18 +293,16 @@ export default class MainScene extends Phaser.Scene {
     this.Addkey();
     loadAnimations(this);
     createground(this);
-    this.playerManager.forEach((player) => {
-      createRoadCollider(this, player.player.sprite);
-    });
 
     // this.frontroad.setCollisionByExclusion([-1], true);
     createMobs(this);
 
+    
     this.cameras.main.setZoom(2.5);
     this.cameras.main.startFollow(this.player.sprite, false, 1, 1, 0, 0);
     this.player.play(mcAnimTypes.FALL, true);
     this.player.sprite.anims.stopAfterRepeat(2);
-    this.physics.world.setBounds(0, 0, Infinity, CONFIG.height - 300);
+    this.matter.world.setBounds(0, 0, CONFIG.width, CONFIG.height - 300);
     this.scene.launch("ui");
     this.scene.bringToTop();
 

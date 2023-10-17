@@ -9,9 +9,9 @@ export type Direction = (typeof direction)[keyof typeof direction];
 //   return direction === "left" ? -1 : 1;
 // }
 export const playerVelocity = {
-  run: 200,
-  jump: -400,
-  fly: 150,
+  run: 2,
+  jump: -4,
+  fly: 1,
   hitting: 0,
   idle: 0,
   dead: 0,
@@ -19,8 +19,8 @@ export const playerVelocity = {
 } as const;
 
 export const goblinVelocity = {
-  run: 100,
-  climb: -150,
+  run: 1.7,
+  climb: -2,
   hitting: 0,
   idle: 0,
   dead: 0,

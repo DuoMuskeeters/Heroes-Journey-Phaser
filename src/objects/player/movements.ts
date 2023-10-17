@@ -164,7 +164,13 @@ export function playerMovementUpdate(player: Player<Character>) {
     player.sprite.setFlipX(false);
   }
 
-  if (!player.sprite.body.onFloor()) {
+  if (
+    scene.matter.collision.collides(
+      player.sprite.body as any,
+      scene.road.body as any,
+      []
+    )
+  ) {
     player.sprite.setVelocityX(
       RunisDown
         ? dirVelocity[player.lastdirection] * playerVelocity.fly

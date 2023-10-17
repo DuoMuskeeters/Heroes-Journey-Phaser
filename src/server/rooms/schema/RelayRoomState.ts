@@ -78,7 +78,9 @@ export class RelayState extends Schema {
     let player: ServerPlayer | undefined;
     this.players.forEach((p) => {
       if (player && p.authoritive)
-        throw new Error("multiple authoritive players");
+        throw new Error(
+          `multiple authoritive players: ${player.sessionId}, ${p.sessionId}`
+        );
 
       if (p.authoritive) player = p;
     });

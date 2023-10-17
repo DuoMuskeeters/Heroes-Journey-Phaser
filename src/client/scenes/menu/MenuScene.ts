@@ -76,7 +76,7 @@ export default class MenuScene extends Phaser.Scene {
     this.backgrounds = createBackground(this);
     this.road = forestRoad(this);
     loadAnimations(this);
-    this.physics.world.setBounds(0, 0, Infinity, CONFIG.height - 140);
+    this.matter.world.setBounds(0, 0, Infinity, CONFIG.height - 140);
     shop(this);
 
     this.cameras.main.startFollow(
