@@ -1,5 +1,5 @@
 import { CONFIG } from "../../PhaserGame";
-import { eventTypes, gameEvents } from "../../game/types/events";
+import { eventTypes, gameEvents } from "../../../game/types/events";
 import { preloadAssets } from "./assets";
 
 export default class LoadScene extends Phaser.Scene {

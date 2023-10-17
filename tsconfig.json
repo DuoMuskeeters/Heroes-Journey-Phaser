@@ -14,7 +14,10 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "strictNullChecks": true,
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false
   },
   "include": [".eslintrc.cjs", "**/*.ts", "**/*.tsx", "**/*.cjs", "**/*.mjs"]
 }

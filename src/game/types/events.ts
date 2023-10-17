@@ -8,6 +8,8 @@ export const mcEventTypes = {
   REGENERATED: "REGENERATED",
   TOOK_HIT: "TOOK_HIT",
   DIED: "DIED",
+  MOVED: "MOVED",
+  TRANSFORM: "TRANSFORM",
 } as const;
 
 export type McEventTypes = (typeof mcEventTypes)[keyof typeof mcEventTypes];
@@ -33,6 +35,15 @@ export type GoblinTookHit = {
 export type Regenerated = {
   HP: number;
   SP: number;
+};
+
+export type PressingKeys = {
+  W: boolean;
+  A: boolean;
+  D: boolean;
+  Space: boolean | "ephemeral";
+  Q: boolean | "ephemeral";
+  E: boolean | "ephemeral";
 };
 
 export const gameEvents = new Phaser.Events.EventEmitter();

@@ -8,6 +8,25 @@ export type Direction = (typeof direction)[keyof typeof direction];
 // export function getDirVelocity(direction: Direction) {
 //   return direction === "left" ? -1 : 1;
 // }
+export const playerVelocity = {
+  run: 200,
+  jump: -400,
+  fly: 150,
+  hitting: 0,
+  idle: 0,
+  dead: 0,
+  takeHit: 0,
+} as const;
+
+export const goblinVelocity = {
+  run: 100,
+  climb: -150,
+  hitting: 0,
+  idle: 0,
+  dead: 0,
+  takeHit: 0,
+} as const;
+
 export const dirVelocity: Record<Direction, number> = {
   left: -1,
   right: 1,

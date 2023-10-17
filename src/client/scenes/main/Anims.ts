@@ -1,8 +1,7 @@
-import { type Character } from "../../game/Karakter";
-import { type MobType } from "../../game/mobStats";
-import { type PlayerType } from "../../game/playerStats";
-import { goblinAnimTypes, mcAnimTypes } from "../../game/types/types";
-import { type Player } from "../../objects/player";
+import { type CharacterType, type Character } from "../../../game/Karakter";
+import { type MobType } from "../../../game/mobStats";
+import { goblinAnimTypes, mcAnimTypes } from "../../../game/types/types";
+import { type Player } from "../../../objects/player";
 import type MenuScene from "../menu/MenuScene";
 import type MainScene from "./MainScene";
 export function loadAnimations(scene: MainScene | MenuScene) {
@@ -54,7 +53,7 @@ const players = [
     death: { start: 16, end: 21 },
     takehit: { start: 56, end: 59 },
   } as const,
-] satisfies (Record<string, unknown> & { type: PlayerType | "fireiroh" })[];
+] satisfies (Record<string, unknown> & { type: CharacterType | "fireiroh" })[];
 
 export function createPlayeranims(scene: MainScene | MenuScene) {
   for (const mc of players) {
@@ -257,7 +256,6 @@ export function createGoblinBomb(
       player.sprite.y - 200,
       goblinAnimTypes.BOMB
     )
-    .setScale(2.5, 2.5)
     .setDepth(4)
     .setBodySize(25, 15, true);
 }
@@ -279,7 +277,7 @@ export function shop(scene: MainScene | MenuScene) {
 }
 
 export function createBar(
-  scene: MainScene,
+  scene: Phaser.Scene,
   framepercent: number,
   bar: "hpBar" | "spBar",
   index: number

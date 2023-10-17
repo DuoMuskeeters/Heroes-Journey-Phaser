@@ -22,6 +22,16 @@ export class PlayerManager extends Array<{
       this[i].player.onTookHit(damage)
     );
   }
+  findByName(name: string) {
+    const item = this.find(({ player }) => player.character.name === name);
+    if (!item) throw new Error(`PlayerManager: player ${name} not found`);
+    return item;
+  }
+  findBySessionId(sessionId: string) {
+    const item = this.find(({ player }) => player.sessionId === sessionId);
+    if (!item) throw new Error(`PlayerManager: player ${sessionId} not found`);
+    return item;
+  }
   mainPlayer() {
     if (this.length === 0)
       throw new Error("PlayerManager: No player is added yet");
@@ -33,6 +43,20 @@ export class PlayerManager extends Array<{
   }
   update(time: number, delta: number) {
     this.forEach(({ player }) => player.update(time, delta));
+  }
+  removePlayer(i: number) {
+    this[i].player.destroy();
+    const UI = this[i].UI;
+    UI.hpBar.destroy();
+    UI.spBar.destroy();
+    UI.hptext.destroy();
+    UI.sptext.destroy();
+    UI.frameLayer.destroy();
+    UI.playerindexText.destroy();
+    UI.playerleveltext.destroy();
+
+    this.splice(i, 1);
+    // TODO: splice needs to reorder each player.index after i
   }
   destroy() {
     mcEvents.removeAllListeners();

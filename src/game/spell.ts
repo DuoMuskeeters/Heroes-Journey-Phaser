@@ -8,7 +8,7 @@ export enum SpellRange {
   SingleORNone,
 }
 
-type ExtractSpell<
+export type ExtractSpell<
   Type,
   Range extends SpellRange
 > = Range extends SpellRange.Single
@@ -19,7 +19,7 @@ type ExtractSpell<
   ? Type | undefined
   : never;
 
-type SpellDamage<R extends SpellRange> = NonNullable<ExtractSpell<number, R>>;
+export type SpellDamage<R extends SpellRange> = NonNullable<ExtractSpell<number, R>>;
 
 type SpellOptions<R extends SpellRange> = {
   damage: (canlı: ExtractSpell<Canlı, R>) => SpellDamage<R>;

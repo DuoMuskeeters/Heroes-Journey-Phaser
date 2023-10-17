@@ -1,17 +1,13 @@
-import { type Character, Iroh, Jack } from "../../game/Karakter";
-import { mcEventTypes, mcEvents } from "../../game/types/events";
+import {
+  type Character,
+  CanlıIsDead,
+  CharacterType,
+} from "../../game/Karakter";
+import { PressingKeys, mcEventTypes, mcEvents } from "../../game/types/events";
 import { type Direction, direction, mcAnimTypes } from "../../game/types/types";
-import { playerAttackListener } from "../../scenes/main/Playerattack";
+import { playerAttackListener } from "../../client/scenes/main/Playerattack";
 import { getOrThrow } from "../utils";
 import { killCharacter, playerMovementUpdate } from "./movements";
-
-export function getCharacterType(character: Character) {
-  return character instanceof Jack
-    ? "jack"
-    : character instanceof Iroh
-    ? "iroh"
-    : "unknown";
-}
 
 export class Player<T extends Character> {
   private _index?: number;
@@ -19,26 +15,32 @@ export class Player<T extends Character> {
   private _sprite?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   private _attackrect?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   public lastdirection: Direction = direction.right;
+  public pressingKeys: PressingKeys = {
+    W: false,
+    A: false,
+    D: false,
+    E: false,
+    Q: false,
+    Space: false,
+  };
 
-  constructor(public character: T) {}
+  constructor(public character: T, public _sessionId?: string) {}
 
   create(scene: Phaser.Scene, x: number, y: number, i: number) {
-    const type = getCharacterType(this.character);
+    const type = this.character.type;
     this._index = i;
     this._scene = scene;
     this._sprite = scene.physics.add
       .sprite(x, y, type + "-" + mcAnimTypes.IDLE)
       .setCollideWorldBounds(true)
-      .setBounce(0.1)
-      .setScale(2.55)
       .setBodySize(30, 45, true)
       .setDepth(300);
     if (type === "iroh") this._sprite.setOffset(56, 19);
     if (type === "jack") this._sprite.setOffset(85, 77);
 
     this._attackrect = scene.physics.add
-      .sprite(500, 500, "attackrect")
-      .setDisplaySize(280, 170)
+      .sprite(0, 0, "attackrect")
+      .setDisplaySize(100, 70)
       .setVisible(false);
 
     (this._attackrect.body as Phaser.Physics.Arcade.Body).allowGravity = false;
@@ -48,11 +50,18 @@ export class Player<T extends Character> {
   }
 
   onTookHit(_damage: number) {
-    if (this.character.isDead()) mcEvents.emit(mcEventTypes.DIED, this.index);
+    if (CanlıIsDead(this.character))
+      mcEvents.emit(mcEventTypes.DIED, this.index);
   }
 
   onDied() {
     killCharacter(this);
+  }
+
+  onCharacterChange(type: CharacterType | "unknown") {
+    console.log("onCharacterChange", type);
+    if (type === "iroh") this.sprite.setOffset(56, 19);
+    if (type === "jack") this.sprite.setOffset(85, 77);
   }
 
   update(_time: number, _delta: number) {
@@ -60,7 +69,7 @@ export class Player<T extends Character> {
   }
 
   animKey(key: string) {
-    const type = getCharacterType(this.character);
+    const type = this.character.type;
     const prefix = this.character.prefix;
     return prefix + type + "-" + key;
   }
@@ -68,6 +77,11 @@ export class Player<T extends Character> {
   play(key: string, ignoreIfPlaying?: boolean) {
     this.sprite.anims.play(this.animKey(key), ignoreIfPlaying);
     // play("jack-idle") play("iroh-idle") play("fireiroh-idle")
+  }
+
+  destroy() {
+    this.sprite.destroy();
+    this.attackrect.destroy();
   }
 
   get index() {
@@ -84,5 +98,9 @@ export class Player<T extends Character> {
 
   get attackrect() {
     return getOrThrow(this._attackrect, "Attackrect");
+  }
+
+  get sessionId() {
+    return getOrThrow(this._sessionId, "SessionId");
   }
 }

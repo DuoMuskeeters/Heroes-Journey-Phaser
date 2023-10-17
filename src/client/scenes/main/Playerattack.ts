@@ -1,16 +1,26 @@
-import { type Character, type Goblin, Iroh, Jack } from "../../game/Karakter";
-import { type Spell, SpellRange } from "../../game/spell";
+import {
+  type Character,
+  type Goblin,
+  Iroh,
+  Jack,
+  IrohTransform,
+  IrohBasicAttack,
+  JackBasicAttack,
+  IrohSpeelQ,
+  JackSpeelQ,
+} from "../../../game/Karakter";
+import { type Spell, SpellRange } from "../../../game/spell";
 import {
   type GoblinTookHit,
   mobEvents,
   mobEventsTypes,
   mcEventTypes,
   mcEvents,
-} from "../../game/types/events";
-import { mcAnimTypes } from "../../game/types/types";
-import { type Mob } from "../../objects/Mob";
-import type goblinController from "../../objects/Mob/goblinController";
-import { type Player, getCharacterType } from "../../objects/player";
+} from "../../../game/types/events";
+import { mcAnimTypes } from "../../../game/types/types";
+import { type Mob } from "../../../objects/Mob";
+import type goblinController from "../../../objects/Mob/goblinController";
+import { type Player } from "../../../objects/player";
 import MainScene from "./MainScene";
 
 type GoblinEmit = { goblin: Mob<Goblin>; damage: number };
@@ -30,7 +40,7 @@ function emit(
     mobEvents.emit(mobEventsTypes.TOOK_HIT, mob.goblin.id, {
       damage: mob.damage,
       stun: atk === "heavy",
-      from: getCharacterType(player.character),
+      from: player.character.type,
     } satisfies GoblinTookHit);
   });
 }
@@ -46,7 +56,7 @@ function attack(
     // SINGLE TARGET
     const closest = ctrl[0] as goblinController | undefined;
     if (!closest) return; // no goblins in range, do not use skill
-    const damage = spell.damage(closest?.goblin.mob);
+    const damage = spell.damage(closest.goblin.mob);
     spell.hit(closest?.goblin.mob);
 
     if (closest) emits.push({ goblin: closest?.goblin, damage });
@@ -72,6 +82,7 @@ function attack(
 }
 
 export function playerAttackListener(player: Player<Character>) {
+  if (player.index !== 0) return;
   const scene = player.scene;
   const isMain = scene instanceof MainScene;
   const controllers = isMain ? scene.mobController : [];
@@ -83,11 +94,17 @@ export function playerAttackListener(player: Player<Character>) {
     (animation: Phaser.Animations.Animation) => {
       let spell: Spell<SpellRange> | undefined;
 
-      if (animation.key.includes(mcAnimTypes.ATTACK_1))
-        spell = player.character.basicAttack;
-      else if (animation.key.includes(mcAnimTypes.ATTACK_2)) {
+      if (animation.key.includes(mcAnimTypes.ATTACK_1)) {
+        if (player.character instanceof Iroh) {
+          spell = IrohBasicAttack(player.character);
+        } else if (player.character instanceof Jack) {
+          spell = JackBasicAttack(player.character);
+        } else throw new Error("Unknown character type for attack 1");
+      } else if (animation.key.includes(mcAnimTypes.ATTACK_2)) {
         if (player.character instanceof Iroh) return; // heavy attack is handled in update
-        spell = player.character.spellQ;
+        if (player.character instanceof Jack)
+          spell = JackSpeelQ(player.character);
+        else throw new Error("Unknown character type for attack 2");
       }
 
       if (spell) attack(player, spell, getAffectedMobs());
@@ -96,16 +113,25 @@ export function playerAttackListener(player: Player<Character>) {
           player.character instanceof Iroh &&
           !animation.key.includes("fire")
         ) {
-          player.character.transform();
-          player.scene.time.addEvent({
-            delay: 5000,
-            callback: () => {
-              player.play(mcAnimTypes.TRANSFORM);
-              player.sprite.anims.stopAfterRepeat(0);
-              if (player.character instanceof Iroh)
-                player.character.transform();
-            },
-          });
+          const delay = 5000;
+
+          if (isMain && scene.connected)
+            // Sending transform event to server
+            mcEvents.emit(mcEventTypes.TRANSFORM, player.index, delay);
+          // Client should handle this
+          else {
+            IrohTransform(player.character);
+
+            player.scene.time.addEvent({
+              delay,
+              callback: () => {
+                player.play(mcAnimTypes.TRANSFORM);
+                player.sprite.anims.stopAfterRepeat(0);
+                if (player.character instanceof Iroh)
+                  IrohTransform(player.character);
+              },
+            });
+          }
           if (player.character instanceof Jack) {
             throw new Error("jack transform not implemented");
           }
@@ -124,7 +150,6 @@ export function playerAttackListener(player: Player<Character>) {
       } else if (animation.key.includes(mcAnimTypes.ATTACK_2)) {
         const affectedMobs = getAffectedMobs(true);
         let damages: number[];
-
         if (player.character instanceof Iroh) {
           const padding = 2;
           const frames = animation.frames.slice(padding, -padding);
@@ -133,14 +158,14 @@ export function playerAttackListener(player: Player<Character>) {
           if (isAtFrame) {
             const mobs = affectedMobs.map((ctrl) => ctrl.goblin.mob);
 
-            if (!player.character.spellQ.has()) {
+            if (!IrohSpeelQ(player.character).has()) {
               console.log(
                 `[PlayerAttack] player ${player.index} heavy strike has exhausted`
               );
               return player.sprite.anims.stop();
             }
-            damages = player.character.spellQ.damage(mobs);
-            player.character.spellQ.hit(mobs);
+            damages = IrohSpeelQ(player.character).damage(mobs);
+            IrohSpeelQ(player.character).hit(mobs);
 
             emit(
               "heavy",
