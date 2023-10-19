@@ -37,14 +37,8 @@ export class Mob<T extends MobCanlı> {
       .setScale(args.scaleSize)
       .setFixedRotation();
 
-    this._attackrect = scene.matter.add.sprite(
-      x,
-      y,
-      `$${this.mob.name}-attackrect`
-    );
-
-    (this._attackrect.body as Phaser.Physics.Arcade.Body).allowGravity = false;
-    this.attackrect
+    this._attackrect = scene.matter.add
+      .sprite(x, y, `$${this.mob.name}-attackrect`)
       .setDisplaySize(args.attackRectX, args.attackRectY)
       .setDepth(0)
       .setVisible(false)

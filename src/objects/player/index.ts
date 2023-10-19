@@ -40,9 +40,8 @@ export class Player<T extends Character> {
       .sprite(0, 0, "attackrect")
       .setDisplaySize(100, 70)
       .setVisible(false)
-      .setSensor(true);
-
-    (this._attackrect as Phaser.Physics.Matter.Sprite).setIgnoreGravity(true);
+      .setSensor(true)
+      .setIgnoreGravity(true);
 
     playerAttackListener(this);
     console.log(`player ${this.index} created in scene`, scene.scene.key);
