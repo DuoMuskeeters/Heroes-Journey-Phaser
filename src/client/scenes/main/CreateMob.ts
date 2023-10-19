@@ -32,7 +32,7 @@ export function createMob(scene: MainScene) {
       const hptitle = scene.add
         .text(0, 0, `${newGoblin.mob.state.HP}`)
         .setStyle({
-          fontSize: "22px Arial",
+          fontSize: "10px Arial",
           color: "red",
           align: "center",
         })

@@ -165,49 +165,53 @@ export function UI_updatePlayersSP(
 export function goblinHealtbar(controller: goblinController) {
   const goblin = controller.goblin;
   const state = goblin.mob.state;
-  const UI = controller.mobUI;
-  const width = 100;
+  const healtBar = controller.mobUI.healtbar;
+  const width = 50;
+  const height = 6;
+  const radius = 3;
   const percent = state.HP / state.max_hp;
 
-  UI.hptitle
+  controller.mobUI.hptitle
     .setText(
       `${goblin.mob.name}: (${
         goblin.mob.tier
       })\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t${Math.round(state.HP)}`
     )
-    .setPosition(goblin.sprite.x - 70, goblin.sprite.y - 72)
+    .setPosition(goblin.sprite.x - 35, goblin.sprite.y - 40)
     .setDepth(5);
 
-  UI.healtbar.clear();
-  UI.healtbar.fillStyle(0x808080);
-  UI.healtbar
-    .fillRoundedRect(0, 0, width, 10, 5)
-    .setPosition(goblin.sprite.x - 50, goblin.sprite.y - 40);
+  healtBar.clear();
+  healtBar.fillStyle(0x808080);
+  healtBar
+    .fillRoundedRect(0, 0, width, height, radius)
+    .setPosition(goblin.sprite.x - 25, goblin.sprite.y - 25);
   if (percent >= 0) {
-    UI.healtbar.fillStyle(0x00ff00);
-    UI.healtbar
-      .fillRoundedRect(0, 0, width * percent, 10, 5)
-      .setPosition(goblin.sprite.x - 50, goblin.sprite.y - 40)
+    healtBar.fillStyle(0x00ff00);
+    healtBar
+      .fillRoundedRect(0, 0, width * percent, height, radius)
+      .setPosition(goblin.sprite.x - 25, goblin.sprite.y - 25)
       .setDepth(5);
   }
 }
 export function goblinspbar(controller: goblinController) {
   const goblin = controller.goblin;
   const state = goblin.mob.state;
-  const UI = controller.mobUI;
-  const width = 90;
+  const spBar = controller.mobUI.spbar;
+  const width = 40;
+  const height = 3;
+  const radius = 1;
   const percent = state.SP / state.max_sp;
 
-  UI.spbar.clear();
-  UI.spbar.fillStyle(0x808080);
-  UI.spbar
-    .fillRoundedRect(0, 0, width, 3, 0)
-    .setPosition(goblin.sprite.x - 45, goblin.sprite.y - 30);
+  spBar.clear();
+  spBar.fillStyle(0x808080);
+  spBar
+    .fillRoundedRect(0, 0, width, height, radius)
+    .setPosition(goblin.sprite.x - 20, goblin.sprite.y - 20);
   if (percent > 0) {
-    UI.spbar.fillStyle(0xffff00);
-    UI.spbar
-      .fillRoundedRect(0, 0, width * percent, 3, 0)
-      .setPosition(goblin.sprite.x - 45, goblin.sprite.y - 30)
+    spBar.fillStyle(0xffff00);
+    spBar
+      .fillRoundedRect(0, 0, width * percent, height, radius)
+      .setPosition(goblin.sprite.x - 20, goblin.sprite.y - 20)
       .setDepth(5);
   }
 }
