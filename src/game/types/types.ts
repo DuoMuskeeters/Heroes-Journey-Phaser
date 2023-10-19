@@ -8,6 +8,42 @@ export type Direction = (typeof direction)[keyof typeof direction];
 // export function getDirVelocity(direction: Direction) {
 //   return direction === "left" ? -1 : 1;
 // }
+export const playersAttackrect = {
+  iroh: {
+    attack1: {
+      width: 30,
+      height: 60,
+      movemntOnXaxis: 13,
+      movemntOnYaxis: 0,
+    },
+    attack1_Combo2: {
+      width: 35,
+      height: 80,
+      movemntOnXaxis: 16,
+      movemntOnYaxis: 5,
+    },
+    attack1_Combo3: {
+      width: 30,
+      height: 20,
+      movemntOnXaxis: 30,
+      movemntOnYaxis: -5,
+    },
+  },
+  jack: {
+    attack1: {
+      width: 30,
+      height: 45,
+      movemntOnXaxis: 40,
+      movemntOnYaxis: 10,
+    },
+    attack2: {
+      width: 33,
+      height: 33,
+      movemntOnXaxis: 40,
+      movemntOnYaxis: 5,
+    },
+  },
+};
 export const playerVelocity = {
   run: 2,
   jump: -4,

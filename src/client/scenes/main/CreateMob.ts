@@ -23,7 +23,6 @@ export function createMob(scene: MainScene) {
       newGoblin.create(scene, x, y, id, goblinAnimTypes.IDLE, {
         attackRectX: 90,
         attackRectY: 45,
-        scaleSize: 1,
         bodySizeX: 32,
         bodySizeY: 36,
       });

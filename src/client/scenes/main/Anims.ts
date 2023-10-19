@@ -254,9 +254,13 @@ export function createGoblinBomb(
     .sprite(
       player.sprite.x,
       player.sprite.y - 200,
-      goblinAnimTypes.BOMB
+      goblinAnimTypes.BOMB,
+      undefined,
+      {
+        shape: { type: "rectangle", width: 30, height: 30 },
+      }
     )
-    .setDepth(4)
+    .setDepth(4);
 }
 export function shop(scene: MainScene | MenuScene) {
   scene.shopobject = scene.add

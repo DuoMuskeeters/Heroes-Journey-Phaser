@@ -31,17 +31,34 @@ export class Player<T extends Character> {
     this._index = i;
     this._scene = scene;
     this._sprite = scene.matter.add
-      .sprite(x, y, type + "-" + mcAnimTypes.IDLE)
+      .sprite(x, y, type + "-" + mcAnimTypes.IDLE, undefined, {
+        label: type,
+        shape: {
+          type: "rectangle",
+          width: 30,
+          height: 50,
+        },
+        render: {
+          sprite: {
+            yOffset: -0.02,
+          },
+        },
+      })
       .setDepth(300)
-      .setBody({})
       .setFixedRotation();
 
     this._attackrect = scene.matter.add
-      .sprite(0, 0, "attackrect")
-      .setDisplaySize(100, 70)
-      .setVisible(false)
-      .setSensor(true)
-      .setIgnoreGravity(true);
+      .sprite(0, 0, "attackrect", undefined, {
+        label: "attackrect",
+        shape: {
+          type: "rectangle",
+          width: 110,
+          height: 50,
+        },
+        ignoreGravity: true,
+        isSensor: true,
+      })
+      .setVisible(false);
 
     playerAttackListener(this);
     console.log(`player ${this.index} created in scene`, scene.scene.key);

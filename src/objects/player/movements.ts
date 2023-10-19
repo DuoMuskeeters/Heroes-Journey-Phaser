@@ -7,6 +7,7 @@ import {
   mcEventTypes,
   PressingKeys,
   playerVelocity,
+  playersAttackrect,
 } from "../../game/types";
 import { type Player } from ".";
 import {
@@ -84,10 +85,38 @@ const attackonUpdate = (player: Player<Character>) => {
 };
 
 const setAttackrect = (player: Player<Character>) => {
-  player.attackrect.setPosition(
-    player.sprite.x + dirVelocity[player.lastdirection] * 40,
-    player.sprite.y - 15
-  );
+  let attackRectSize = {
+    width: 0,
+    height: 0,
+    movemntOnXaxis: 0,
+    movemntOnYaxis: 0,
+  };
+  const attackName = player.sprite.anims.getName();
+
+  if (player.character instanceof Iroh) {
+    const { lastCombo } = player.character;
+    if (attackName.includes(mcAnimTypes.ATTACK_1)) {
+      attackRectSize =
+        lastCombo === 0
+          ? playersAttackrect.iroh.attack1
+          : lastCombo === 1
+          ? playersAttackrect.iroh.attack1_Combo2
+          : playersAttackrect.iroh.attack1_Combo3;
+    }
+  } else if (player.character instanceof Jack) {
+    if (attackName.includes(mcAnimTypes.ATTACK_2)) {
+      attackRectSize = playersAttackrect.jack.attack2;
+    } else if (attackName.includes(mcAnimTypes.ATTACK_1)) {
+      attackRectSize = playersAttackrect.jack.attack1;
+    }
+  }
+  player.attackrect
+    .setPosition(
+      player.sprite.x +
+        dirVelocity[player.lastdirection] * attackRectSize.movemntOnXaxis,
+      player.sprite.y - attackRectSize.movemntOnYaxis
+    )
+    .setDisplaySize(attackRectSize.width, attackRectSize.height);
 };
 export function killCharacter(player: Player<Character>) {
   player.play(mcAnimTypes.DEATH, true);

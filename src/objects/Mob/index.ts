@@ -24,7 +24,6 @@ export class Mob<T extends MobCanlı> {
     args: {
       attackRectX: number;
       attackRectY: number;
-      scaleSize: number;
       bodySizeX: number;
       bodySizeY: number;
     }
@@ -32,18 +31,30 @@ export class Mob<T extends MobCanlı> {
     this._scene = scene;
     this.id = id;
     this._sprite = scene.matter.add
-      .sprite(x, y, anim)
+      .sprite(x, y, anim, undefined, {
+        label: this.mob.name,
+        render: {
+          sprite: {
+            yOffset: 0.06,
+          },
+        },
+      })
       .setDepth(100)
-      .setScale(args.scaleSize)
       .setFixedRotation();
 
     this._attackrect = scene.matter.add
-      .sprite(x, y, `$${this.mob.name}-attackrect`)
-      .setDisplaySize(args.attackRectX, args.attackRectY)
+      .sprite(x, y, `$${this.mob.name}-attackrect`, undefined, {
+        label: `$${this.mob.name}-attackrect`,
+        shape: {
+          type: "rectangle",
+          width: args.attackRectX,
+          height: args.attackRectY,
+        },
+        ignoreGravity: true,
+        isSensor: true,
+      })
       .setDepth(0)
-      .setVisible(false)
-      .setSensor(true)
-      .setIgnoreGravity(true);
+      .setVisible(false);
   }
 
   // update(time: number, delta: number) {}
