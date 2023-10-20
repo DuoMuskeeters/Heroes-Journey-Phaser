@@ -11,22 +11,28 @@ export type Direction = (typeof direction)[keyof typeof direction];
 export const playersAttackrect = {
   iroh: {
     attack1: {
-      width: 30,
-      height: 60,
+      width: 15,
+      height: 30,
       movemntOnXaxis: 13,
       movemntOnYaxis: 0,
     },
     attack1_Combo2: {
-      width: 35,
-      height: 80,
+      width: 17.5,
+      height: 40,
       movemntOnXaxis: 16,
       movemntOnYaxis: 5,
     },
     attack1_Combo3: {
-      width: 30,
-      height: 20,
+      width: 15,
+      height: 10,
       movemntOnXaxis: 30,
       movemntOnYaxis: -5,
+    },
+    attack2: {
+      width: 17,
+      height: 35,
+      movemntOnXaxis: 43,
+      movemntOnYaxis: 0,
     },
   },
   jack: {

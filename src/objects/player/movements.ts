@@ -26,7 +26,6 @@ import {
   IROH_ATTACK1_FRAME_COUNT,
   JACK_ATTACK1_FRAME_COUNT,
 } from "../../client/scenes/main/Anims";
-import { CONFIG } from "../../client/PhaserGame";
 
 const runonUpdate = (player: Player<Character>) => {
   player.play(mcAnimTypes.RUN, true);
@@ -94,15 +93,14 @@ const setAttackrect = (player: Player<Character>) => {
   const attackName = player.sprite.anims.getName();
 
   if (player.character instanceof Iroh) {
-    const { lastCombo } = player.character;
-    if (attackName.includes(mcAnimTypes.ATTACK_1)) {
-      attackRectSize =
-        lastCombo === 0
-          ? playersAttackrect.iroh.attack1
-          : lastCombo === 1
-          ? playersAttackrect.iroh.attack1_Combo2
-          : playersAttackrect.iroh.attack1_Combo3;
-    }
+    if (attackName.includes(mcAnimTypes.ATTACK_2))
+      attackRectSize = playersAttackrect.iroh.attack2;
+    else if (attackName.includes(mcAnimTypes.ATTACK_1_COMBO3))
+      attackRectSize = playersAttackrect.iroh.attack1_Combo3;
+    else if (attackName.includes(mcAnimTypes.ATTACK_1_COMBO2))
+      attackRectSize = playersAttackrect.iroh.attack1_Combo2;
+    else if (attackName.includes(mcAnimTypes.ATTACK_1))
+      attackRectSize = playersAttackrect.iroh.attack1;
   } else if (player.character instanceof Jack) {
     if (attackName.includes(mcAnimTypes.ATTACK_2)) {
       attackRectSize = playersAttackrect.jack.attack2;
