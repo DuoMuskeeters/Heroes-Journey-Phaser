@@ -36,6 +36,7 @@ import {
   type ConnectPlayer,
   ChangeCharacter,
 } from "../../../server/rooms/relay_room/commands";
+import type { UiScene } from "../Ui/uiScene";
 
 type Key = Phaser.Input.Keyboard.Key;
 
@@ -112,8 +113,9 @@ export default class MainScene extends Phaser.Scene {
         const i = this.playerManager.length;
         player.create(this, 300, 0, i);
         this.playerManager.push({ player, UI: {} as PlayerUI });
-        createAvatarFrame(this, this.playerManager[i]);
-        UI_createPlayer(this, this.playerManager[i]);
+        console.log("[Manager] Created player i:", i, "index:", player.index);
+        const uiScene = this.scene.get<UiScene>("ui");
+        uiScene.addPlayer(this.playerManager[i]);
       }
       const { player, UI } = this.playerManager.findBySessionId(sessionId);
 
@@ -141,8 +143,9 @@ export default class MainScene extends Phaser.Scene {
       });
 
       serverPlayer.listen("y", (newY) => {
-        player.sprite.y = Phaser.Math.Linear(player.sprite.y, newY, 0.1);
-        player.pressingKeys.W = player.sprite.y > newY;
+        player.sprite.y = newY;
+        // player.sprite.y = Phaser.Math.Linear(player.sprite.y, newY, 0.1);
+        // player.pressingKeys.W = player.sprite.y > newY;
         // console.log("[MOVE(Y)] player", sessionId, "y changed to", newY);
       });
       serverPlayer.listen("x", (newX) => {
@@ -150,16 +153,17 @@ export default class MainScene extends Phaser.Scene {
         // player.pressingKeys.D = player.sprite.x < newX;
         // player.sprite.x = Phaser.Math.Linear(player.sprite.x, newX, 0.1);
 
-        this.tweens.add({
-          targets: player.sprite,
-          x: newX,
-          duration: 100,
-          ease: "Linear",
-          onUpdate: () => {
-            player.pressingKeys.A = player.sprite.x > newX;
-            player.pressingKeys.D = player.sprite.x < newX;
-          },
-        });
+        player.sprite.x = newX;
+        // this.tweens.add({
+        //   targets: player.sprite,
+        //   x: newX,
+        //   duration: 100,
+        //   ease: "Linear",
+        //   onUpdate: () => {
+        //     player.pressingKeys.A = player.sprite.x > newX;
+        //     player.pressingKeys.D = player.sprite.x < newX;
+        //   },
+        // });
 
         // console.log("[MOVE(X)] player", sessionId, "x changed to", newX);
       });
@@ -187,6 +191,8 @@ export default class MainScene extends Phaser.Scene {
     });
 
     mcEvents.on(mcEventTypes.MOVED, (i: number, keys: PressingKeys) => {
+      const player = this.playerManager.find(p => p.player.index === i);
+      console.log("MOVE i", player?.player.index, player?.player.getKeys())
       if (i !== this.player.index || !this.connected) return;
       if (!this.room.connection.isOpen) this.connected = false;
 
@@ -364,20 +370,25 @@ export default class MainScene extends Phaser.Scene {
       const serverPlayer = this.room.state.players.get(this.room.sessionId);
       if (!serverPlayer) return;
       const deltaY = serverPlayer.y - this.player.sprite.y;
+      this.player.sprite.x = serverPlayer.x;
+      this.player.sprite.y = serverPlayer.y;
 
-      this.player.sprite.x = Phaser.Math.Linear(
-        this.player.sprite.x,
-        serverPlayer.x,
-        0.2
-      );
-      if (deltaY > 0 || deltaY < -50)
-        this.player.sprite.y = Phaser.Math.Linear(
-          this.player.sprite.y,
-          serverPlayer.y,
-          0.01
-        );
+      // this.player.sprite.x = Phaser.Math.Linear(
+      //   this.player.sprite.x,
+      //   serverPlayer.x,
+      //   0.2
+      // );
+      // if (deltaY > 0 || deltaY < -50)
+      //   this.player.sprite.y = Phaser.Math.Linear(
+      //     this.player.sprite.y,
+      //     serverPlayer.y,
+      //     0.01
+      //   );
     }
     this.playerManager.update(time, delta);
+    this.playerManager.forEach(({ player }) => {
+      console.log(player._sessionId, player.sprite.x);
+    });
     this.mobController.forEach((mobCcontroller) => {
       if (mobCcontroller.goblin.sprite.body) mobCcontroller.update(delta);
     });

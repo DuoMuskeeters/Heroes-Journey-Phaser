@@ -35,7 +35,9 @@ export class PlayerManager extends Array<{
   mainPlayer() {
     if (this.length === 0)
       throw new Error("PlayerManager: No player is added yet");
-    return this[0];
+    const main = this.find(({ player }) => player.isMainPlayer());
+    if (!main) throw new Error("PlayerManager: Main player not found");
+    return main;
   }
   create(scene: Phaser.Scene, x: number, y: number) {
     this.listeners();
@@ -56,6 +58,12 @@ export class PlayerManager extends Array<{
     UI.playerleveltext.destroy();
 
     this.splice(i, 1);
+    console.log(
+      "[Manager] Removed player i:",
+      i,
+      "index:",
+      this[i].player.index
+    );
     // TODO: splice needs to reorder each player.index after i
   }
   destroy() {

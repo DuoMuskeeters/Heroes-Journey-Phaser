@@ -43,7 +43,7 @@ export function UI_createPlayer(
   playerItem: PlayerManager[number]
 ) {
   const { player, UI } = playerItem;
-  const isscroolFactor = player.index === 0 ? 0 : 1;
+  const isscroolFactor = player.isMainPlayer() ? 0 : 1;
 
   const Center = UI.frameLayer.getCenter<Phaser.Tilemaps.TilemapLayer>();
   const LeftCenterX =
@@ -139,7 +139,7 @@ const UI_updateSP = (
 };
 export function UI_updateOtherPlayers(playerManager: PlayerManager) {
   playerManager.forEach(({ player, UI }, i) => {
-    if (i === 0) return;
+    if (player.isMainPlayer()) return;
     UI.frameLayer.setPosition(player.sprite.x - 60, player.sprite.y - 160);
     UI.playerindexText.setPosition(UI.frameLayer.x, UI.frameLayer.y);
     UI.playerleveltext
@@ -156,7 +156,7 @@ export function UI_updatePlayersHP(
     const UIhpText = UI.hptext;
     UIhpText.setText(`${Math.floor(state.HP)}`);
     UI_updateHP(scene, playerManager[i]);
-    if (i !== 0) {
+    if (!player.isMainPlayer()) {
       UI.hpBar
         .setScale(3, 3)
         .setPosition(UI.frameLayer.x - 8, UI.frameLayer.y + 50);
@@ -181,7 +181,7 @@ export function UI_updatePlayersSP(
     const UIspText = UI.sptext;
     UIspText.setText(`${Math.floor(state.SP)}`);
 
-    if (i !== 0) {
+    if (!player.isMainPlayer()) {
       UI.spBar
         .setScale(2.1, 3)
         .setPosition(UI.frameLayer.x + 17, UI.frameLayer.y + 75);

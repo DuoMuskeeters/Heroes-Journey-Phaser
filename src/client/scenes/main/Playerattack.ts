@@ -88,7 +88,7 @@ function isMainScene(scene: Phaser.Scene): scene is MainScene {
 }
 
 export function playerAttackListener(player: Player<Character>) {
-  if (player.index !== 0) return;
+  if (!player.isMainPlayer()) return;
   const scene = player.scene as MainScene | ServerScene;
   const isMain = isMainScene(scene);
   const controllers = isMain ? scene.mobController : [];

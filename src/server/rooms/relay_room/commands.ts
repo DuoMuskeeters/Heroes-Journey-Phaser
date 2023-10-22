@@ -124,6 +124,7 @@ export class ConnectPlayer extends Command<RelayRoom> {
     if (!this.state.getAuthoritivePlayer()) player.authoritive = true;
 
     this.state.players.set(this.client.sessionId, player);
+    this.room.game.scene.onPlayerJoin(player);
   }
 
   validate(payload: unknown): boolean {
@@ -233,7 +234,12 @@ export class Leave extends Command<RelayRoom> {
   client!: Client;
   payload!: boolean; //consented
 
+  get player() {
+    return this.state.getPlayer(this.client);
+  }
+
   execute() {
+    this.room.game.scene.onPlayerLeave(this.player);
     this.state.players.delete(this.client.sessionId);
   }
 }

@@ -14,6 +14,7 @@ import {
 } from "./Components";
 import { createAvatarFrame } from "./AvatarUi";
 import { Backroundmovement } from "../main/GameMovement";
+import type { PlayerManager } from "../../../objects/player/manager";
 
 export class UiScene extends Phaser.Scene {
   statemenu!: statemenu;
@@ -72,9 +73,13 @@ export class UiScene extends Phaser.Scene {
 
     this.backgrounds = createBackground(this);
     this.mainscene.playerManager.forEach((player, i) => {
-      createAvatarFrame(this, player);
-      UI_createPlayer(this, player);
+      this.addPlayer(player);
     });
+  }
+
+  addPlayer(player: PlayerManager[number]) {
+    createAvatarFrame(this, player);
+    UI_createPlayer(this, player);
   }
 
   update(_time: number, _delta: number): void {

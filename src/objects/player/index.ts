@@ -87,7 +87,7 @@ export class Player<T extends Character> {
   }
 
   onCharacterChange(type: CharacterType | "unknown") {
-    console.log("onCharacterChange", type);
+    console.log("[Player.index] onCharacterChange", type);
   }
 
   update(_time: number, _delta: number) {
@@ -108,6 +108,10 @@ export class Player<T extends Character> {
   destroy() {
     this.sprite.destroy();
     this.attackrect.destroy();
+  }
+
+  isMainPlayer() {
+    return this.index === 0;
   }
 
   get index() {

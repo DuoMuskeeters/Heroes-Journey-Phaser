@@ -50,25 +50,31 @@ export class ServerScene extends Phaser.Scene {
       this.state.players.size,
       "players"
     );
-    this.state.players.onAdd((player) => this.onPlayerJoin(player));
-    this.state.players.onRemove((player) => this.onPlayerLeave(player));
   }
 
   update(time: number, delta: number) {
     this.state.players.forEach((player) => {
+      if (!player.clientP) return;
       const keys = player.waitingKeys.splice(0, player.waitingKeys.length);
       keys.forEach((key) => {
         player.clientP!.pressingKeys = key;
         player.clientP!.update(Date.now(), delta);
         player.clientP!.clearKeys();
       });
-      player.x = player.clientP!.sprite.x;
-      player.y = player.clientP!.sprite.y;
+      player.x = player.clientP.sprite.x;
+      player.y = player.clientP.sprite.y;
+      console.log("player", player.sessionId, player.x);
+      console.log("-----------------------");
     });
   }
 
   onPlayerJoin(player: ServerPlayer) {
-    console.log("player joined", player.character.type);
+    console.log(
+      "player joined session:",
+      player.sessionId,
+      "to room:",
+      this.room.roomId
+    );
     player.clientP = new Player(player.character, player.sessionId);
     player.clientP.create(this, player.x, player.y, this.state.players.size);
     this.initCollisionEventForPlayer(player);
