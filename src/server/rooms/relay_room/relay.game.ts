@@ -59,7 +59,6 @@ export class ServerScene extends Phaser.Scene {
       keys.forEach((key) => {
         player.clientP!.pressingKeys = key;
         player.clientP!.update(Date.now(), delta);
-        player.clientP!.clearKeys();
       });
       player.x = player.clientP.sprite.x;
       player.y = player.clientP.sprite.y;
