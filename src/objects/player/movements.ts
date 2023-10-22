@@ -202,7 +202,7 @@ export function playerMovementUpdate(player: Player<Character>) {
     (canMoVE && isNotDown && !attackQActive && !attack1Active) ||
     !isanimplaying
   )
-    ıdleonUpdate(player);
+    return ıdleonUpdate(player);
   if (OnStun) return;
   if (W_isDOWN && canMoVE) jumpandFallonupdate(player);
   if (RunisDown && !W_isDOWN && canMoVE) runonUpdate(player);

@@ -3,7 +3,11 @@ import {
   CanlıIsDead,
   type CharacterType,
 } from "../../game/Karakter";
-import { type PressingKeys, mcEventTypes, mcEvents } from "../../game/types/events";
+import {
+  type PressingKeys,
+  mcEventTypes,
+  mcEvents,
+} from "../../game/types/events";
 import { type Direction, direction, mcAnimTypes } from "../../game/types/types";
 import { playerAttackListener } from "../../client/scenes/main/Playerattack";
 import { getOrThrow } from "../utils";
@@ -112,6 +116,11 @@ export class Player<T extends Character> {
 
   isMainPlayer() {
     return this.index === 0;
+  }
+
+  reduceIndex(by = 1) {
+    getOrThrow(this._index, "Index");
+    this._index! -= by;
   }
 
   get index() {

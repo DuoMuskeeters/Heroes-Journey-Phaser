@@ -143,29 +143,24 @@ export default class MainScene extends Phaser.Scene {
       });
 
       serverPlayer.listen("y", (newY) => {
-        player.sprite.y = Phaser.Math.Interpolation.SmoothStep(
-          0.1,
-          player.sprite.y,
-          newY
-        );
-        player.pressingKeys.W = player.sprite.y > newY;
-        // console.log("[MOVE(Y)] player", sessionId, "y changed to", newY);
+        this.tweens.add({
+          targets: player.sprite,
+          y: newY,
+          duration: 100,
+          ease: Phaser.Math.Easing.Sine.InOut,
+        });
       });
       serverPlayer.listen("x", (newX) => {
-        // player.pressingKeys.A = player.sprite.x > newX;
-        // player.pressingKeys.D = player.sprite.x < newX;
-        // player.sprite.x = Phaser.Math.Linear(player.sprite.x, newX, 0.1);
         this.tweens.add({
           targets: player.sprite,
           x: newX,
           duration: 100,
-          ease: "Linear",
+          ease: "Power1",
           onUpdate: () => {
             player.pressingKeys.A = player.sprite.x > newX;
             player.pressingKeys.D = player.sprite.x < newX;
           },
         });
-        // console.log("[MOVE(X)] player", sessionId, "x changed to", newX);
       });
     }, false);
 
@@ -365,6 +360,15 @@ export default class MainScene extends Phaser.Scene {
 
   update(time: number, delta: number): void {
     if (this.connected) {
+      this.room.state.players.forEach((serverPlayer) => {
+        if (serverPlayer.sessionId === this.room.sessionId) return;
+        const { player } = this.playerManager.findBySessionId(
+          serverPlayer.sessionId
+        );
+
+        player.pressingKeys.W =
+          Math.floor(player.sprite.y) > Math.floor(serverPlayer.y);
+      });
       const serverPlayer = this.room.state.players.get(this.room.sessionId);
       if (!serverPlayer) return;
       const deltaY = serverPlayer.y - this.player.sprite.y;

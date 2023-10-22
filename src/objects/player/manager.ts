@@ -47,6 +47,7 @@ export class PlayerManager extends Array<{
     this.forEach(({ player }) => player.update(time, delta));
   }
   removePlayer(i: number) {
+    console.info("[PlayerManager] removePlayer", i);
     this[i].player.destroy();
     const UI = this[i].UI;
     UI.hpBar.destroy();
@@ -58,13 +59,7 @@ export class PlayerManager extends Array<{
     UI.playerleveltext.destroy();
 
     this.splice(i, 1);
-    console.log(
-      "[Manager] Removed player i:",
-      i,
-      "index:",
-      this[i].player.index
-    );
-    // TODO: splice needs to reorder each player.index after i
+    this.slice(i).forEach((p) => p.player.reduceIndex());
   }
   destroy() {
     mcEvents.removeAllListeners();
