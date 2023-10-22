@@ -1,9 +1,9 @@
 import {
   type Character,
   CanlıIsDead,
-  CharacterType,
+  type CharacterType,
 } from "../../game/Karakter";
-import { PressingKeys, mcEventTypes, mcEvents } from "../../game/types/events";
+import { type PressingKeys, mcEventTypes, mcEvents } from "../../game/types/events";
 import { type Direction, direction, mcAnimTypes } from "../../game/types/types";
 import { playerAttackListener } from "../../client/scenes/main/Playerattack";
 import { getOrThrow } from "../utils";
@@ -15,16 +15,29 @@ export class Player<T extends Character> {
   private _sprite?: Phaser.Physics.Matter.Sprite;
   private _attackrect?: Phaser.Physics.Matter.Sprite;
   public lastdirection: Direction = direction.right;
-  public pressingKeys: PressingKeys = {
-    W: false,
-    A: false,
-    D: false,
-    E: false,
-    Q: false,
-    Space: false,
-  };
+  public pressingKeys!: PressingKeys;
 
-  constructor(public character: T, public _sessionId?: string) {}
+  clearKeys() {
+    this.pressingKeys = {
+      W: false,
+      A: false,
+      D: false,
+      E: false,
+      Q: false,
+      Space: false,
+    };
+  }
+
+  getKeys() {
+    // return the key name if true
+    return Object.keys(this.pressingKeys).filter(
+      (key) => this.pressingKeys[key as keyof PressingKeys]
+    ) as (keyof PressingKeys)[];
+  }
+
+  constructor(public character: T, public _sessionId?: string) {
+    this.clearKeys();
+  }
 
   create(scene: Phaser.Scene, x: number, y: number, i: number) {
     const type = this.character.type;

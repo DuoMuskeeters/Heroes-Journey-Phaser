@@ -1,4 +1,3 @@
-
 import {
   type GoblinTookHit,
   mobEvents,
@@ -255,7 +254,7 @@ export default class goblinController {
       const waitForUlti = !this.hasUltimate();
       const isOverlapping = this.goblin.scene.matter.overlap(
         this.goblin.attackrect,
-        [player.sprite.body as any]
+        [player.sprite]
       );
 
       return isOverlapping && !this.OnStun() && waitForUlti && canSeePlayer[i];

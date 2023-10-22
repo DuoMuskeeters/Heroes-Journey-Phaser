@@ -4,7 +4,7 @@ import { goblinAnimTypes, mcAnimTypes } from "../../../game/types/types";
 import { type Player } from "../../../objects/player";
 import type MenuScene from "../menu/MenuScene";
 import type MainScene from "./MainScene";
-export function loadAnimations(scene: MainScene | MenuScene) {
+export function loadAnimations(scene: Phaser.Scene) {
   createPlayeranims(scene);
   createGoblinAnims(scene);
 }
@@ -55,7 +55,7 @@ const players = [
   } as const,
 ] satisfies (Record<string, unknown> & { type: CharacterType | "fireiroh" })[];
 
-export function createPlayeranims(scene: MainScene | MenuScene) {
+export function createPlayeranims(scene: Phaser.Scene) {
   for (const mc of players) {
     scene.anims.create({
       key: mc.type + "-" + mcAnimTypes.IDLE,

@@ -41,9 +41,9 @@ export type PressingKeys = {
   W: boolean;
   A: boolean;
   D: boolean;
-  Space: boolean | "ephemeral";
-  Q: boolean | "ephemeral";
-  E: boolean | "ephemeral";
+  Space: boolean;
+  Q: boolean;
+  E: boolean;
 };
 
 export const gameEvents = new Phaser.Events.EventEmitter();

@@ -21,7 +21,9 @@ import { mcAnimTypes } from "../../../game/types/types";
 import { type Mob } from "../../../objects/Mob";
 import type goblinController from "../../../objects/Mob/goblinController";
 import { type Player } from "../../../objects/player";
-import MainScene from "./MainScene";
+import { Transform } from "../../../server/rooms/relay_room/commands";
+import type { ServerScene } from "../../../server/rooms/relay_room/relay.game";
+import type MainScene from "./MainScene";
 
 type GoblinEmit = { goblin: Mob<Goblin>; damage: number };
 
@@ -81,10 +83,14 @@ function attack(
   return emit(s.type, player, emits);
 }
 
+function isMainScene(scene: Phaser.Scene): scene is MainScene {
+  return scene.scene.key === "mainscene";
+}
+
 export function playerAttackListener(player: Player<Character>) {
   if (player.index !== 0) return;
-  const scene = player.scene;
-  const isMain = scene instanceof MainScene;
+  const scene = player.scene as MainScene | ServerScene;
+  const isMain = isMainScene(scene);
   const controllers = isMain ? scene.mobController : [];
   const getAffectedMobs = (s?: boolean) =>
     controllers.filter((mob) => mob.arePlayersHitting(s)[player.index]);
@@ -114,6 +120,12 @@ export function playerAttackListener(player: Player<Character>) {
           !animation.key.includes("fire")
         ) {
           const delay = 5000;
+
+          if (!isMain) {
+            const command = new Transform();
+            command.client = scene.room.clients.getById(player.sessionId)!;
+            scene.room.dispatcher.dispatch(command, delay);
+          }
 
           if (isMain && scene.connected)
             // Sending transform event to server

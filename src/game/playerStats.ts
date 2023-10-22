@@ -1,4 +1,4 @@
-import { CharacterType, State } from "./Karakter";
+import { type CharacterType, State } from "./Karakter";
 
 export type BaseTypes = {
   Strength: number;

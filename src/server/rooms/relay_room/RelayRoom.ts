@@ -1,4 +1,4 @@
-import { Client, Delayed, Room } from "colyseus";
+import { type Client, Room } from "colyseus";
 import { RelayState } from "../schema/RelayRoomState";
 import {
   COMMANDS,
@@ -8,8 +8,8 @@ import {
   Reconnect,
 } from "./commands";
 import { Dispatcher } from "@colyseus/command";
-import { CommandInput } from "../../../client/utils";
-import { Engine } from "matter-js";
+import type { CommandInput } from "../../../client/utils";
+import { GameEngine } from "./engine";
 
 /**
  * client.joinOrCreate("relayroom", {
@@ -21,16 +21,17 @@ import { Engine } from "matter-js";
 export class RelayRoom extends Room<RelayState> {
   public allowReconnectionTime: number | "manual" = "manual";
   public dispatcher = new Dispatcher(this);
-  public engine = Engine.create();
+  public game!: GameEngine;
 
   public onCreate(
     options: Partial<{
       maxClients: number;
       allowReconnectionTime: number;
-      metadata: any;
+      metadata: unknown;
     }>
   ) {
     this.setState(new RelayState());
+    this.game = new GameEngine(this);
     this.clock.setInterval(() => {
       // console.log("Regeneration");
     }, 1000);

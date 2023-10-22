@@ -5,7 +5,7 @@ import {
   mcAnimTypes,
   mcEvents,
   mcEventTypes,
-  PressingKeys,
+  type PressingKeys,
   playerVelocity,
   playersAttackrect,
 } from "../../game/types";
@@ -21,7 +21,6 @@ import {
   CharacterSpellQ,
   CharacterSpellBasicAttack,
 } from "../../game/Karakter";
-import MainScene from "../../client/scenes/main/MainScene";
 import {
   IROH_ATTACK1_FRAME_COUNT,
   JACK_ATTACK1_FRAME_COUNT,
@@ -124,7 +123,6 @@ export function killCharacter(player: Player<Character>) {
 
 export function playerMovementUpdate(player: Player<Character>) {
   const scene = player.scene;
-  if (!(scene instanceof MainScene)) return;
 
   const Space_isD = player.pressingKeys.Space;
   const W_isDOWN = player.pressingKeys.W;
@@ -132,11 +130,6 @@ export function playerMovementUpdate(player: Player<Character>) {
   const D_isDOWN = player.pressingKeys.D;
   const justQ = player.pressingKeys.Q;
   const justE = player.pressingKeys.E;
-
-  if (player.pressingKeys.Q === "ephemeral") player.pressingKeys.Q = false;
-  if (player.pressingKeys.Space === "ephemeral")
-    player.pressingKeys.Space = false;
-  if (player.pressingKeys.E === "ephemeral") player.pressingKeys.E = false;
 
   // const mouse = scene.input.activePointer.leftButtonDown();
 
@@ -191,13 +184,7 @@ export function playerMovementUpdate(player: Player<Character>) {
     player.sprite.setFlipX(false);
   }
 
-  if (
-    scene.matter.collision.collides(
-      player.sprite.body as any,
-      scene.road.body as any,
-      []
-    )
-  ) {
+  if (!scene.matter.overlap(player.sprite.body as any)) {
     player.sprite.setVelocityX(
       RunisDown
         ? dirVelocity[player.lastdirection] * playerVelocity.fly

@@ -9,6 +9,7 @@
     "@colyseus/playground": "^0.15.5",
     "@colyseus/schema": "^2.0.18",
     "@colyseus/tools": "^0.15.21",
+    "@geckos.io/phaser-on-nodejs": "^1.2.9",
     "colyseus": "^0.15.9",
     "colyseus.js": "^0.15.14",
     "eslint": "^8.50.0",

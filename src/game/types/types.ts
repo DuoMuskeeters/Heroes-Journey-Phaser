@@ -53,7 +53,7 @@ export const playersAttackrect = {
 export const playerVelocity = {
   run: 2,
   jump: -4,
-  fly: 1,
+  fly: 2,
   hitting: 0,
   idle: 0,
   dead: 0,

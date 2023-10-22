@@ -9,6 +9,9 @@ export const CONFIG = {
   type: Phaser.AUTO,
   parent: "phaser-container",
   backgroundColor: "#282c34",
+  fps: {
+    target: 30,
+  },
 
   width: 1600,
   height: 900,

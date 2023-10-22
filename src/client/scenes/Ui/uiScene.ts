@@ -10,16 +10,16 @@ import {
   UI_updateOtherPlayers,
   UI_updatePlayersHP,
   UI_updatePlayersSP,
+  createBackground,
 } from "./Components";
 import { createAvatarFrame } from "./AvatarUi";
-import { createBackground } from "../preLoad/assets";
 import { Backroundmovement } from "../main/GameMovement";
 
 export class UiScene extends Phaser.Scene {
   statemenu!: statemenu;
   heroesJourneyMap!: HeroesJourneyMap;
   statebutton!: Phaser.GameObjects.Image;
-  mainscene = PhaserGame.scene.keys.mainscene as MainScene;
+  mainscene = PhaserGame.scene.keys["mainscene"] as MainScene;
   backgrounds!: {
     rationx: number;
     sprite: Phaser.GameObjects.TileSprite;

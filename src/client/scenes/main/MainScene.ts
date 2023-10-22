@@ -1,7 +1,6 @@
 import Phaser from "phaser";
 import { loadAnimations } from "./Anims";
 import { UI_createPlayer } from "../Ui/Components";
-import { Backroundmovement } from "./GameMovement";
 import { createground } from "./TileGround";
 import { createMob as createMobs } from "./CreateMob";
 import { createAvatarFrame } from "../Ui/AvatarUi";
@@ -21,7 +20,7 @@ import {
   mobEvents,
   mobEventsTypes,
   type Regenerated,
-  PressingKeys,
+  type PressingKeys,
 } from "../../../game/types";
 import { CONFIG } from "../../PhaserGame";
 import type goblinController from "../../../objects/Mob/goblinController";
@@ -30,11 +29,9 @@ import { playerBaseStates } from "../../../game/playerStats";
 import { Client, Room } from "colyseus.js";
 import { getOrThrow } from "../../../objects/utils";
 import type { RelayState } from "../../../server/rooms/schema/RelayRoomState";
-import { CommandInput, command } from "../../../client/utils";
+import { type CommandInput, command } from "../../../client/utils";
 import {
-  type PlayerSkillPayload,
-  Move,
-  Skill,
+  Keys,
   Transform,
   type ConnectPlayer,
   ChangeCharacter,
@@ -100,7 +97,7 @@ export default class MainScene extends Phaser.Scene {
     });
 
     this.room.state.players.onAdd((serverPlayer, sessionId) => {
-      console.log("players.onAdd:", sessionId);
+      console.log("players.onAdd:", sessionId, serverPlayer);
 
       if (sessionId !== this.room.sessionId) {
         console.log("A player has joined! sid:", sessionId);
@@ -184,44 +181,17 @@ export default class MainScene extends Phaser.Scene {
       this.playerManager.removePlayer(i);
     });
 
-    this.room.onMessage(
-      "player-skill",
-      ([sessionId, skill]: PlayerSkillPayload) => {
-        const item = this.playerManager.findBySessionId(sessionId);
-        if (!item) {
-          console.error(`player ${sessionId} not found`);
-          return;
-        }
-        const key = skill === "basic" ? "Space" : skill === "heavy" ? "Q" : "E";
-        item.player.pressingKeys[key] = "ephemeral";
-      }
-    );
-
     mcEvents.on(mcEventTypes.TRANSFORM, (i: number, delay: number) => {
-      if (i !== this.player.index) return;
+      if (i !== this.player.index || !this.connected) return;
       this.room.send(...command(new Transform(), delay));
     });
 
     mcEvents.on(mcEventTypes.MOVED, (i: number, keys: PressingKeys) => {
-      if (i !== this.player.index) return;
-      this.room.send(
-        ...command(new Move(), {
-          x: this.player.sprite.x,
-          y: this.player.sprite.y,
-        })
-      );
-      if (keys.Space === true || keys.Q === true || keys.E === true) {
-        this.room.send(
-          ...command(
-            new Skill(),
-            keys.Space === true
-              ? "basic"
-              : keys.Q === true
-              ? "heavy"
-              : "transform"
-          )
-        );
-      }
+      if (i !== this.player.index || !this.connected) return;
+      if (!this.room.connection.isOpen) this.connected = false;
+
+      this.room.send(...command(new Keys(), keys));
+
       if (keys.E === true)
         this.room.send(
           ...command(
@@ -297,14 +267,19 @@ export default class MainScene extends Phaser.Scene {
     // this.frontroad.setCollisionByExclusion([-1], true);
     createMobs(this);
 
-    
     this.cameras.main.setZoom(2.5);
     this.cameras.main.startFollow(this.player.sprite, false, 1, 1, 0, 0);
     this.player.play(mcAnimTypes.FALL, true);
     this.player.sprite.anims.stopAfterRepeat(2);
-    this.matter.world.setBounds(0, 0, CONFIG.width, CONFIG.height - 300);
+    this.matter.world.setBounds(this.road.x, 0, this.road.width, CONFIG.height);
     this.scene.launch("ui");
     this.scene.bringToTop();
+
+    // this.player.attackrect.setOnCollideActive(
+    //   (data: Phaser.Types.Physics.Matter.MatterCollisionData) => {
+    //     console.log("collide", data.bodyA.label, data.bodyB.label);
+    //   }
+    // );
 
     // TODO: server side regeneration
     if (!this.connected)
@@ -380,11 +355,28 @@ export default class MainScene extends Phaser.Scene {
       reconnectionToken.set(this.room.reconnectionToken);
       this.onConnectionReady();
     } catch (error) {
-      console.error(error);
+      console.error("[Client Connection Error]: ", error);
     }
   }
 
   update(time: number, delta: number): void {
+    if (this.connected) {
+      const serverPlayer = this.room.state.players.get(this.room.sessionId);
+      if (!serverPlayer) return;
+      const deltaY = serverPlayer.y - this.player.sprite.y;
+
+      this.player.sprite.x = Phaser.Math.Linear(
+        this.player.sprite.x,
+        serverPlayer.x,
+        0.2
+      );
+      if (deltaY > 0 || deltaY < -50)
+        this.player.sprite.y = Phaser.Math.Linear(
+          this.player.sprite.y,
+          serverPlayer.y,
+          0.01
+        );
+    }
     this.playerManager.update(time, delta);
     this.mobController.forEach((mobCcontroller) => {
       if (mobCcontroller.goblin.sprite.body) mobCcontroller.update(delta);

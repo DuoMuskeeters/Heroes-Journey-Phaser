@@ -1,7 +1,7 @@
 import { Schema, type } from "@colyseus/schema";
 import { type MobTier, mobStates } from "./mobStats";
 import { type BaseTypes } from "./playerStats";
-import { ExtractSpell, Passive, Spell, SpellDamage, SpellRange } from "./spell";
+import { Passive, Spell, SpellRange } from "./spell";
 
 type Level = number;
 type XP = number;
@@ -184,7 +184,8 @@ export function IrohBasicAttack(c: Iroh) {
         : damage * 0.3;
     },
     hit: (rakip, damage) => {
-      if (c.lastCombo === 2) c.lastCombo = 0;
+      if (c.lastCombo === 2 || (!IrohInComboTime(c) && c.lastCombo === 1))
+        c.lastCombo = 0;
       else if (IrohInComboTime(c)) c.lastCombo += 1;
       else c.lastCombo = 1;
 

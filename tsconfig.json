@@ -16,6 +16,11 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "strictNullChecks": true,
+    // "noUncheckedIndexedAccess": true,
+    // "verbatimModuleSyntax": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noPropertyAccessFromIndexSignature": true,
     "experimentalDecorators": true,
     "useDefineForClassFields": false
   },

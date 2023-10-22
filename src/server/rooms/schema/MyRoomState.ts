@@ -1,5 +1,5 @@
 import { Schema, type, MapSchema } from "@colyseus/schema";
-import { Client } from "colyseus";
+import type { Client } from "colyseus";
 import { Canlı } from "../../../game/Karakter";
 
 export class ServerPlayer extends Canlı {

@@ -1,4 +1,4 @@
-import { Room, Client } from "@colyseus/core";
+import { Room, type Client } from "@colyseus/core";
 import { MyRoomState } from "../schema/MyRoomState";
 import { Dispatcher } from "@colyseus/command";
 import { COMMANDS, ConnectPlayer } from "./commands";
@@ -7,7 +7,7 @@ export class MyRoom extends Room<MyRoomState> {
   dispatcher = new Dispatcher(this);
   maxClients = 4;
 
-  onCreate(options: any) {
+  onCreate(options: unknown) {
     console.log("MyRoom created!", options);
     this.setState(new MyRoomState());
     /**
@@ -22,7 +22,7 @@ export class MyRoom extends Room<MyRoomState> {
     });
   }
 
-  onJoin(client: Client, options: any) {
+  onJoin(client: Client, options: unknown) {
     const command = new ConnectPlayer();
     command.client = client;
     this.dispatcher.dispatch(command);
