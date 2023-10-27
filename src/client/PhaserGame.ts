@@ -9,6 +9,9 @@ export const CONFIG = {
   type: Phaser.AUTO,
   parent: "phaser-container",
   backgroundColor: "#282c34",
+  fps: {
+    target: 30,
+  },
 
   width: 1600,
   height: 900,
@@ -17,13 +20,13 @@ export const CONFIG = {
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
   physics: {
-    default: "arcade",
-    arcade: {
+    default: "matter",
+    matter: {
       debug: true,
-      gravity: { y: 1 * /*CONFIG.height*/ 900 },
+      gravity: { y: 1 },
     },
   },
-} as const; // satisfies Phaser.Types.Core.GameConfig;
+} as const satisfies Phaser.Types.Core.GameConfig;
 
 const game = new Phaser.Game({
   ...CONFIG,

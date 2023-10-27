@@ -4,7 +4,7 @@ import { goblinAnimTypes, mcAnimTypes } from "../../../game/types/types";
 import { type Player } from "../../../objects/player";
 import type MenuScene from "../menu/MenuScene";
 import type MainScene from "./MainScene";
-export function loadAnimations(scene: MainScene | MenuScene) {
+export function loadAnimations(scene: Phaser.Scene) {
   createPlayeranims(scene);
   createGoblinAnims(scene);
 }
@@ -55,7 +55,7 @@ const players = [
   } as const,
 ] satisfies (Record<string, unknown> & { type: CharacterType | "fireiroh" })[];
 
-export function createPlayeranims(scene: MainScene | MenuScene) {
+export function createPlayeranims(scene: Phaser.Scene) {
   for (const mc of players) {
     scene.anims.create({
       key: mc.type + "-" + mcAnimTypes.IDLE,
@@ -250,14 +250,17 @@ export function createGoblinBomb(
   scene: Phaser.Scene,
   player: Player<Character>
 ) {
-  return scene.physics.add
+  return scene.matter.add
     .sprite(
-      player.sprite.body.center.x,
+      player.sprite.x,
       player.sprite.y - 200,
-      goblinAnimTypes.BOMB
+      goblinAnimTypes.BOMB,
+      undefined,
+      {
+        shape: { type: "rectangle", width: 30, height: 30 },
+      }
     )
-    .setDepth(4)
-    .setBodySize(25, 15, true);
+    .setDepth(4);
 }
 export function shop(scene: MainScene | MenuScene) {
   scene.shopobject = scene.add

@@ -8,10 +8,52 @@ export type Direction = (typeof direction)[keyof typeof direction];
 // export function getDirVelocity(direction: Direction) {
 //   return direction === "left" ? -1 : 1;
 // }
+export const playersAttackrect = {
+  iroh: {
+    attack1: {
+      width: 15,
+      height: 30,
+      movemntOnXaxis: 13,
+      movemntOnYaxis: 0,
+    },
+    attack1_Combo2: {
+      width: 17.5,
+      height: 40,
+      movemntOnXaxis: 16,
+      movemntOnYaxis: 5,
+    },
+    attack1_Combo3: {
+      width: 15,
+      height: 10,
+      movemntOnXaxis: 30,
+      movemntOnYaxis: -5,
+    },
+    attack2: {
+      width: 17,
+      height: 35,
+      movemntOnXaxis: 43,
+      movemntOnYaxis: 0,
+    },
+  },
+  jack: {
+    attack1: {
+      width: 30,
+      height: 45,
+      movemntOnXaxis: 40,
+      movemntOnYaxis: 10,
+    },
+    attack2: {
+      width: 33,
+      height: 33,
+      movemntOnXaxis: 40,
+      movemntOnYaxis: 5,
+    },
+  },
+};
 export const playerVelocity = {
-  run: 200,
-  jump: -400,
-  fly: 150,
+  run: 2,
+  jump: -6,
+  fly: 2,
   hitting: 0,
   idle: 0,
   dead: 0,
@@ -19,8 +61,8 @@ export const playerVelocity = {
 } as const;
 
 export const goblinVelocity = {
-  run: 100,
-  climb: -150,
+  run: 1.7,
+  climb: -2,
   hitting: 0,
   idle: 0,
   dead: 0,

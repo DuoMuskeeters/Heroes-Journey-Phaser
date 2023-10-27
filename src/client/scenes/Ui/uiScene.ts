@@ -7,19 +7,20 @@ import MainScene from "../main/MainScene";
 import { CanlıIsDead } from "../../../game/Karakter";
 import {
   UI_createPlayer,
-  UI_updateOtherPlayers,
-  UI_updatePlayersHP,
-  UI_updatePlayersSP,
+  UI_updatePositionOtherPlayers,
+  UI_updateAllPlayersHP,
+  UI_updateAllPlayersSP,
+  createBackground,
 } from "./Components";
 import { createAvatarFrame } from "./AvatarUi";
-import { createBackground } from "../preLoad/assets";
 import { Backroundmovement } from "../main/GameMovement";
+import type { PlayerManager } from "../../../objects/player/manager";
 
 export class UiScene extends Phaser.Scene {
   statemenu!: statemenu;
   heroesJourneyMap!: HeroesJourneyMap;
   statebutton!: Phaser.GameObjects.Image;
-  mainscene = PhaserGame.scene.keys.mainscene as MainScene;
+  mainscene!: MainScene;
   backgrounds!: {
     rationx: number;
     sprite: Phaser.GameObjects.TileSprite;
@@ -30,9 +31,10 @@ export class UiScene extends Phaser.Scene {
   }
 
   async create() {
+    this.mainscene = this.scene.get<MainScene>("mainscene");
     this.statemenu = new statemenu(this, this.mainscene.player);
     this.heroesJourneyMap = new heroesJourneyMap(this);
-
+    this.cameras.main.name = "ui";
     this.input.keyboard?.on("keydown-C", () => {
       if (CanlıIsDead(this.mainscene.player.character)) return;
 
@@ -72,16 +74,27 @@ export class UiScene extends Phaser.Scene {
 
     this.backgrounds = createBackground(this);
     this.mainscene.playerManager.forEach((player, i) => {
-      createAvatarFrame(this, player);
-      UI_createPlayer(this, player);
+      this.addPlayer(player);
     });
   }
 
+  addPlayer(player: PlayerManager[number]) {
+    /**
+     * @description : main player frame stay in uiscene
+     * @description : other players frame stay in main scene
+     * @description : when issue #30 is fixed, this problem will be solved
+     **/
+    const { player: playerObj } = player;
+    const scene = playerObj.isMainPlayer() ? this : this.mainscene;
+    createAvatarFrame(scene, player);
+    UI_createPlayer(scene, player);
+  }
+
   update(_time: number, _delta: number): void {
-    this.statemenu.update();
-    UI_updateOtherPlayers(this.mainscene.playerManager);
+    UI_updatePositionOtherPlayers(this.mainscene.playerManager);
     Backroundmovement(this, this.mainscene.cameras);
-    UI_updatePlayersHP(this, this.mainscene.playerManager);
-    UI_updatePlayersSP(this, this.mainscene.playerManager);
+    UI_updateAllPlayersHP(this, this.mainscene.playerManager);
+    UI_updateAllPlayersSP(this, this.mainscene.playerManager);
+    this.statemenu.update();
   }
 }

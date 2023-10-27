@@ -1,6 +1,6 @@
 import { Command } from "@colyseus/command";
 import { z } from "zod";
-import { Client } from "colyseus";
+import type { Client } from "colyseus";
 import { RelayRoom } from "./RelayRoom";
 import { Inventory, ServerPlayer } from "../schema/RelayRoomState";
 
@@ -13,7 +13,7 @@ import {
   IrohTransform,
   CanlıIsDead,
 } from "../../../game/Karakter";
-import { MobType } from "../../../game/mobStats";
+import type { MobType } from "../../../game/mobStats";
 
 const SessionId = z.string().trim().min(1).max(32);
 const Name = z.string().trim().min(1).max(32);
@@ -25,6 +25,16 @@ const Coordinates = z.object({
   y: z.number().min(0).max(UINT16_MAX),
 });
 
+// NOTE: not optimal
+const KeyboardKeys = z.object({
+  W: z.boolean(),
+  A: z.boolean(),
+  D: z.boolean(),
+  Space: z.boolean(),
+  Q: z.boolean(),
+  E: z.boolean(),
+});
+
 const MobTypes = z.enum(["goblin"] satisfies AllPermutations<MobType>);
 const PlayerTypes = z.enum([
   "iroh",
@@ -33,18 +43,21 @@ const PlayerTypes = z.enum([
 
 const PlayerSkill = z.enum(["basic", "heavy", "transform"]);
 
-export class Move extends Command<RelayRoom> {
+export class Keys extends Command<RelayRoom> {
   client!: Client;
   payload!: z.infer<typeof this.validator>;
-  validator = Coordinates;
+  validator = KeyboardKeys;
 
   get player() {
     return this.state.getPlayer(this.client);
   }
 
   execute() {
-    this.player.x = this.payload.x;
-    this.player.y = this.payload.y;
+    if (!this.player.clientP) {
+      this.client.error(45, "Skipping Keys, Player is not created yet");
+      return;
+    }
+    this.player.waitingKeys.push(this.payload);
   }
 
   validate(payload: unknown): boolean {
@@ -68,11 +81,12 @@ export class Skill extends Command<RelayRoom> {
   }
 
   execute() {
-    this.room.broadcast(
-      "player-skill",
-      [this.client.sessionId, this.payload] satisfies PlayerSkillPayload,
-      { except: this.client }
-    );
+    this.client.error(69, "PlayerSkill Deprecated");
+    // this.room.broadcast(
+    //   "player-skill",
+    //   [this.client.sessionId, this.payload] satisfies PlayerSkillPayload,
+    //   { except: this.client }
+    // );
   }
 
   validate(payload: unknown): boolean {
@@ -110,6 +124,7 @@ export class ConnectPlayer extends Command<RelayRoom> {
     if (!this.state.getAuthoritivePlayer()) player.authoritive = true;
 
     this.state.players.set(this.client.sessionId, player);
+    this.room.game.scene.onPlayerJoin(player);
   }
 
   validate(payload: unknown): boolean {
@@ -219,13 +234,18 @@ export class Leave extends Command<RelayRoom> {
   client!: Client;
   payload!: boolean; //consented
 
+  get player() {
+    return this.state.getPlayer(this.client);
+  }
+
   execute() {
+    this.room.game.scene.onPlayerLeave(this.player);
     this.state.players.delete(this.client.sessionId);
   }
 }
 
 export const COMMANDS = [
-  Move,
+  Keys,
   Skill,
   Transform,
   ChangeCharacter,

@@ -1,10 +1,7 @@
 import Phaser from "phaser";
 import { loadAnimations } from "./Anims";
-import { UI_createPlayer } from "../Ui/Components";
-import { Backroundmovement } from "./GameMovement";
-import { createRoadCollider, createground } from "./TileGround";
+import { createground } from "./TileGround";
 import { createMob as createMobs } from "./CreateMob";
-import { createAvatarFrame } from "../Ui/AvatarUi";
 
 import { Player } from "../../../objects/player";
 import {
@@ -21,7 +18,7 @@ import {
   mobEvents,
   mobEventsTypes,
   type Regenerated,
-  PressingKeys,
+  type PressingKeys,
 } from "../../../game/types";
 import { CONFIG } from "../../PhaserGame";
 import type goblinController from "../../../objects/Mob/goblinController";
@@ -30,15 +27,14 @@ import { playerBaseStates } from "../../../game/playerStats";
 import { Client, Room } from "colyseus.js";
 import { getOrThrow } from "../../../objects/utils";
 import type { RelayState } from "../../../server/rooms/schema/RelayRoomState";
-import { CommandInput, command } from "../../../client/utils";
+import { type CommandInput, command } from "../../../client/utils";
 import {
-  type PlayerSkillPayload,
-  Move,
-  Skill,
+  Keys,
   Transform,
   type ConnectPlayer,
   ChangeCharacter,
 } from "../../../server/rooms/relay_room/commands";
+import type { UiScene } from "../Ui/uiScene";
 
 type Key = Phaser.Input.Keyboard.Key;
 
@@ -88,19 +84,20 @@ export default class MainScene extends Phaser.Scene {
     const player = new Player(new Character(type, state));
     this.playerManager = new PlayerManager();
     this.playerManager.push({ player, UI: {} as PlayerUI });
-    if (CONFIG.physics.arcade.debug)
+    if (CONFIG.physics.matter.debug)
       (globalThis as unknown as { player: typeof player }).player = player;
   }
 
   onConnectionReady() {
     console.log("connection ready");
+    this.cameras.main.name = "main";
     this.player._sessionId = this.room.sessionId;
     this.room.onStateChange((state) => {
       console.debug("onStateChange", state);
     });
 
     this.room.state.players.onAdd((serverPlayer, sessionId) => {
-      console.log("players.onAdd:", sessionId);
+      console.log("players.onAdd:", sessionId, serverPlayer);
 
       if (sessionId !== this.room.sessionId) {
         console.log("A player has joined! sid:", sessionId);
@@ -115,9 +112,9 @@ export default class MainScene extends Phaser.Scene {
         const i = this.playerManager.length;
         player.create(this, 300, 0, i);
         this.playerManager.push({ player, UI: {} as PlayerUI });
-        createAvatarFrame(this, this.playerManager[i]);
-        UI_createPlayer(this, this.playerManager[i]);
-        createRoadCollider(this, this.playerManager[i].player.sprite);
+        console.log("[Manager] Created player i:", i, "index:", player.index);
+        const uiScene = this.scene.get<UiScene>("ui");
+        uiScene.addPlayer(this.playerManager[i]);
       }
       const { player, UI } = this.playerManager.findBySessionId(sessionId);
 
@@ -145,27 +142,24 @@ export default class MainScene extends Phaser.Scene {
       });
 
       serverPlayer.listen("y", (newY) => {
-        player.sprite.y = Phaser.Math.Linear(player.sprite.y, newY, 0.1);
-        player.pressingKeys.W = player.sprite.y > newY;
-        // console.log("[MOVE(Y)] player", sessionId, "y changed to", newY);
+        this.tweens.add({
+          targets: player.sprite,
+          y: newY,
+          duration: 100,
+          ease: Phaser.Math.Easing.Sine.InOut,
+        });
       });
       serverPlayer.listen("x", (newX) => {
-        // player.pressingKeys.A = player.sprite.x > newX;
-        // player.pressingKeys.D = player.sprite.x < newX;
-        // player.sprite.x = Phaser.Math.Linear(player.sprite.x, newX, 0.1);
-
         this.tweens.add({
           targets: player.sprite,
           x: newX,
           duration: 100,
-          ease: "Linear",
+          ease: "Power1",
           onUpdate: () => {
             player.pressingKeys.A = player.sprite.x > newX;
             player.pressingKeys.D = player.sprite.x < newX;
           },
         });
-
-        // console.log("[MOVE(X)] player", sessionId, "x changed to", newX);
       });
     }, false);
 
@@ -185,44 +179,17 @@ export default class MainScene extends Phaser.Scene {
       this.playerManager.removePlayer(i);
     });
 
-    this.room.onMessage(
-      "player-skill",
-      ([sessionId, skill]: PlayerSkillPayload) => {
-        const item = this.playerManager.findBySessionId(sessionId);
-        if (!item) {
-          console.error(`player ${sessionId} not found`);
-          return;
-        }
-        const key = skill === "basic" ? "Space" : skill === "heavy" ? "Q" : "E";
-        item.player.pressingKeys[key] = "ephemeral";
-      }
-    );
-
     mcEvents.on(mcEventTypes.TRANSFORM, (i: number, delay: number) => {
-      if (i !== this.player.index) return;
+      if (i !== this.player.index || !this.connected) return;
       this.room.send(...command(new Transform(), delay));
     });
 
     mcEvents.on(mcEventTypes.MOVED, (i: number, keys: PressingKeys) => {
-      if (i !== this.player.index) return;
-      this.room.send(
-        ...command(new Move(), {
-          x: this.player.sprite.x,
-          y: this.player.sprite.y,
-        })
-      );
-      if (keys.Space === true || keys.Q === true || keys.E === true) {
-        this.room.send(
-          ...command(
-            new Skill(),
-            keys.Space === true
-              ? "basic"
-              : keys.Q === true
-              ? "heavy"
-              : "transform"
-          )
-        );
-      }
+      if (i !== this.player.index || !this.connected) return;
+      if (!this.room.connection.isOpen) this.connected = false;
+
+      this.room.send(...command(new Keys(), keys));
+
       if (keys.E === true)
         this.room.send(
           ...command(
@@ -294,9 +261,6 @@ export default class MainScene extends Phaser.Scene {
     this.Addkey();
     loadAnimations(this);
     createground(this);
-    this.playerManager.forEach((player) => {
-      createRoadCollider(this, player.player.sprite);
-    });
 
     // this.frontroad.setCollisionByExclusion([-1], true);
     createMobs(this);
@@ -305,9 +269,15 @@ export default class MainScene extends Phaser.Scene {
     this.cameras.main.startFollow(this.player.sprite, false, 1, 1, 0, 0);
     this.player.play(mcAnimTypes.FALL, true);
     this.player.sprite.anims.stopAfterRepeat(2);
-    this.physics.world.setBounds(0, 0, Infinity, CONFIG.height - 300);
+    this.matter.world.setBounds(this.road.x, 0, this.road.width, CONFIG.height);
     this.scene.launch("ui");
     this.scene.bringToTop();
+
+    // this.player.attackrect.setOnCollideActive(
+    //   (data: Phaser.Types.Physics.Matter.MatterCollisionData) => {
+    //     console.log("collide", data.bodyA.label, data.bodyB.label);
+    //   }
+    // );
 
     // TODO: server side regeneration
     if (!this.connected)
@@ -383,11 +353,37 @@ export default class MainScene extends Phaser.Scene {
       reconnectionToken.set(this.room.reconnectionToken);
       this.onConnectionReady();
     } catch (error) {
-      console.error(error);
+      console.error("[Client Connection Error]: ", error);
     }
   }
 
   update(time: number, delta: number): void {
+    if (this.connected) {
+      this.room.state.players.forEach((serverPlayer) => {
+        if (serverPlayer.sessionId === this.room.sessionId) return;
+        const { player } = this.playerManager.findBySessionId(
+          serverPlayer.sessionId
+        );
+
+        player.pressingKeys.W =
+          Math.floor(player.sprite.y) > Math.floor(serverPlayer.y);
+      });
+      const serverPlayer = this.room.state.players.get(this.room.sessionId);
+      if (!serverPlayer) return;
+      const deltaY = serverPlayer.y - this.player.sprite.y;
+
+      this.player.sprite.x = Phaser.Math.Interpolation.SmoothStep(
+        0.2,
+        this.player.sprite.x,
+        serverPlayer.x
+      );
+      if (deltaY > 0 || deltaY < -55)
+        this.player.sprite.y = Phaser.Math.Interpolation.SmoothStep(
+          0.05,
+          this.player.sprite.y,
+          serverPlayer.y
+        );
+    }
     this.playerManager.update(time, delta);
     this.mobController.forEach((mobCcontroller) => {
       if (mobCcontroller.goblin.sprite.body) mobCcontroller.update(delta);

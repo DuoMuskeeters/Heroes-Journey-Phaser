@@ -1,3 +1,4 @@
+import path from "path";
 import config from "@colyseus/tools";
 import { monitor } from "@colyseus/monitor";
 import { playground } from "@colyseus/playground";
@@ -7,6 +8,8 @@ import { playground } from "@colyseus/playground";
  */
 import { MyRoom } from "./rooms/my_room/MyRoom";
 import { RelayRoom } from "./rooms/relay_room/RelayRoom";
+
+export const publicFolder = path.join(__dirname, "..", "..", "public");
 
 export default config({
   initializeGameServer: (gameServer) => {
@@ -21,6 +24,8 @@ export default config({
   },
 
   initializeExpress: (app) => {
+    // use public folder for static files
+    // app.use("/", express.static(publicFolder));
     /**
      * Bind your custom express routes here:
      * Read more: https://expressjs.com/en/starter/basic-routing.html
@@ -33,7 +38,7 @@ export default config({
      * Use @colyseus/playground
      * (It is not recommended to expose this route in a production environment)
      */
-    if (process.env.NODE_ENV !== "production") {
+    if (process.env["NODE_ENV"] !== "production") {
       app.use("/", playground);
     }
 

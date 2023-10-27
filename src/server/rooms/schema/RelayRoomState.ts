@@ -1,6 +1,8 @@
 import { MapSchema, Schema, filter, type } from "@colyseus/schema";
-import { Client, Delayed } from "colyseus";
+import type { Client, Delayed } from "colyseus";
 import { Character, MobCanlı } from "../../../game/Karakter";
+import type { Player } from "../../../objects/player";
+import type { PressingKeys } from "../../../game/types";
 
 function inSameGuild(client: Client, value: boolean, root: RelayState) {
   return true;
@@ -36,6 +38,10 @@ export class ServerPlayer extends Schema {
   @type(Inventory) inventory: Inventory;
   @filter(inSameGuild) @type("uint16") x: number;
   @filter(inSameGuild) @type("uint16") y: number;
+
+  clientP?: Player<Character>;
+
+  waitingKeys: PressingKeys[] = [];
 
   transformation?: Delayed;
 
@@ -78,7 +84,9 @@ export class RelayState extends Schema {
     let player: ServerPlayer | undefined;
     this.players.forEach((p) => {
       if (player && p.authoritive)
-        throw new Error("multiple authoritive players");
+        throw new Error(
+          `multiple authoritive players: ${player.sessionId}, ${p.sessionId}`
+        );
 
       if (p.authoritive) player = p;
     });

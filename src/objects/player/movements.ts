@@ -5,8 +5,9 @@ import {
   mcAnimTypes,
   mcEvents,
   mcEventTypes,
-  PressingKeys,
+  type PressingKeys,
   playerVelocity,
+  playersAttackrect,
 } from "../../game/types";
 import { type Player } from ".";
 import {
@@ -20,12 +21,10 @@ import {
   CharacterSpellQ,
   CharacterSpellBasicAttack,
 } from "../../game/Karakter";
-import MainScene from "../../client/scenes/main/MainScene";
 import {
   IROH_ATTACK1_FRAME_COUNT,
   JACK_ATTACK1_FRAME_COUNT,
 } from "../../client/scenes/main/Anims";
-import { CONFIG } from "../../client/PhaserGame";
 
 const runonUpdate = (player: Player<Character>) => {
   player.play(mcAnimTypes.RUN, true);
@@ -84,10 +83,37 @@ const attackonUpdate = (player: Player<Character>) => {
 };
 
 const setAttackrect = (player: Player<Character>) => {
-  player.attackrect.setPosition(
-    player.sprite.x + dirVelocity[player.lastdirection] * 40,
-    player.sprite.y - 15
-  );
+  let attackRectSize = {
+    width: 0,
+    height: 0,
+    movemntOnXaxis: 0,
+    movemntOnYaxis: 0,
+  };
+  const attackName = player.sprite.anims.getName();
+
+  if (player.character instanceof Iroh) {
+    if (attackName.includes(mcAnimTypes.ATTACK_2))
+      attackRectSize = playersAttackrect.iroh.attack2;
+    else if (attackName.includes(mcAnimTypes.ATTACK_1_COMBO3))
+      attackRectSize = playersAttackrect.iroh.attack1_Combo3;
+    else if (attackName.includes(mcAnimTypes.ATTACK_1_COMBO2))
+      attackRectSize = playersAttackrect.iroh.attack1_Combo2;
+    else if (attackName.includes(mcAnimTypes.ATTACK_1))
+      attackRectSize = playersAttackrect.iroh.attack1;
+  } else if (player.character instanceof Jack) {
+    if (attackName.includes(mcAnimTypes.ATTACK_2)) {
+      attackRectSize = playersAttackrect.jack.attack2;
+    } else if (attackName.includes(mcAnimTypes.ATTACK_1)) {
+      attackRectSize = playersAttackrect.jack.attack1;
+    }
+  }
+  player.attackrect
+    .setPosition(
+      player.sprite.x +
+        dirVelocity[player.lastdirection] * attackRectSize.movemntOnXaxis,
+      player.sprite.y - attackRectSize.movemntOnYaxis
+    )
+    .setDisplaySize(attackRectSize.width, attackRectSize.height);
 };
 export function killCharacter(player: Player<Character>) {
   player.play(mcAnimTypes.DEATH, true);
@@ -97,7 +123,6 @@ export function killCharacter(player: Player<Character>) {
 
 export function playerMovementUpdate(player: Player<Character>) {
   const scene = player.scene;
-  if (!(scene instanceof MainScene)) return;
 
   const Space_isD = player.pressingKeys.Space;
   const W_isDOWN = player.pressingKeys.W;
@@ -105,11 +130,6 @@ export function playerMovementUpdate(player: Player<Character>) {
   const D_isDOWN = player.pressingKeys.D;
   const justQ = player.pressingKeys.Q;
   const justE = player.pressingKeys.E;
-
-  if (player.pressingKeys.Q === "ephemeral") player.pressingKeys.Q = false;
-  if (player.pressingKeys.Space === "ephemeral")
-    player.pressingKeys.Space = false;
-  if (player.pressingKeys.E === "ephemeral") player.pressingKeys.E = false;
 
   // const mouse = scene.input.activePointer.leftButtonDown();
 
@@ -164,7 +184,7 @@ export function playerMovementUpdate(player: Player<Character>) {
     player.sprite.setFlipX(false);
   }
 
-  if (!player.sprite.body.onFloor()) {
+  if (!scene.matter.overlap(player.sprite.body as any)) {
     player.sprite.setVelocityX(
       RunisDown
         ? dirVelocity[player.lastdirection] * playerVelocity.fly
@@ -182,7 +202,7 @@ export function playerMovementUpdate(player: Player<Character>) {
     (canMoVE && isNotDown && !attackQActive && !attack1Active) ||
     !isanimplaying
   )
-    ıdleonUpdate(player);
+    return ıdleonUpdate(player);
   if (OnStun) return;
   if (W_isDOWN && canMoVE) jumpandFallonupdate(player);
   if (RunisDown && !W_isDOWN && canMoVE) runonUpdate(player);

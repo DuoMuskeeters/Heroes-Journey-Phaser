@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { loadAnimations, shop } from "../main/Anims";
-import { createBackground, forestRoad } from "../preLoad/assets";
+import {  forestRoad } from "../preLoad/assets";
 import { Backroundmovement } from "../main/GameMovement";
 import { mcAnimTypes, playerVelocity } from "../../../game/types/types";
 import { CONFIG } from "../../PhaserGame";
@@ -8,6 +8,7 @@ import { Player } from "../../../objects/player";
 import { Jack } from "../../../game/Karakter";
 import { PlayerManager, type PlayerUI } from "../../../objects/player/manager";
 import { playerBaseStates } from "../../../game/playerStats";
+import { createBackground } from "../Ui/Components";
 
 export default class MenuScene extends Phaser.Scene {
   logo = {} as Phaser.GameObjects.Image;
@@ -76,7 +77,7 @@ export default class MenuScene extends Phaser.Scene {
     this.backgrounds = createBackground(this);
     this.road = forestRoad(this);
     loadAnimations(this);
-    this.physics.world.setBounds(0, 0, Infinity, CONFIG.height - 140);
+    this.matter.world.setBounds(0, 0, Infinity, CONFIG.height - 140);
     shop(this);
 
     this.cameras.main.startFollow(

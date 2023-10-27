@@ -1,7 +1,11 @@
 import { addTilesetImage, createLayer } from "../Ui/utils";
-import type MainScene from "./MainScene";
 
-export function createground(scene: MainScene) {
+export function createground(
+  scene: Phaser.Scene & {
+    tilemap: Phaser.Tilemaps.Tilemap;
+    road: Phaser.Tilemaps.TilemapLayer;
+  }
+) {
   const tiles = addTilesetImage(scene.tilemap, "road-set", "road-set");
   const lamp = addTilesetImage(scene.tilemap, "lamp", "lamp");
   const fence_2 = addTilesetImage(scene.tilemap, "fence_2", "fence_2");
@@ -14,11 +18,9 @@ export function createground(scene: MainScene) {
   const rock1 = addTilesetImage(scene.tilemap, "rock_1", "rock_1");
   const sign = addTilesetImage(scene.tilemap, "sign", "sign");
 
-  scene.road = createLayer(
-    scene.tilemap,
-    "road",
-    tiles
-  ).setCollisionFromCollisionGroup();
+  scene.road = createLayer(scene.tilemap, "road", tiles);
+  scene.road.setCollisionFromCollisionGroup();
+  scene.matter.world.convertTilemapLayer(scene.road, { label: "road" });
 
   createLayer(scene.tilemap, "lamp", lamp, 0, -33);
   createLayer(scene.tilemap, "rock_3", rock3, 0, 6);
@@ -27,10 +29,4 @@ export function createground(scene: MainScene) {
   createLayer(scene.tilemap, "sign", sign, 0, -7);
   createLayer(scene.tilemap, "grass", [grass1, grass2, grass3], 0, 20);
   createLayer(scene.tilemap, "fence", [fence_1, fence_2], 0, 6);
-}
-export function createRoadCollider(
-  scene: MainScene,
-  object: Phaser.Types.Physics.Arcade.ArcadeColliderType
-) {
-  scene.physics.add.collider(object, [scene.road]);
 }

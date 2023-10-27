@@ -1,7 +1,7 @@
 import { Command } from "@colyseus/command";
 import { MyRoom } from "./MyRoom";
 import { z } from "zod";
-import { Client, Room } from "colyseus";
+import type { Client } from "colyseus";
 import { playerBaseStates } from "../../../game/playerStats";
 import { ServerPlayer } from "../schema/MyRoomState";
 

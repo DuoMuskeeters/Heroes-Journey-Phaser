@@ -14,7 +14,7 @@ export default class LoadScene extends Phaser.Scene {
 
     this.load.on("complete", () => {
       gameEvents.emit(eventTypes.GAME_LOADED);
-      this.scene.start(CONFIG.physics.arcade.debug ? "mainscene" : "menu");
+      this.scene.start(CONFIG.physics.matter.debug ? "mainscene" : "menu");
     });
 
     this.load.image("logo", "DuoMuskeeters.jpg");

@@ -3,28 +3,84 @@ import { createBar } from "../main/Anims";
 import { type PlayerManager } from "../../../objects/player/manager";
 
 import type Phaser from "phaser";
+import { CONFIG } from "../../PhaserGame";
+
+export function createBackground(scene: Phaser.Scene) {
+  const bg1 = {
+    rationx: 0.05,
+    sprite: scene.add
+      .tileSprite(0, 0, 0, 0, "background1")
+      .setOrigin(0, 0)
+      .setDisplaySize(CONFIG.width, CONFIG.height)
+      .setDepth(-3)
+      .setScrollFactor(0),
+  };
+
+  const bg2 = {
+    rationx: 0.1,
+    sprite: scene.add
+      .tileSprite(0, 0, 0, 0, "background2")
+      .setOrigin(0, 0)
+      .setDepth(-2)
+      .setDisplaySize(CONFIG.width, CONFIG.height)
+      .setScrollFactor(0),
+  };
+
+  const bg3 = {
+    rationx: 0.15,
+    sprite: scene.add
+      .tileSprite(0, 0, 0, 0, "background3")
+      .setOrigin(0, 0)
+      .setDepth(-1)
+      .setDisplaySize(CONFIG.width, CONFIG.height)
+      .setScrollFactor(0),
+  };
+  return [bg1, bg2, bg3];
+}
 
 export function UI_createPlayer(
   scene: Phaser.Scene,
   playerItem: PlayerManager[number]
 ) {
   const { player, UI } = playerItem;
-  const isscroolFactor = player.index === 0 ? 0 : 1;
+  const isscroolFactor = player.isMainPlayer() ? 0 : 1;
+  /**
+   * @description we change the size for other players because their UI got the mainscene
+   */
+  const _ = player.isMainPlayer()
+    ? {
+        frameRatio: 1,
+        hpBarscaleX: 5.5,
+        hpBarscaleY: 7,
+        spBarscaleX: 3.1,
+        spBarscaleY: 5,
+        hptextScale: 0.8,
+        sptextScale: 0.8,
+      }
+    : {
+        frameRatio: 2.5,
+        hpBarscaleX: 3.4,
+        hpBarscaleY: 3,
+        spBarscaleX: 2.4,
+        spBarscaleY: 3,
+        hptextScale: 0.7,
+        sptextScale: 0.7,
+        leveltextScale: 2,
+      };
 
   const Center = UI.frameLayer.getCenter<Phaser.Tilemaps.TilemapLayer>();
   const LeftCenterX =
     UI.frameLayer.getLeftCenter<Phaser.Tilemaps.TilemapLayer>().x;
   const BottomCenterY =
     UI.frameLayer.getBottomCenter<Phaser.Tilemaps.TilemapLayer>().y;
-
   UI.hpBar = scene.add
     .sprite(LeftCenterX + 270, Center.y + 3, `hpBar`)
-    .setScale(5.5, 7)
+    .setScale(_.hpBarscaleX / _.frameRatio, _.hpBarscaleY / _.frameRatio)
     .setDepth(5)
     .setScrollFactor(isscroolFactor);
   UI.spBar = scene.add
     .sprite(LeftCenterX + 227, BottomCenterY - 25, `spBar-${isscroolFactor}`)
-    .setScale(3.1, 5)
+    .setScale(_.spBarscaleX / _.frameRatio, _.spBarscaleY / _.frameRatio)
     .setDepth(4)
     .setScrollFactor(isscroolFactor);
   UI.hptext = scene.add
@@ -40,7 +96,7 @@ export function UI_createPlayer(
     .setFontFamily("URW Chancery L, cursive")
     .setFontStyle("bold")
     .setScrollFactor(isscroolFactor)
-    .setScale(0.8)
+    .setScale(_.hptextScale / _.frameRatio)
     .setDepth(500);
 
   UI.sptext = scene.add
@@ -56,8 +112,12 @@ export function UI_createPlayer(
     .setFontFamily("URW Chancery L, cursive")
     .setFontStyle("bold")
     .setScrollFactor(isscroolFactor)
-    .setScale(0.8)
+    .setScale(_.sptextScale / _.frameRatio)
     .setDepth(500);
+
+  if (!player.isMainPlayer()) {
+    UI.playerleveltext.setScale(_.leveltextScale! / _.frameRatio);
+  }
 }
 const UI_updateHP = (
   scene: Phaser.Scene,
@@ -103,17 +163,26 @@ const UI_updateSP = (
     UI.spBar.anims.play(`spBar-${player.index}`, true);
   }
 };
-export function UI_updateOtherPlayers(playerManager: PlayerManager) {
+export function UI_updatePositionOtherPlayers(playerManager: PlayerManager) {
   playerManager.forEach(({ player, UI }, i) => {
-    if (i === 0) return;
-    UI.frameLayer.setPosition(player.sprite.x - 60, player.sprite.y - 160);
+    if (player.isMainPlayer()) return;
+    UI.frameLayer.setPosition(player.sprite.x - 20, player.sprite.y - 80);
     UI.playerindexText.setPosition(UI.frameLayer.x, UI.frameLayer.y);
-    UI.playerleveltext
-      .setPosition(UI.frameLayer.x + 30, UI.frameLayer.y + 40)
-      .setScale(1.5);
+    UI.playerleveltext.setPosition(UI.frameLayer.x + 15, UI.frameLayer.y + 20);
+    UI.hpBar.setPosition(UI.frameLayer.x + 2, UI.frameLayer.y + 25);
+
+    UI.hptext.setPosition(
+      UI.hpBar.getRightCenter(UI.hpBar).x + 60,
+      UI.hpBar.getRightCenter(UI.hpBar).y - 5
+    );
+    UI.spBar.setPosition(UI.frameLayer.x + 13, UI.frameLayer.y + 38);
+    UI.sptext.setPosition(
+      UI.spBar.getRightCenter(UI.spBar).x + 45,
+      UI.spBar.getRightCenter(UI.spBar).y - 4
+    );
   });
 }
-export function UI_updatePlayersHP(
+export function UI_updateAllPlayersHP(
   scene: Phaser.Scene,
   playerManager: PlayerManager
 ) {
@@ -122,22 +191,10 @@ export function UI_updatePlayersHP(
     const UIhpText = UI.hptext;
     UIhpText.setText(`${Math.floor(state.HP)}`);
     UI_updateHP(scene, playerManager[i]);
-    if (i !== 0) {
-      UI.hpBar
-        .setScale(3, 3)
-        .setPosition(UI.frameLayer.x - 8, UI.frameLayer.y + 50);
-
-      UIhpText.setPosition(
-        UI.hpBar.getRightCenter(UI.hpBar).x + 120,
-        UI.hpBar.getRightCenter(UI.hpBar).y - 10
-      )
-        .setScrollFactor(1)
-        .setScale(0.7);
-    }
   });
 }
 
-export function UI_updatePlayersSP(
+export function UI_updateAllPlayersSP(
   scene: Phaser.Scene,
   playerManager: PlayerManager
 ) {
@@ -146,68 +203,59 @@ export function UI_updatePlayersSP(
     UI_updateSP(scene, playerManager[i]);
     const UIspText = UI.sptext;
     UIspText.setText(`${Math.floor(state.SP)}`);
-
-    if (i !== 0) {
-      UI.spBar
-        .setScale(2.1, 3)
-        .setPosition(UI.frameLayer.x + 17, UI.frameLayer.y + 75);
-
-      UIspText.setPosition(
-        UI.spBar.getRightCenter(UI.spBar).x + 90,
-        UI.spBar.getRightCenter(UI.spBar).y - 6
-      )
-        .setScrollFactor(1)
-        .setScale(0.7);
-    }
   });
 }
 
 export function goblinHealtbar(controller: goblinController) {
   const goblin = controller.goblin;
   const state = goblin.mob.state;
-  const UI = controller.mobUI;
-  const width = 100;
+  const healtBar = controller.mobUI.healtbar;
+  const width = 50;
+  const height = 6;
+  const radius = 3;
   const percent = state.HP / state.max_hp;
 
-  UI.hptitle
+  controller.mobUI.hptitle
     .setText(
       `${goblin.mob.name}: (${
         goblin.mob.tier
       })\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t${Math.round(state.HP)}`
     )
-    .setPosition(goblin.sprite.x - 70, goblin.sprite.y - 72)
+    .setPosition(goblin.sprite.x - 35, goblin.sprite.y - 40)
     .setDepth(5);
 
-  UI.healtbar.clear();
-  UI.healtbar.fillStyle(0x808080);
-  UI.healtbar
-    .fillRoundedRect(0, 0, width, 10, 5)
-    .setPosition(goblin.sprite.x - 50, goblin.sprite.y - 40);
+  healtBar.clear();
+  healtBar.fillStyle(0x808080);
+  healtBar
+    .fillRoundedRect(0, 0, width, height, radius)
+    .setPosition(goblin.sprite.x - 25, goblin.sprite.y - 25);
   if (percent >= 0) {
-    UI.healtbar.fillStyle(0x00ff00);
-    UI.healtbar
-      .fillRoundedRect(0, 0, width * percent, 10, 5)
-      .setPosition(goblin.sprite.x - 50, goblin.sprite.y - 40)
+    healtBar.fillStyle(0x00ff00);
+    healtBar
+      .fillRoundedRect(0, 0, width * percent, height, radius)
+      .setPosition(goblin.sprite.x - 25, goblin.sprite.y - 25)
       .setDepth(5);
   }
 }
 export function goblinspbar(controller: goblinController) {
   const goblin = controller.goblin;
   const state = goblin.mob.state;
-  const UI = controller.mobUI;
-  const width = 90;
+  const spBar = controller.mobUI.spbar;
+  const width = 40;
+  const height = 3;
+  const radius = 1;
   const percent = state.SP / state.max_sp;
 
-  UI.spbar.clear();
-  UI.spbar.fillStyle(0x808080);
-  UI.spbar
-    .fillRoundedRect(0, 0, width, 3, 0)
-    .setPosition(goblin.sprite.x - 45, goblin.sprite.y - 30);
+  spBar.clear();
+  spBar.fillStyle(0x808080);
+  spBar
+    .fillRoundedRect(0, 0, width, height, radius)
+    .setPosition(goblin.sprite.x - 20, goblin.sprite.y - 20);
   if (percent > 0) {
-    UI.spbar.fillStyle(0xffff00);
-    UI.spbar
-      .fillRoundedRect(0, 0, width * percent, 3, 0)
-      .setPosition(goblin.sprite.x - 45, goblin.sprite.y - 30)
+    spBar.fillStyle(0xffff00);
+    spBar
+      .fillRoundedRect(0, 0, width * percent, height, radius)
+      .setPosition(goblin.sprite.x - 20, goblin.sprite.y - 20)
       .setDepth(5);
   }
 }

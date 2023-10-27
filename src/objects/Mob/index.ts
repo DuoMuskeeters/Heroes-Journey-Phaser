@@ -8,8 +8,8 @@ import { getOrThrow } from "../utils";
 
 export class Mob<T extends MobCanlı> {
   private _scene?: Phaser.Scene;
-  private _sprite?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
-  private _attackrect?: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+  private _sprite?: Phaser.Physics.Matter.Sprite;
+  private _attackrect?: Phaser.Physics.Matter.Sprite;
   public lastdirection: Direction = direction.right;
   public id?: number;
 
@@ -24,30 +24,35 @@ export class Mob<T extends MobCanlı> {
     args: {
       attackRectX: number;
       attackRectY: number;
-      scaleSize: number;
       bodySizeX: number;
       bodySizeY: number;
     }
   ) {
     this._scene = scene;
     this.id = id;
-    this._sprite = scene.physics.add
-      .sprite(x, y, anim)
-      .setBodySize(args.bodySizeX, args.bodySizeY, true)
-      .setCollideWorldBounds(true)
-      .setBounce(0)
+    this._sprite = scene.matter.add
+      .sprite(x, y, anim, undefined, {
+        label: this.mob.name,
+        render: {
+          sprite: {
+            yOffset: 0.06,
+          },
+        },
+      })
       .setDepth(100)
-      .setScale(args.scaleSize)
-      .setOffset(60, 65);
-    this._attackrect = scene.physics.add.sprite(
-      x,
-      y,
-      `$${this.mob.name}-attackrect`
-    );
+      .setFixedRotation();
 
-    (this._attackrect.body as Phaser.Physics.Arcade.Body).allowGravity = false;
-    this.attackrect
-      .setDisplaySize(args.attackRectX, args.attackRectY)
+    this._attackrect = scene.matter.add
+      .sprite(x, y, `$${this.mob.name}-attackrect`, undefined, {
+        label: `$${this.mob.name}-attackrect`,
+        shape: {
+          type: "rectangle",
+          width: args.attackRectX,
+          height: args.attackRectY,
+        },
+        ignoreGravity: true,
+        isSensor: true,
+      })
       .setDepth(0)
       .setVisible(false);
   }
