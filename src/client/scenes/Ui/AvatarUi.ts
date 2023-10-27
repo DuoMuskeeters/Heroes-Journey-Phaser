@@ -27,11 +27,17 @@ export function createAvatarFrame(
     console.log("----------------")
     UI.playerindexText = scene.add
       .text(0, 0, `PLAYER: ${player.index + 1}`)
-      .setFont("bold 15px Arial");
-    console.log("playerindexText", UI.playerindexText);
-    UI.playerleveltext = scene.add.text(0, 0, `${player.character.level}`);
+      .setFont("bold 15px Arial")
+      .setScrollFactor(1)
+      .setScale(1 / 2.5);
+    UI.playerleveltext = scene.add
+      .text(0, 0, `${player.character.level}`)
+      .setScrollFactor(1)
+      .setScale(1 / 2.5);
     UI.frameLayer = createLayer(otherPlayersFrame, "frame", [avatarframe])
       .setDepth(200)
-      .setScale(0.8);
+      .setScale(0.8)
+      .setScrollFactor(1)
+      .setScale(1 / 2.5);
   }
 }

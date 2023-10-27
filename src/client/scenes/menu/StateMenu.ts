@@ -15,7 +15,7 @@ export default class statemenu {
   constructor(scene: Phaser.Scene, player: Player<Character>) {
     this.scene = scene;
 
-    this.container = scene.add.container(CONFIG.width, 0);
+    this.container = scene.add.container(CONFIG.width, 0).setScrollFactor(0);
     this.character = player.character;
     const title = scene.add
       .image(-265, -300, "title-iron")

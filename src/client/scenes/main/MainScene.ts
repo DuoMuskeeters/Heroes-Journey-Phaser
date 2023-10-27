@@ -1,9 +1,7 @@
 import Phaser from "phaser";
 import { loadAnimations } from "./Anims";
-import { UI_createPlayer } from "../Ui/Components";
 import { createground } from "./TileGround";
 import { createMob as createMobs } from "./CreateMob";
-import { createAvatarFrame } from "../Ui/AvatarUi";
 
 import { Player } from "../../../objects/player";
 import {
@@ -92,6 +90,7 @@ export default class MainScene extends Phaser.Scene {
 
   onConnectionReady() {
     console.log("connection ready");
+    this.cameras.main.name = "main";
     this.player._sessionId = this.room.sessionId;
     this.room.onStateChange((state) => {
       console.debug("onStateChange", state);

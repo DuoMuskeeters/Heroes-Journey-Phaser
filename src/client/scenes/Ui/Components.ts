@@ -44,21 +44,43 @@ export function UI_createPlayer(
 ) {
   const { player, UI } = playerItem;
   const isscroolFactor = player.isMainPlayer() ? 0 : 1;
+  /**
+   * @description we change the size for other players because their UI got the mainscene
+   */
+  const _ = player.isMainPlayer()
+    ? {
+        frameRatio: 1,
+        hpBarscaleX: 5.5,
+        hpBarscaleY: 7,
+        spBarscaleX: 3.1,
+        spBarscaleY: 5,
+        hptextScale: 0.8,
+        sptextScale: 0.8,
+      }
+    : {
+        frameRatio: 2.5,
+        hpBarscaleX: 3.4,
+        hpBarscaleY: 3,
+        spBarscaleX: 2.4,
+        spBarscaleY: 3,
+        hptextScale: 0.7,
+        sptextScale: 0.7,
+        leveltextScale: 2,
+      };
 
   const Center = UI.frameLayer.getCenter<Phaser.Tilemaps.TilemapLayer>();
   const LeftCenterX =
     UI.frameLayer.getLeftCenter<Phaser.Tilemaps.TilemapLayer>().x;
   const BottomCenterY =
     UI.frameLayer.getBottomCenter<Phaser.Tilemaps.TilemapLayer>().y;
-
   UI.hpBar = scene.add
     .sprite(LeftCenterX + 270, Center.y + 3, `hpBar`)
-    .setScale(5.5, 7)
+    .setScale(_.hpBarscaleX / _.frameRatio, _.hpBarscaleY / _.frameRatio)
     .setDepth(5)
     .setScrollFactor(isscroolFactor);
   UI.spBar = scene.add
     .sprite(LeftCenterX + 227, BottomCenterY - 25, `spBar-${isscroolFactor}`)
-    .setScale(3.1, 5)
+    .setScale(_.spBarscaleX / _.frameRatio, _.spBarscaleY / _.frameRatio)
     .setDepth(4)
     .setScrollFactor(isscroolFactor);
   UI.hptext = scene.add
@@ -74,7 +96,7 @@ export function UI_createPlayer(
     .setFontFamily("URW Chancery L, cursive")
     .setFontStyle("bold")
     .setScrollFactor(isscroolFactor)
-    .setScale(0.8)
+    .setScale(_.hptextScale / _.frameRatio)
     .setDepth(500);
 
   UI.sptext = scene.add
@@ -90,8 +112,12 @@ export function UI_createPlayer(
     .setFontFamily("URW Chancery L, cursive")
     .setFontStyle("bold")
     .setScrollFactor(isscroolFactor)
-    .setScale(0.8)
+    .setScale(_.sptextScale / _.frameRatio)
     .setDepth(500);
+
+  if (!player.isMainPlayer()) {
+    UI.playerleveltext.setScale(_.leveltextScale! / _.frameRatio);
+  }
 }
 const UI_updateHP = (
   scene: Phaser.Scene,
@@ -137,17 +163,26 @@ const UI_updateSP = (
     UI.spBar.anims.play(`spBar-${player.index}`, true);
   }
 };
-export function UI_updateOtherPlayers(playerManager: PlayerManager) {
+export function UI_updatePositionOtherPlayers(playerManager: PlayerManager) {
   playerManager.forEach(({ player, UI }, i) => {
     if (player.isMainPlayer()) return;
-    UI.frameLayer.setPosition(player.sprite.x - 60, player.sprite.y - 160);
+    UI.frameLayer.setPosition(player.sprite.x - 20, player.sprite.y - 80);
     UI.playerindexText.setPosition(UI.frameLayer.x, UI.frameLayer.y);
-    UI.playerleveltext
-      .setPosition(UI.frameLayer.x + 30, UI.frameLayer.y + 40)
-      .setScale(1.5);
+    UI.playerleveltext.setPosition(UI.frameLayer.x + 15, UI.frameLayer.y + 20);
+    UI.hpBar.setPosition(UI.frameLayer.x + 2, UI.frameLayer.y + 25);
+
+    UI.hptext.setPosition(
+      UI.hpBar.getRightCenter(UI.hpBar).x + 60,
+      UI.hpBar.getRightCenter(UI.hpBar).y - 5
+    );
+    UI.spBar.setPosition(UI.frameLayer.x + 13, UI.frameLayer.y + 38);
+    UI.sptext.setPosition(
+      UI.spBar.getRightCenter(UI.spBar).x + 45,
+      UI.spBar.getRightCenter(UI.spBar).y - 4
+    );
   });
 }
-export function UI_updatePlayersHP(
+export function UI_updateAllPlayersHP(
   scene: Phaser.Scene,
   playerManager: PlayerManager
 ) {
@@ -156,22 +191,10 @@ export function UI_updatePlayersHP(
     const UIhpText = UI.hptext;
     UIhpText.setText(`${Math.floor(state.HP)}`);
     UI_updateHP(scene, playerManager[i]);
-    if (!player.isMainPlayer()) {
-      UI.hpBar
-        .setScale(3, 3)
-        .setPosition(UI.frameLayer.x - 8, UI.frameLayer.y + 50);
-
-      UIhpText.setPosition(
-        UI.hpBar.getRightCenter(UI.hpBar).x + 120,
-        UI.hpBar.getRightCenter(UI.hpBar).y - 10
-      )
-        .setScrollFactor(1)
-        .setScale(0.7);
-    }
   });
 }
 
-export function UI_updatePlayersSP(
+export function UI_updateAllPlayersSP(
   scene: Phaser.Scene,
   playerManager: PlayerManager
 ) {
@@ -180,19 +203,6 @@ export function UI_updatePlayersSP(
     UI_updateSP(scene, playerManager[i]);
     const UIspText = UI.sptext;
     UIspText.setText(`${Math.floor(state.SP)}`);
-
-    if (!player.isMainPlayer()) {
-      UI.spBar
-        .setScale(2.1, 3)
-        .setPosition(UI.frameLayer.x + 17, UI.frameLayer.y + 75);
-
-      UIspText.setPosition(
-        UI.spBar.getRightCenter(UI.spBar).x + 90,
-        UI.spBar.getRightCenter(UI.spBar).y - 6
-      )
-        .setScrollFactor(1)
-        .setScale(0.7);
-    }
   });
 }
 
